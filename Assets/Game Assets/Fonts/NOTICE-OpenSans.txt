@@ -1,0 +1,3 @@
+Open Sans. Digitized data copyright © 2010–2011, Google Corporation.
+Unmodified font binaries from the Debian fonts-open-sans package.
+Licensed under Apache License 2.0. See LICENSE-Apache-2.0.txt.

@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc7246d20b704104c83ba8911a7d3484, type: 3}
+  m_Name: FileRef
+  m_EditorClassIdentifier: Assembly-CSharp::FileRef
+  _cellPrefab: {fileID: 6202675774534852809, guid: 41738945ffb35d645a18727c82e67f9a, type: 3}
+  _tilePrefab: {fileID: 7203315545098251666, guid: a72788e8d341cf14ea606acf1bbc8d78, type: 3}
+  _targetMarkerPrefab: {fileID: 5999239083927954089, guid: 5dc34a41aedb324449c2713a5e0ad550, type: 3}
+  _tileSprites:
+  - Shape: 0
+    Color: 0
+    Sprite: {fileID: 21300000, guid: 490ca190335b4104398418a42f7e2961, type: 3}
+  - Shape: 0
+    Color: 1
+    Sprite: {fileID: 21300000, guid: 5f57064e5a575e04ba032e41ba788ff4, type: 3}
+  - Shape: 0
+    Color: 2
+    Sprite: {fileID: 21300000, guid: a7d9422caccd96c44962d9a469a266eb, type: 3}
+  - Shape: 0
+    Color: 3
+    Sprite: {fileID: 21300000, guid: 05c2b75a56d761f45bac3c78f317e0cf, type: 3}
+  - Shape: 1
+    Color: 0
+    Sprite: {fileID: 21300000, guid: e4d172a5f7251f0458da2fcc3ac8e7ab, type: 3}
+  - Shape: 1
+    Color: 1
+    Sprite: {fileID: 21300000, guid: 70a6ffa488796ae418f38bffce73baac, type: 3}
+  - Shape: 1
+    Color: 2
+    Sprite: {fileID: 21300000, guid: c3f71be18f43bfe4ba540b2c0ca43574, type: 3}
+  - Shape: 1
+    Color: 3
+    Sprite: {fileID: 21300000, guid: 23d2c84f668cac0418b09f7fb4183f2c, type: 3}
+  - Shape: 2
+    Color: 0
+    Sprite: {fileID: 21300000, guid: 19c6277482857ff49907648f5f62761d, type: 3}
+  - Shape: 2
+    Color: 1
+    Sprite: {fileID: 21300000, guid: 46b0de259b7f82c4ebfb253347784709, type: 3}
+  - Shape: 2
+    Color: 2
+    Sprite: {fileID: 21300000, guid: 0ba007d9a347f5948ae8c03cae01fa4e, type: 3}
+  - Shape: 2
+    Color: 3
+    Sprite: {fileID: 21300000, guid: d7c03a8535691914d9fcb75a761fa019, type: 3}
+  - Shape: 5
+    Color: 0
+    Sprite: {fileID: 21300000, guid: b8b30263ef0173649ae81d1b1ac5350e, type: 3}
+  - Shape: 5
+    Color: 1
+    Sprite: {fileID: 21300000, guid: 4446098152b386348b7884ee3def7788, type: 3}
+  - Shape: 5
+    Color: 2
+    Sprite: {fileID: 21300000, guid: ae89d49a4fbed0841b32bb359dc863f9, type: 3}
+  - Shape: 5
+    Color: 3
+    Sprite: {fileID: 21300000, guid: 9231ec76ed93df84296e663d20b550d8, type: 3}
+  _rowTargetSprites:
+  - Shape: 0
+    Sprite: {fileID: 21300000, guid: d6f779e8c0ca3fd4aa04e606c575ca2a, type: 3}
+  - Shape: 1
+    Sprite: {fileID: 21300000, guid: fa20fbddc2495074d9ee5b05b53dae3b, type: 3}
+  - Shape: 2
+    Sprite: {fileID: 21300000, guid: bcb1345392214dd40ab370387813a8ab, type: 3}
+  - Shape: 5
+    Sprite: {fileID: 21300000, guid: 83284733d05f9e541843d054f5c5f2fe, type: 3}
+  _columnTargetSprites:
+  - Color: 0
+    Sprite: {fileID: 21300000, guid: b267597c2d0a9cc42a66e736cedd4319, type: 3}
+  - Color: 1
+    Sprite: {fileID: 21300000, guid: a1ec68455b96f844e8b7e3ea7d7ab37b, type: 3}
+  - Color: 2
+    Sprite: {fileID: 21300000, guid: 882fa8ade61e7bd4d989dfdf55dd059f, type: 3}
+  - Color: 3
+    Sprite: {fileID: 21300000, guid: 328b2fa4d6047174189313006694e642, type: 3}
