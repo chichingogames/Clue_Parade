@@ -63,7 +63,7 @@ Assets/
   Resources/                      ← loaded by name at runtime — EVERYTHING here ships
     FileRef.asset
     Levels/level_N.json + level_index.json
-  Plugins/                        ← DOTween etc.
+  Plugins/                        ← DOTween etc. (package links: §13 "Packages")
 ```
 
 All game scripts are in `Assembly-CSharp`, global namespace. Naming: classes are
@@ -491,7 +491,7 @@ reuse a value; give them explicit numbers (`Loading = 0, Playing = 1`).
 
 ## 13  Checklist to start a new game from this
 
-1. New Unity project (URP, Android, new Input System only). Install DOTween, TextMesh Pro.
+1. New Unity project (URP, Android, new Input System only). Install the packages below.
 2. Copy `Scripts/Gameplay/Essentials/` as-is. (Optionally fix the duplicate-singleton guard
    and the double `OfflineData.Load()`, §3–4.)
 3. Copy `Popup.cs`, `BasePopUp.cs`, `Manager_PopUp.cs`; reset `PopupName` to your popups.
@@ -507,6 +507,22 @@ reuse a value; give them explicit numbers (`Loading = 0, Playing = 1`).
 8. Create `Resources/FileRef.asset` (just access `FileRef.Instance` once in the Editor and it
    auto-creates) and assign prefabs/sounds there.
 9. Add an Editor builder for any scene structure you'll regenerate more than once.
+
+### Packages
+
+Versions are the ones Shift & Sort ships with (Unity 6000.3).
+
+| Package | Install | Used for |
+|---|---|---|
+| **DOTween** (free) | [Asset Store](https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676) or [dotween.demigiant.com](https://dotween.demigiant.com/download.php). Imports into `Assets/Plugins/Demigiant/`; then run *Tools > Demigiant > DOTween Utility Panel > Setup DOTween* (adds the `DOTWEEN` define and `Resources/DOTweenSettings.asset`). | All animation and timed delays. No coroutines. |
+| **TextMesh Pro** | Comes with `com.unity.ugui` 2.0 in Unity 6 ([manual](https://docs.unity3d.com/Packages/com.unity.ugui@2.0/manual/TextMeshPro/index.html)). Import the essentials once: *Window > TextMeshPro > Import TMP Essential Resources* (→ `Assets/TextMesh Pro/`). | All UI text. Font assets are made from the TTFs in `Fonts/`. |
+| **Input System** `com.unity.inputsystem` 1.19.0 | Package Manager → Unity Registry ([manual](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.19/manual/index.html)). Set *Player > Active Input Handling* to **Input System Package (New)**. | `Manager_Input` (`Pointer.current`), `InputSystemUIInputModule`. |
+| **Haptic Feedback** `xyz.candycoded.hapticfeedback` 1.0.3 | Not on OpenUPM: *Package Manager > + > Install package from git URL* → `https://github.com/CandyCoded/HapticFeedback.git#v1.0.3` ([repo](https://github.com/CandyCoded/HapticFeedback), MIT). Its code compiles only for Android, iOS and the Editor, so wrap calls in `#if UNITY_ANDROID \|\| UNITY_IOS \|\| UNITY_EDITOR`. | Device vibration (`Haptics.Play`). No-op in the Editor. |
+| **Test Framework** `com.unity.test-framework` 1.6.0 | Unity Registry ([manual](https://docs.unity3d.com/Packages/com.unity.test-framework@1.6/manual/index.html)); usually preinstalled. | EditMode / PlayMode tests. |
+
+Copied source, not a package:
+
+- **Sortify `[Button]`** (`Scripts/Sortify/`: `ButtonAttribute.cs`, `SortifyHelper.cs`, `Editor/ButtonAttributeDrawer.cs`). It turns parameterless methods into Inspector buttons. `TestManager` uses it. Copy the folder from an existing project; there is no package to install.
 
 ### Rules to carry over
 

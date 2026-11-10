@@ -8,6 +8,13 @@ public enum TileShape { Circle = 0, Square = 1, Triangle = 2, Diamond = 3, Hexag
 
 public enum TileColor { Coral = 0, Teal = 1, Yellow = 2, Blue = 3, Purple = 4 }
 
+// Stored by ordinal in FileRef's sound table. Audio file name = snake_case of the name
+// (TileMatch -> tile_match.wav, or tile_match_01.wav, tile_match_02.wav... for variants).
+// Strength of a vibration pulse (Haptics.Play). Not serialized.
+public enum HapticType { Light = 0, Medium = 1, Heavy = 2 }
+
+public enum SoundType { UiTap = 0, SwipeSettle = 1, TileMatch = 2, LineComplete = 3, LevelComplete = 4, OutOfMoves = 5, Restart = 6, Undo = 7 }
+
 [Serializable]
 public struct TileData
 {

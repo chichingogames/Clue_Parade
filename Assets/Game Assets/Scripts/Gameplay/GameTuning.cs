@@ -26,9 +26,33 @@ public class GameTuning : MonoBehaviour
     [SerializeField, Range(2, 5)] private int _minBoardSize = Tuning.MinBoardSizeDefault;
     [SerializeField, Range(2, 5)] private int _maxBoardSize = Tuning.MaxBoardSizeDefault;
 
-    [Header("Flow")]
-    [SerializeField] private float _winAdvanceDelay = Tuning.WinAdvanceDelayDefault;
-    [SerializeField] private float _failRestartDelay = Tuning.FailRestartDelayDefault;
+    [Header("Intro (on launch): HUD, then board")]
+    [Tooltip("Seconds before the first HUD element starts scaling up.")]
+    [SerializeField, Min(0f)] private float _uiIntroDelay = Tuning.UiIntroDelayDefault;
+    [Tooltip("Scale-up time of each HUD element (ease OutBack).")]
+    [SerializeField, Min(0.01f)] private float _uiIntroDuration = Tuning.UiIntroDurationDefault;
+    [Tooltip("Delay between one element starting and the next, top to bottom.")]
+    [SerializeField, Min(0f)] private float _uiIntroStagger = Tuning.UiIntroStaggerDefault;
+
+    [Tooltip("Seconds before the board starts scaling up. The default lands it between the top bar and the pills.")]
+    [SerializeField, Min(0f)] private float _boardIntroDelay = Tuning.BoardIntroDelayDefault;
+    [Tooltip("Board scale-up time (ease OutBack). Board input is ignored until it finishes.")]
+    [SerializeField, Min(0.01f)] private float _boardIntroDuration = Tuning.BoardIntroDurationDefault;
+
+    [Header("Tile spawn (every level)")]
+    [Tooltip("Scale-up time of each tile when a level loads (ease OutBack).")]
+    [SerializeField, Min(0.01f)] private float _tileSpawnDuration = Tuning.TileSpawnDurationDefault;
+    [Tooltip("Extra delay per diagonal step (row + col) from the top-left tile.")]
+    [SerializeField, Min(0f)] private float _tileSpawnStagger = Tuning.TileSpawnStaggerDefault;
+
+    [Tooltip("Scale-up time of a matched check. On level load each check pops once its tile has spawned; in play, when a move matches it.")]
+    [SerializeField, Min(0.01f)] private float _checkPopDuration = Tuning.CheckPopDurationDefault;
+
+    [Header("Layout")]
+    [Tooltip("Fraction of the safe-area height kept free above the board for the HUD (logo, level, pills). The camera fits the board into what is left.")]
+    [SerializeField, Range(0f, 0.45f)] private float _hudTopReserve = Tuning.HudTopReserveDefault;
+    [Tooltip("Fraction of the safe-area height kept free below the board (message panel, buttons).")]
+    [SerializeField, Range(0f, 0.45f)] private float _hudBottomReserve = Tuning.HudBottomReserveDefault;
 
     public float CellSize => _cellSize;
     public float TileScale => _tileScale;
@@ -43,8 +67,16 @@ public class GameTuning : MonoBehaviour
     public int LevelsPerSizeStep => _levelsPerSizeStep;
     public int MinBoardSize => _minBoardSize;
     public int MaxBoardSize => _maxBoardSize;
-    public float WinAdvanceDelay => _winAdvanceDelay;
-    public float FailRestartDelay => _failRestartDelay;
+    public float UiIntroDelay => _uiIntroDelay;
+    public float UiIntroDuration => _uiIntroDuration;
+    public float UiIntroStagger => _uiIntroStagger;
+    public float BoardIntroDelay => _boardIntroDelay;
+    public float BoardIntroDuration => _boardIntroDuration;
+    public float TileSpawnDuration => _tileSpawnDuration;
+    public float TileSpawnStagger => _tileSpawnStagger;
+    public float CheckPopDuration => _checkPopDuration;
+    public float HudTopReserve => _hudTopReserve;
+    public float HudBottomReserve => _hudBottomReserve;
 
     public static GameTuning Active { get; private set; }
 

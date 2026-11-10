@@ -1,7 +1,8 @@
+using DG.Tweening;
 using UnityEngine;
 
-// The game's boot. Initializes singletons in the Inspector order (ORDER MATTERS),
-// before any default-order Awake runs.
+// The game's boot. Loads the save once, then initializes singletons in the Inspector order
+// (ORDER MATTERS), before any default-order Awake runs.
 [DefaultExecutionOrder(-900)]
 public class SingletonManager : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class SingletonManager : MonoBehaviour
 
     private void Awake()
     {
+        OfflineData.Load();     // once, before any Awake2 reads it
+
         foreach (var entry in _singletonsToInitialize)
         {
             if (entry is ISingleton singleton) singleton.Initialize();
@@ -16,5 +19,6 @@ public class SingletonManager : MonoBehaviour
         }
 
         Application.targetFrameRate = 60;
+        DOTween.SetTweensCapacity(500, 100);
     }
 }

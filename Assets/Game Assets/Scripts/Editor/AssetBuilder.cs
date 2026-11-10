@@ -1,20 +1,38 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
 // Imports the art, creates the few placeholder sprites still needed (cell slot and mask),
 // the Cell / Tile / TargetMarker prefabs, and fills Resources/FileRef.asset from the art by file name:
 //   Sprites/Sprites/tiles/tile_{shape}_{color}.png, targets/target_row_{shape}.png, targets/target_column_{color}.png
+//   Audio/Music/*.wav (first one = music), Audio/SFX/{sound_type}.wav or {sound_type}_NN.wav (variants)
 // Re-runnable: existing prefabs are kept (so prefab edits survive) and FileRef tables are only filled when empty.
 public static class AssetBuilder
 {
     private const string SpriteFolder = "Assets/Game Assets/Sprites/Placeholder";
     private const string ArtFolder = "Assets/Game Assets/Sprites/Sprites";
     private const string PrefabFolder = "Assets/Game Assets/Prefabs/Gameobjects";
+    private const string MusicFolder = "Assets/Game Assets/Audio/Music";
+    private const string SfxFolder = "Assets/Game Assets/Audio/SFX";
     private const int Resolution = 128;
 
-    public const string SlotSprite = "Slot";
+    // Rounded panels, drawn 9-sliced (ApplyPanel) so their corners stay sharp at any size: a stretched
+    // 128 px sprite looked blurry on a big board. Both are 1 world unit wide at scale 1 (ppu = width).
+    //   BoardFrame: the board frame only, 512 px, the most detail where the corner is largest on screen.
+    //   Panel:      slots and target backgrounds, 256 px.
+    public const string BoardFrameSprite = "BoardFrame";
+    private const int BoardFrameResolution = 512;
+    private const int BoardFrameCornerPixels = 128;
+    public const float BoardFrameCornerRadius = (float)BoardFrameCornerPixels / BoardFrameResolution;   // 0.25 at scale 1
+
+    public const string PanelSprite = "Panel";
+    private const int PanelResolution = 256;
+    private const int PanelCornerPixels = 64;
+    public const float PanelCornerRadius = (float)PanelCornerPixels / PanelResolution;   // 0.25 at scale 1
+
+    private const int PanelBorderMargin = 8;           // slice border = corner + this, for the anti-aliased edge
     public const string SolidSprite = "Solid";
     private const string MatchedBadge = "fx/fx_matched_badge";
 
@@ -23,6 +41,7 @@ public static class AssetBuilder
     {
         GenerateSprites();
         ImportArt();
+        ImportAudio();
         var cell = BuildCellPrefab();
         var tile = BuildTilePrefab();
         var marker = BuildTargetMarkerPrefab();
@@ -39,7 +58,8 @@ public static class AssetBuilder
     private static void GenerateSprites()
     {
         Directory.CreateDirectory(SpriteFolder);
-        WriteSprite(SlotSprite, p => RoundedBox(p, 0.98f, 0.16f));
+        WritePanelSprite(BoardFrameSprite, BoardFrameResolution, BoardFrameCornerPixels);
+        WritePanelSprite(PanelSprite, PanelResolution, PanelCornerPixels);
         WriteSprite(SolidSprite, p => -1f);
     }
 
@@ -72,6 +92,53 @@ public static class AssetBuilder
         importer.alphaIsTransparency = true;
         importer.mipmapEnabled = false;
         importer.SaveAndReimport();
+    }
+
+    // A white rounded box filling an n x n texture, imported as a 9-slice sprite with mipmaps.
+    private static void WritePanelSprite(string spriteName, int n, int cornerPixels)
+    {
+        string path = $"{SpriteFolder}/{spriteName}.png";
+        if (File.Exists(path)) return;
+
+        float half = n * 0.5f;
+        var texture = new Texture2D(n, n, TextureFormat.RGBA32, false);
+        for (int y = 0; y < n; y++)
+        {
+            for (int x = 0; x < n; x++)
+            {
+                // Pixel-space SDF of a rounded box 1 px inside the texture edge.
+                var p = new Vector2(x + 0.5f - half, y + 0.5f - half);
+                float d = RoundedBox(p, half - 1f, cornerPixels);
+                texture.SetPixel(x, y, new Color(1f, 1f, 1f, Mathf.Clamp01(0.5f - d)));
+            }
+        }
+
+        File.WriteAllBytes(path, texture.EncodeToPNG());
+        UnityEngine.Object.DestroyImmediate(texture);
+        AssetDatabase.ImportAsset(path);
+
+        var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+        importer.textureType = TextureImporterType.Sprite;
+        importer.spriteImportMode = SpriteImportMode.Single;
+        importer.spritePixelsPerUnit = n;              // full sprite = 1 world unit
+        importer.spriteBorder = Vector4.one * (cornerPixels + PanelBorderMargin);
+        importer.alphaIsTransparency = true;
+        importer.mipmapEnabled = true;                 // shown smaller than its pixels: mips keep the edge smooth
+        var settings = new TextureImporterSettings();
+        importer.ReadTextureSettings(settings);
+        settings.spriteMeshType = SpriteMeshType.FullRect;   // required for 9-slicing
+        importer.SetTextureSettings(settings);
+        importer.SaveAndReimport();
+    }
+
+    // Shows the Panel sprite 9-sliced on r: size in r's parent space, cornerRadius in the same units.
+    public static void ApplyPanel(SpriteRenderer r, Vector2 size, float cornerRadius)
+    {
+        float scale = cornerRadius / PanelCornerRadius;
+        r.sprite = LoadSprite(PanelSprite);
+        r.drawMode = SpriteDrawMode.Sliced;
+        r.transform.localScale = Vector3.one * scale;
+        r.size = size / scale;
     }
 
     private static float RoundedBox(Vector2 p, float halfSize, float radius)
@@ -107,6 +174,32 @@ public static class AssetBuilder
         }
     }
 
+    // Music streams (long, compressed); effects decompress on load (short, played often, no latency).
+    private static void ImportAudio()
+    {
+        foreach (string guid in AssetDatabase.FindAssets("t:AudioClip", new[] { MusicFolder, SfxFolder }))
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var importer = (AudioImporter)AssetImporter.GetAtPath(path);
+            bool music = path.StartsWith(MusicFolder);
+
+            var settings = importer.defaultSampleSettings;
+            var wantLoad = music ? AudioClipLoadType.Streaming : AudioClipLoadType.DecompressOnLoad;
+            var wantFormat = music ? AudioCompressionFormat.Vorbis : AudioCompressionFormat.ADPCM;
+            bool changed = settings.loadType != wantLoad || settings.compressionFormat != wantFormat
+                           || importer.forceToMono == music || importer.loadInBackground != music;
+            if (!changed) continue;
+
+            settings.loadType = wantLoad;
+            settings.compressionFormat = wantFormat;
+            settings.quality = 0.6f;
+            importer.defaultSampleSettings = settings;
+            importer.forceToMono = !music;
+            importer.loadInBackground = music;
+            importer.SaveAndReimport();
+        }
+    }
+
     private static Sprite LoadArt(string relativePath) =>
         AssetDatabase.LoadAssetAtPath<Sprite>($"{ArtFolder}/{relativePath}.png");
 
@@ -121,8 +214,9 @@ public static class AssetBuilder
         if (existing != null) return existing;
 
         var root = new GameObject("Cell");
-        var background = AddRenderer(root.transform, "Background", LoadSprite(SlotSprite),
-            new Color(0.14f, 0.11f, 0.22f), 0.94f, Vector3.zero, SortOrder.Slot, masked: false);
+        var background = AddRenderer(root.transform, "Background", null,
+            new Color(0.14f, 0.11f, 0.22f), 1f, Vector3.zero, SortOrder.Slot, masked: false);
+        ApplyPanel(background, Vector2.one * SlotSize, SlotCornerRadius);
         var check = AddRenderer(root.transform, "Check", LoadArt(MatchedBadge),
             Color.white, 0.2f, new Vector3(0.33f, 0.33f), SortOrder.TileCheck, masked: false);
 
@@ -130,6 +224,14 @@ public static class AssetBuilder
         SetRefs(cell, ("_background", background), ("_check", check.gameObject));
         return SavePrefab<Cell>(root, path);
     }
+
+    // In cell units. The frame's corner is BoardFrameCornerRadius (0.25) and sits 0.18 outside the slots
+    // (FramePadding + slot inset), so 0.07 would be exactly parallel; 0.1 keeps them close to parallel
+    // while still reading as rounded at slot size.
+    public const float SlotSize = 0.94f;
+    public const float SlotCornerRadius = 0.1f;
+    public const float MarkerSize = 0.8f;
+    public const float MarkerCornerRadius = 0.16f;
 
     private static Tile BuildTilePrefab()
     {
@@ -153,8 +255,9 @@ public static class AssetBuilder
         if (existing != null) return existing;
 
         var root = new GameObject("TargetMarker");
-        var background = AddRenderer(root.transform, "Background", LoadSprite(SlotSprite), Color.white, 0.8f,
+        var background = AddRenderer(root.transform, "Background", null, Color.white, 1f,
             Vector3.zero, SortOrder.Marker, masked: false);
+        ApplyPanel(background, Vector2.one * MarkerSize, MarkerCornerRadius);
         var icon = AddRenderer(root.transform, "Icon", null, Color.white, 0.7f, Vector3.zero,
             SortOrder.MarkerIcon, masked: false);
 
@@ -251,8 +354,46 @@ public static class AssetBuilder
             }
         }
 
+        if (so.FindProperty("_music").objectReferenceValue == null)
+        {
+            var music = AssetDatabase.FindAssets("t:AudioClip", new[] { MusicFolder });
+            if (music.Length > 0)
+                so.FindProperty("_music").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(AssetDatabase.GUIDToAssetPath(music[0]));
+        }
+
+        var sounds = so.FindProperty("_sounds");
+        if (sounds.arraySize == 0)
+        {
+            foreach (SoundType type in Enum.GetValues(typeof(SoundType)))
+            {
+                var clips = FindSoundClips(type);
+                if (clips.Length == 0) continue;
+                var entry = AppendElement(sounds);
+                entry.FindPropertyRelative("Type").intValue = (int)type;
+                entry.FindPropertyRelative("Volume").floatValue = 1f;
+                var clipArray = entry.FindPropertyRelative("Clips");
+                clipArray.arraySize = clips.Length;
+                for (int i = 0; i < clips.Length; i++) clipArray.GetArrayElementAtIndex(i).objectReferenceValue = clips[i];
+            }
+        }
+
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(fileRef);
+    }
+
+    // SoundType.TileMatch -> SFX/tile_match.wav, or tile_match_01.wav, tile_match_02.wav... in name order.
+    private static AudioClip[] FindSoundClips(SoundType type)
+    {
+        string baseName = Regex.Replace(type.ToString(), "(?<=[a-z0-9])([A-Z])", "_$1").ToLowerInvariant();
+        var pattern = new Regex($"^{baseName}(_\\d+)?$");
+        var paths = new System.Collections.Generic.List<string>();
+        foreach (string guid in AssetDatabase.FindAssets("t:AudioClip", new[] { SfxFolder }))
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (pattern.IsMatch(Path.GetFileNameWithoutExtension(path))) paths.Add(path);
+        }
+        paths.Sort(StringComparer.Ordinal);
+        return paths.ConvertAll(AssetDatabase.LoadAssetAtPath<AudioClip>).ToArray();
     }
 
     private static SerializedProperty AppendElement(SerializedProperty array)

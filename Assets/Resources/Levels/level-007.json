@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": 7,
+  "name": "Quick reset",
+  "instruction": "Two rows are out of line. Start with either one.",
+  "size": 3,
+  "board": [
+    2,
+    0,
+    1,
+    3,
+    4,
+    5,
+    7,
+    8,
+    6
+  ],
+  "moveBudget": 6,
+  "tutorial": "",
+  "verifiedMoves": 2,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    }
+  ],
+  "minimumMoves": 2
+}

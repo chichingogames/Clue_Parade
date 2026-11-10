@@ -29,6 +29,15 @@ public class FileRef : ScriptableSingleton<FileRef>
         public Sprite Sprite;
     }
 
+    [Serializable]
+    public struct SoundData
+    {
+        public SoundType Type;
+        [Tooltip("Variants. Manager_Audio.PlaySound picks one at random, or the one asked for.")]
+        public AudioClip[] Clips;
+        [Range(0f, 1f)] public float Volume;
+    }
+
     [Header("Prefabs")]
     [SerializeField] private Cell _cellPrefab;
     [SerializeField] private Tile _tilePrefab;
@@ -42,9 +51,27 @@ public class FileRef : ScriptableSingleton<FileRef>
     [SerializeField] private ShapeSprite[] _rowTargetSprites = new ShapeSprite[0];
     [SerializeField] private ColorSprite[] _columnTargetSprites = new ColorSprite[0];
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip _music;
+    [SerializeField] private SoundData[] _sounds = new SoundData[0];
+
     public Cell CellPrefab => _cellPrefab;
     public Tile TilePrefab => _tilePrefab;
     public TargetMarker TargetMarkerPrefab => _targetMarkerPrefab;
+    public AudioClip Music => _music;
+
+    // False (and no error) when the sound has no clips: a missing sound is silence, not a crash.
+    public bool TryGetSound(SoundType type, out SoundData data)
+    {
+        foreach (var entry in _sounds)
+        {
+            if (entry.Type != type || entry.Clips == null || entry.Clips.Length == 0) continue;
+            data = entry;
+            return true;
+        }
+        data = default;
+        return false;
+    }
 
     public Sprite GetTileSprite(TileData data)
     {
@@ -143,6 +170,9 @@ public class FileRef : ScriptableSingleton<FileRef>
         if (_cellPrefab == null) { Debug.LogError("[FileRef] Cell prefab missing.", this); problems++; }
         if (_tilePrefab == null) { Debug.LogError("[FileRef] Tile prefab missing.", this); problems++; }
         if (_targetMarkerPrefab == null) { Debug.LogError("[FileRef] Target marker prefab missing.", this); problems++; }
+        if (_music == null) { Debug.LogWarning("[FileRef] No music clip.", this); }
+        foreach (SoundType type in Enum.GetValues(typeof(SoundType)))
+            if (!TryGetSound(type, out _)) Debug.LogWarning($"[FileRef] No clip for sound {type}.", this);
 
         var shapes = PlayableShapes;
         var colors = PlayableColors;

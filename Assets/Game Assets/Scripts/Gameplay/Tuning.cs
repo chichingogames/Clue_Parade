@@ -15,8 +15,16 @@ public static class Tuning
     public const int LevelsPerSizeStepDefault = 5;        // board grows by 1 every N levels
     public const int MinBoardSizeDefault = 3;
     public const int MaxBoardSizeDefault = 5;             // limited by the number of shapes/colors
-    public const float WinAdvanceDelayDefault = 1f;
-    public const float FailRestartDelayDefault = 1f;
+    public const float UiIntroDelayDefault = 0.1f;        // seconds before the first HUD element pops in on launch
+    public const float UiIntroDurationDefault = 0.35f;    // scale-up time per element
+    public const float UiIntroStaggerDefault = 0.06f;     // gap between one element starting and the next
+    public const float BoardIntroDelayDefault = 0.22f;    // seconds before the board starts scaling up on launch
+    public const float BoardIntroDurationDefault = 0.45f; // board scale-up time
+    public const float TileSpawnDurationDefault = 0.28f;  // each tile's scale-up when a level loads
+    public const float TileSpawnStaggerDefault = 0.045f;  // extra delay per diagonal step (row + col) from the top-left
+    public const float CheckPopDurationDefault = 0.22f;   // a matched check's scale-up (after its tile spawns, or when a move matches it)
+    public const float HudTopReserveDefault = 0.23f;      // fraction of the safe area kept free above the board (logo, level, pills)
+    public const float HudBottomReserveDefault = 0.29f;   // fraction kept free below it (message panel, buttons)
 
     private static GameTuning Source => GameTuning.Active;
 
@@ -33,6 +41,14 @@ public static class Tuning
     public static int LevelsPerSizeStep => Source != null ? Source.LevelsPerSizeStep : LevelsPerSizeStepDefault;
     public static int MinBoardSize => Source != null ? Source.MinBoardSize : MinBoardSizeDefault;
     public static int MaxBoardSize => Source != null ? Source.MaxBoardSize : MaxBoardSizeDefault;
-    public static float WinAdvanceDelay => Source != null ? Source.WinAdvanceDelay : WinAdvanceDelayDefault;
-    public static float FailRestartDelay => Source != null ? Source.FailRestartDelay : FailRestartDelayDefault;
+    public static float UiIntroDelay => Source != null ? Source.UiIntroDelay : UiIntroDelayDefault;
+    public static float UiIntroDuration => Source != null ? Source.UiIntroDuration : UiIntroDurationDefault;
+    public static float UiIntroStagger => Source != null ? Source.UiIntroStagger : UiIntroStaggerDefault;
+    public static float BoardIntroDelay => Source != null ? Source.BoardIntroDelay : BoardIntroDelayDefault;
+    public static float BoardIntroDuration => Source != null ? Source.BoardIntroDuration : BoardIntroDurationDefault;
+    public static float TileSpawnDuration => Source != null ? Source.TileSpawnDuration : TileSpawnDurationDefault;
+    public static float TileSpawnStagger => Source != null ? Source.TileSpawnStagger : TileSpawnStaggerDefault;
+    public static float CheckPopDuration => Source != null ? Source.CheckPopDuration : CheckPopDurationDefault;
+    public static float HudTopReserve => Source != null ? Source.HudTopReserve : HudTopReserveDefault;
+    public static float HudBottomReserve => Source != null ? Source.HudBottomReserve : HudBottomReserveDefault;
 }

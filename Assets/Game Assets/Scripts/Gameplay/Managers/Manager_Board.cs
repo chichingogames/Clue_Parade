@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 
 // Owns the BoardState and its views: builds the board from Cell/Tile/TargetMarker prefabs,
@@ -20,9 +20,14 @@ public class Manager_Board : Singleton<Manager_Board>
     // Raised when a line has finished animating and the indicators are up to date.
     public event Action OnBoardSettled = delegate { };
 
+    // Raised after Build has placed the board and fitted the camera, i.e. whenever the board's
+    // on-screen area may have changed. UI that lays out around the board listens to this.
+    public event Action OnLayoutChanged = delegate { };
+
     public BoardState State { get; private set; }
     public bool IsDragging => _held && _animation == null;
-    public bool IsAnimating => _animation != null;
+    // True while a line slides or the launch intro scales the board in; presses are refused meanwhile.
+    public bool IsAnimating => _animation != null || _intro != null;
     public float DragOffset => _offset;
 
     private Cell[,] _cells;
@@ -37,7 +42,15 @@ public class Manager_Board : Singleton<Manager_Board>
     private Tile[] _heldTiles;       // the line's tiles in their order before the drag
     private float _offset;
     private Tile _ghost;
-    private Coroutine _animation;
+    private Tween _animation;
+
+    // Launch intro: the whole board scales up once, on the first Build.
+    private Tween _intro;
+    private bool _introPlayed;
+
+    // Board as it was when the line was picked up, to tell which matches a move is new.
+    private bool[,] _matchedAtPickUp;
+    private int _linesAtPickUp;
 
     private int Size => State.Size;
     private static float CellSize => Tuning.CellSize;
@@ -49,7 +62,10 @@ public class Manager_Board : Singleton<Manager_Board>
 
         var fileRef = FileRef.Instance;
         float boardSize = Size * CellSize;
-        _frame.transform.localScale = Vector3.one * (boardSize + 2f * Tuning.FramePadding * CellSize);
+        // The frame is a 9-sliced panel: sized, not scaled, so its rounded corners stay sharp.
+        _frame.drawMode = SpriteDrawMode.Sliced;
+        _frame.transform.localScale = Vector3.one;
+        _frame.size = Vector2.one * (boardSize + 2f * Tuning.FramePadding * CellSize);
         _mask.transform.localScale = Vector3.one * boardSize;
 
         _cells = new Cell[Size, Size];
@@ -84,8 +100,13 @@ public class Manager_Board : Singleton<Manager_Board>
             _columnMarkers[c] = SpawnMarker($"Column Target {c}", position, fileRef.GetColumnTargetSprite(State.ColumnTargets[c]));
         }
 
-        RefreshIndicators();
         FitCamera();
+        OnLayoutChanged();
+        if (!_introPlayed) PlayIntro();
+        float spawnStart = AnimateTileSpawn();
+
+        // Each check pops in once its own tile has finished spawning.
+        RefreshIndicators((r, c) => spawnStart + (r + c) * Tuning.TileSpawnStagger + Tuning.TileSpawnDuration);
     }
 
     // ---------- Dragging ----------
@@ -94,6 +115,7 @@ public class Manager_Board : Singleton<Manager_Board>
     {
         if (_held) return;
 
+        SnapshotMatches();
         _held = true;
         _heldIsRow = isRow;
         _heldIndex = index;
@@ -122,7 +144,7 @@ public class Manager_Board : Singleton<Manager_Board>
     public void CancelDrag()
     {
         if (!IsDragging) return;
-        _animation = StartCoroutine(AnimateHeldLine(0f, 0));
+        AnimateHeldLine(0f, 0);
     }
 
     // Commit the held line by whole steps (sign = direction), updating the model now
@@ -134,7 +156,7 @@ public class Manager_Board : Singleton<Manager_Board>
         if (_heldIsRow) State.ShiftRow(_heldIndex, steps);
         else State.ShiftColumn(_heldIndex, steps);
 
-        _animation = StartCoroutine(AnimateHeldLine(steps, steps));
+        AnimateHeldLine(steps, steps);
     }
 
     // Programmatic one-shot shifts (dir +1 = right / down).
@@ -150,20 +172,19 @@ public class Manager_Board : Singleton<Manager_Board>
         CommitDrag(steps);
     }
 
-    private IEnumerator AnimateHeldLine(float targetOffset, int committedSteps)
+    private void AnimateHeldLine(float targetOffset, int committedSteps)
     {
-        float from = _offset;
-        float duration = Tuning.ShiftDuration * Mathf.Clamp(Mathf.Abs(targetOffset - from), 0.35f, 1.5f);
+        float duration = Tuning.ShiftDuration * Mathf.Clamp(Mathf.Abs(targetOffset - _offset), 0.35f, 1.5f);
 
-        for (float t = 0f; t < duration; t += Time.deltaTime)
-        {
-            float k = 1f - Mathf.Pow(1f - t / duration, 3f);   // ease-out cubic
-            _offset = Mathf.LerpUnclamped(from, targetOffset, k);
-            RenderHeldLine();
-            yield return null;
-        }
+        _animation = DOTween.To(() => _offset, x => { _offset = x; RenderHeldLine(); }, targetOffset, duration)
+            .SetEase(Ease.OutCubic)
+            .SetLink(gameObject)
+            .OnComplete(() => SettleHeldLine(committedSteps));
+    }
 
-        // Reorder the views to match the model and snap them into their cells.
+    // Reorder the views to match the model and snap them into their cells.
+    private void SettleHeldLine(int committedSteps)
+    {
         for (int i = 0; i < Size; i++)
         {
             var tile = _heldTiles[State.Wrap(i - committedSteps)];
@@ -175,7 +196,58 @@ public class Manager_Board : Singleton<Manager_Board>
 
         ReleaseHeldLine();
         RefreshIndicators();
+        if (committedSteps != 0) PlaySettleFeedback();
         OnBoardSettled();
+    }
+
+    private void SnapshotMatches()
+    {
+        _matchedAtPickUp = new bool[Size, Size];
+        for (int r = 0; r < Size; r++)
+            for (int c = 0; c < Size; c++)
+                _matchedAtPickUp[r, c] = State.IsCellMatched(r, c);
+        _linesAtPickUp = CompleteLineCount();
+    }
+
+    private int CompleteLineCount()
+    {
+        int lines = 0;
+        for (int i = 0; i < Size; i++)
+        {
+            if (State.IsRowComplete(i)) lines++;
+            if (State.IsColumnComplete(i)) lines++;
+        }
+        return lines;
+    }
+
+    // One layered cue per settled move: the slide sound, then the best thing it achieved, and a
+    // single haptic pulse for the best thing (Heavy = solved, Medium = line, Light = anything else).
+    // TileMatch variants climb with the number of cells newly matched (01 = one, 04 = four or more).
+    private void PlaySettleFeedback()
+    {
+        var audio = Manager_Audio.Instance;
+        audio?.PlaySound(SoundType.SwipeSettle);
+
+        if (State.IsSolved)
+        {
+            Haptics.Play(HapticType.Heavy);
+            audio?.PlaySound(SoundType.LevelComplete);
+            return;
+        }
+
+        if (CompleteLineCount() > _linesAtPickUp)
+        {
+            Haptics.Play(HapticType.Medium);
+            audio?.PlaySound(SoundType.LineComplete);
+            return;
+        }
+
+        Haptics.Play(HapticType.Light);
+        int newMatches = 0;
+        for (int r = 0; r < Size; r++)
+            for (int c = 0; c < Size; c++)
+                if (State.IsCellMatched(r, c) && !_matchedAtPickUp[r, c]) newMatches++;
+        if (newMatches > 0) audio?.PlaySound(SoundType.TileMatch, Mathf.Min(newMatches, 4) - 1);
     }
 
     private void RenderHeldLine()
@@ -278,14 +350,100 @@ public class Manager_Board : Singleton<Manager_Board>
         return marker;
     }
 
-    private void RefreshIndicators()
+    // Checks that appear pop in (Tuning.CheckPopDuration), after checkDelay(row, col) if given,
+    // otherwise right away; checks already up stay as they are.
+    private void RefreshIndicators(Func<int, int, float> checkDelay = null)
     {
         for (int r = 0; r < Size; r++)
             for (int c = 0; c < Size; c++)
-                _cells[r, c].SetMatched(State.IsCellMatched(r, c));
+                _cells[r, c].SetMatched(State.IsCellMatched(r, c), Tuning.CheckPopDuration, checkDelay?.Invoke(r, c) ?? 0f);
 
         for (int r = 0; r < Size; r++) _rowMarkers[r].SetComplete(State.IsRowComplete(r));
         for (int c = 0; c < Size; c++) _columnMarkers[c].SetComplete(State.IsColumnComplete(c));
+    }
+
+    // ---------- Intro ----------
+
+    // Scales _boardRoot from 0 to its scene scale (DOTween, OutBack), in step with UI_InGame's HUD
+    // intro. Runs after FitCamera / OnLayoutChanged, which measure the board at full size.
+    private void PlayIntro()
+    {
+        _introPlayed = true;
+        var target = _boardRoot.localScale;
+        _boardRoot.localScale = Vector3.zero;
+        _intro = _boardRoot.DOScale(target, Tuning.BoardIntroDuration)
+            .SetDelay(Tuning.BoardIntroDelay)
+            .SetEase(Ease.OutBack)
+            .SetLink(gameObject)
+            .OnComplete(() => _intro = null);
+    }
+
+    // Every Build: the level's tiles scale up from 0 in a diagonal wave from the top-left
+    // (row + col steps of TileSpawnStagger). On launch the wave waits until the board is half grown.
+    // Only the level's own tiles: the drag ghost appears instantly. Moves are allowed meanwhile
+    // (dragging only touches position). The tweens die with the tiles (SetLink).
+    // Returns when the wave starts (seconds from now), so the checks can follow it.
+    private float AnimateTileSpawn()
+    {
+        float start = _intro != null ? Tuning.BoardIntroDelay + Tuning.BoardIntroDuration * 0.5f : 0f;
+        for (int r = 0; r < Size; r++)
+        {
+            for (int c = 0; c < Size; c++)
+            {
+                var tile = _tiles[r, c].transform;
+                var target = tile.localScale;
+                tile.localScale = Vector3.zero;
+                tile.DOScale(target, Tuning.TileSpawnDuration)
+                    .SetDelay(start + (r + c) * Tuning.TileSpawnStagger)
+                    .SetEase(Ease.OutBack)
+                    .SetLink(tile.gameObject);
+            }
+        }
+        return start;
+    }
+
+    // ---------- Layout ----------
+
+    public bool HasBoard => State != null;
+
+    // World-space area of the board. withTargets false: the frame only (grid + FramePadding).
+    // withTargets true: the frame plus the row targets on the left and column targets on top,
+    // which is the area the camera fits. Board rotation is not supported (axis-aligned bounds).
+    public Bounds GetWorldBounds(bool withTargets)
+    {
+        GetLocalBounds(withTargets, out var min, out var max);
+        var a = _boardRoot.TransformPoint(min);
+        var b = _boardRoot.TransformPoint(max);
+        var bounds = new Bounds((a + b) * 0.5f, Vector3.zero);
+        bounds.Encapsulate(a);
+        bounds.Encapsulate(b);
+        return bounds;
+    }
+
+    // The same area in screen pixels (origin bottom-left), through Camera.main.
+    public Rect GetScreenRect(bool withTargets)
+    {
+        var cam = Camera.main;
+        if (cam == null || !HasBoard) return default;
+
+        var bounds = GetWorldBounds(withTargets);
+        Vector2 a = cam.WorldToScreenPoint(bounds.min);
+        Vector2 b = cam.WorldToScreenPoint(bounds.max);
+        return Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
+    }
+
+    private void GetLocalBounds(bool withTargets, out Vector2 min, out Vector2 max)
+    {
+        float half = (HasBoard ? Size : 0) * CellSize * 0.5f;
+        float frame = half + Tuning.FramePadding * CellSize;
+        min = new Vector2(-frame, -frame);
+        max = new Vector2(frame, frame);
+        if (!withTargets) return;
+
+        // Targets: rows on the left, columns on top.
+        float markers = half + (Tuning.MarkerOffset + 0.5f) * CellSize;
+        min.x = Mathf.Min(min.x, -markers);
+        max.y = Mathf.Max(max.y, markers);
     }
 
     private void FitCamera()
@@ -293,23 +451,42 @@ public class Manager_Board : Singleton<Manager_Board>
         var cam = Camera.main;
         if (cam == null) return;
 
-        // Board plus the row targets on the left and column targets on top.
-        float half = Size * CellSize * 0.5f;
-        float frame = half + Tuning.FramePadding * CellSize;
-        float markers = half + (Tuning.MarkerOffset + 0.5f) * CellSize;
-        var min = new Vector2(-markers, -frame);
-        var max = new Vector2(frame, markers);
+        GetLocalBounds(withTargets: true, out var min, out var max);
 
+        // Fit the board (with targets) into the safe area minus the HUD bands above and below it.
+        Rect safe = Screen.safeArea;
+        var region = Rect.MinMaxRect(safe.xMin, safe.yMin + safe.height * Tuning.HudBottomReserve,
+                                     safe.xMax, safe.yMax - safe.height * Tuning.HudTopReserve);
+        if (region.width <= 0f || region.height <= 0f) region = safe;
+
+        Vector2 extent = (max - min) * Tuning.CameraMargin;
+        float unitsPerPixel = Mathf.Max(extent.x / region.width, extent.y / region.height);
+        cam.orthographicSize = unitsPerPixel * Screen.height * 0.5f;
+
+        // Shift the camera so the board's center lands on the region's center.
         Vector3 center = _boardRoot.TransformPoint((min + max) * 0.5f);
-        cam.transform.position = new Vector3(center.x, center.y, cam.transform.position.z);
-
-        Vector2 extent = max - min;
-        cam.orthographicSize = Mathf.Max(extent.y * 0.5f, extent.x * 0.5f / cam.aspect) * Tuning.CameraMargin;
+        Vector2 offset = (region.center - new Vector2(Screen.width, Screen.height) * 0.5f) * unitsPerPixel;
+        cam.transform.position = new Vector3(center.x - offset.x, center.y - offset.y, cam.transform.position.z);
     }
+
+#if UNITY_EDITOR
+    // Scene view: green = frame, yellow = frame + targets (the camera-fit area).
+    private void OnDrawGizmos()
+    {
+        if (!HasBoard || _boardRoot == null) return;
+        var frame = GetWorldBounds(false);
+        var all = GetWorldBounds(true);
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(frame.center, frame.size);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(all.center, all.size);
+    }
+#endif
 
     private void Clear()
     {
-        if (_animation != null) StopCoroutine(_animation);
+        _animation?.Kill();
+        _intro?.Complete();     // a level change mid-intro jumps to full size
         ReleaseHeldLine();
         DestroyChildren(_cellsRoot);
         DestroyChildren(_tilesRoot);

@@ -26,8 +26,11 @@ public static class SceneBuilder
         var managers = BuildManagers();
         BuildBoard(managers);
         BuildCamera();
+        BuildSound(managers);
         BuildCanvas();
         BuildEventSystem();
+        BuildTester();
+        UIBuilder.Build();
 
         EditorSceneManager.MarkSceneDirty(scene);
         Debug.Log("[SceneBuilder] Scene structure is up to date.");
@@ -42,6 +45,7 @@ public static class SceneBuilder
         // Init order: data providers first, Manager_Game last.
         MonoBehaviour[] order =
         {
+            GetOrAdd<Manager_Audio>(go),
             GetOrAdd<Manager_Level>(go),
             GetOrAdd<Manager_Board>(go),
             GetOrAdd<Manager_Input>(go),
@@ -53,6 +57,19 @@ public static class SceneBuilder
         {
             list.arraySize = order.Length;
             for (int i = 0; i < order.Length; i++) list.GetArrayElementAtIndex(i).objectReferenceValue = order[i];
+            list.serializedObject.ApplyModifiedProperties();
+        }
+        else
+        {
+            // An existing list is kept; managers added since it was filled are inserted at their place in `order`.
+            for (int i = 0; i < order.Length; i++)
+            {
+                bool present = false;
+                for (int j = 0; j < list.arraySize; j++) present |= list.GetArrayElementAtIndex(j).objectReferenceValue == order[i];
+                if (present) continue;
+                list.InsertArrayElementAtIndex(Mathf.Min(i, list.arraySize));
+                list.GetArrayElementAtIndex(Mathf.Min(i, list.arraySize - 1)).objectReferenceValue = order[i];
+            }
             list.serializedObject.ApplyModifiedProperties();
         }
 
@@ -68,7 +85,8 @@ public static class SceneBuilder
         var frame = GetOrAdd<SpriteRenderer>(frameGo.gameObject);
         if (frameCreated)
         {
-            frame.sprite = AssetBuilder.LoadSprite(AssetBuilder.SlotSprite);
+            frame.sprite = AssetBuilder.LoadSprite(AssetBuilder.BoardFrameSprite);
+            frame.drawMode = SpriteDrawMode.Sliced;     // Manager_Board.Build sets its size
             frame.color = new Color(0.23f, 0.19f, 0.34f);
             frame.sortingOrder = SortOrder.Board;
         }
@@ -89,6 +107,31 @@ public static class SceneBuilder
         SetIfEmpty(so, "_tilesRoot", tiles);
         SetIfEmpty(so, "_markersRoot", markers);
         so.ApplyModifiedProperties();
+    }
+
+    // Sound/Music and Sound/SFX: one AudioSource each, wired into Manager_Audio. Their Volume is the
+    // level to tune (music 0.45 to start). Existing sources keep their settings.
+    private static void BuildSound(GameObject managers)
+    {
+        var sound = GetOrCreateRoot("Sound");
+
+        var musicGo = GetOrCreateChild(sound.transform, "Music", out bool musicCreated);
+        var music = GetOrAdd<AudioSource>(musicGo.gameObject);
+        if (musicCreated)
+        {
+            music.playOnAwake = false;
+            music.loop = true;
+            music.volume = 0.45f;
+        }
+
+        var sfxGo = GetOrCreateChild(sound.transform, "SFX", out bool sfxCreated);
+        var sfx = GetOrAdd<AudioSource>(sfxGo.gameObject);
+        if (sfxCreated) sfx.playOnAwake = false;
+
+        var so = new SerializedObject(managers.GetComponent<Manager_Audio>());
+        SetIfEmpty(so, "_music", music);
+        SetIfEmpty(so, "_sfx", sfx);
+        so.ApplyModifiedPropertiesWithoutUndo();
     }
 
     private static void BuildCamera()
@@ -138,8 +181,11 @@ public static class SceneBuilder
         GetOrAdd<GraphicRaycaster>(canvasGo);
 
         // Order matters: later siblings draw on top.
-        var container = GetOrCreateUI(canvasGo.transform, "Container");   // SafeArea component goes here
-        GetOrCreateUI(container, "InGame");                               // UI_InGame
+        var container = GetOrCreateUI(canvasGo.transform, "Container");
+        GetOrAdd<SafeArea>(container.gameObject);
+        var inGame = GetOrCreateUI(container, "InGame");                  // UI_InGame
+        var boardArea = GetOrCreateUI(inGame, "Board Area");              // HUD around the board anchors to this
+        GetOrAdd<UI_BoardArea>(boardArea.gameObject);
         GetOrCreateUI(container, "PopUps");                               // Manager_PopUp._popUpParent
 
         var darkArea = GetOrCreateUI(canvasGo.transform, "Dark Area", out bool createdDarkArea);
@@ -163,6 +209,14 @@ public static class SceneBuilder
         var legacy = go.GetComponent<StandaloneInputModule>();
         if (legacy != null) Object.DestroyImmediate(legacy);
         GetOrAdd<InputSystemUIInputModule>(go);
+    }
+
+    // Cheat panel. Tagged EditorOnly so Unity strips the whole object from builds.
+    private static void BuildTester()
+    {
+        var go = GetOrCreateRoot("Tester");
+        go.tag = "EditorOnly";
+        GetOrAdd<TestManager>(go);
     }
 
     private static GameObject GetOrCreateRoot(string name)

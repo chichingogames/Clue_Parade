@@ -1,13 +1,14 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-// Central state machine. Decides whether a swipe is legal, counts moves, and ends the level.
+// Central state machine. Decides whether a swipe is legal, counts moves, keeps the undo history,
+// and ends the level. Moving on after a win or fail is the player's call (UI_InGame buttons).
 public class Manager_Game : Singleton<Manager_Game>
 {
     public event Action<GameState> OnStateChanged = delegate { };
     public event Action<int> OnLevelStarted = delegate { };
-    public event Action OnMoveMade = delegate { };
+    public event Action OnMoveMade = delegate { };      // also raised by Undo: the board and MovesUsed changed
 
     public GameState State { get; private set; } = GameState.Loading;
     public int CurrentLevel { get; private set; } = 1;
@@ -15,12 +16,27 @@ public class Manager_Game : Singleton<Manager_Game>
     public int MovesUsed { get; private set; }
     public int MovesLeft => Level != null && Level.HasMoveLimit ? Level.MoveLimit - MovesUsed : -1;   // -1 = unlimited
 
+    // Undo works while playing and also after a win or fail ("Undo for one more move").
+    public bool CanUndo => _history.Count > 0 && State != GameState.Loading;
+
     // Current press: the cell it started on, and whether a line has been picked up.
     private bool _pressOnBoard;
     private int _pressRow;
     private int _pressCol;
     private bool _lineHeld;
     private bool _lineIsRow;
+
+    // Cells a line can move in one swipe. Each swipe is one move.
+    private const int MaxStepsPerMove = 1;
+
+    private readonly Stack<Move> _history = new Stack<Move>();
+
+    private struct Move
+    {
+        public bool IsRow;
+        public int Index;
+        public int Steps;
+    }
 
     public override void Awake2()
     {
@@ -44,12 +60,13 @@ public class Manager_Game : Singleton<Manager_Game>
         base.OnDestroy();
     }
 
-    private void Start() => StartLevel(CurrentLevel);
+    // Opens the saved level (OfflineData.CurrentLevel).
+    private void Start() => StartLevel(OfflineData.Instance.CurrentLevel);
 
     public void StartLevel(int levelNumber)
     {
-        StopAllCoroutines();
         SetState(GameState.Loading);
+        _history.Clear();
 
         CurrentLevel = levelNumber;
         Level = Manager_Level.Instance.Load(levelNumber);
@@ -62,14 +79,20 @@ public class Manager_Game : Singleton<Manager_Game>
                   $"{Manager_Board.Instance.State.MatchedCount}/{Level.Size * Level.Size} matched).");
     }
 
-    public void RestartLevel() => StartLevel(CurrentLevel);
+    public void RestartLevel()
+    {
+        Manager_Audio.Instance?.PlaySound(SoundType.Restart);
+        Haptics.Play(HapticType.Light);
+        StartLevel(CurrentLevel);
+    }
 
     public void AdvanceLevel() => StartLevel(CurrentLevel + 1);
 
     // ---------- Hold-and-drag / swipe ----------
     // A press on the board picks up its row or column once the pointer has moved
     // Tuning.DragStartThreshold along one axis; the line then follows the pointer.
-    // On release the line snaps to whole cells (see StepsForRelease), each step is one move.
+    // A move is exactly one cell: the line follows the pointer but no further than MaxStepsPerMove
+    // cells, and on release snaps to 0 or 1 cell (see StepsForRelease).
 
     private void HandlePress(Vector2 screenPosition)
     {
@@ -114,6 +137,45 @@ public class Manager_Game : Singleton<Manager_Game>
         }
 
         board.CommitDrag(steps);
+        CountMove(_lineIsRow, _lineIsRow ? _pressRow : _pressCol, steps);
+    }
+
+    // A move made from code (tutorials, hints, the tester): same rules and counting as a swipe.
+    // steps: only the sign is used (row + = right, column + = down): a move is one cell.
+    // Ignored unless Playing and the board is idle.
+    public bool ApplyMove(bool isRow, int index, int steps)
+    {
+        var board = Manager_Board.Instance;
+        if (State != GameState.Playing || board.IsAnimating || board.IsDragging || _lineHeld || steps == 0) return false;
+        steps = Mathf.Clamp(steps, -MaxStepsPerMove, MaxStepsPerMove);
+
+        if (isRow) board.ShiftRow(index, steps);
+        else board.ShiftColumn(index, steps);
+        CountMove(isRow, index, steps);
+        return true;
+    }
+
+    // Takes back the last swipe, refunding its move. From Won or Failed this
+    // returns to Playing. Refused while a line is moving.
+    public bool Undo()
+    {
+        var board = Manager_Board.Instance;
+        if (!CanUndo || board.IsAnimating || board.IsDragging || _lineHeld) return false;
+
+        var move = _history.Pop();
+        if (move.IsRow) board.ShiftRow(move.Index, -move.Steps);
+        else board.ShiftColumn(move.Index, -move.Steps);
+        MovesUsed -= Mathf.Abs(move.Steps);
+        Manager_Audio.Instance?.PlaySound(SoundType.Undo);     // haptic comes from the slide's settle
+
+        SetState(GameState.Playing);
+        OnMoveMade();
+        return true;
+    }
+
+    private void CountMove(bool isRow, int index, int steps)
+    {
+        _history.Push(new Move { IsRow = isRow, Index = index, Steps = steps });
         MovesUsed += Mathf.Abs(steps);
         OnMoveMade();
         EvaluateEndConditions();
@@ -127,14 +189,16 @@ public class Manager_Game : Singleton<Manager_Game>
     }
 
     // Line offset in cells: row + = right, column + = down (screen up = towards row 0).
+    // Clamped to one move's reach, so the line stops following past one cell.
     private float DragOffset(Vector2 screenStart, Vector2 screenNow)
     {
         Vector2 cells = Manager_Board.Instance.ScreenDeltaToCells(screenStart, screenNow);
-        return _lineIsRow ? cells.x : -cells.y;
+        return Mathf.Clamp(_lineIsRow ? cells.x : -cells.y, -MaxStepsPerMove, MaxStepsPerMove);
     }
 
     // Every whole cell dragged is a step; the leftover part counts as one more step once it
     // reaches Tuning.DragCommitThreshold of a cell. A quick flick moves at least one cell.
+    // Never more than MaxStepsPerMove (the offset is already clamped; this is the guard).
     private static int StepsForRelease(float offset, float secondsHeld)
     {
         float distance = Mathf.Abs(offset);
@@ -142,6 +206,7 @@ public class Manager_Game : Singleton<Manager_Game>
         int steps = whole + (distance - whole >= Tuning.DragCommitThreshold ? 1 : 0);
 
         if (steps == 0 && secondsHeld <= Tuning.FlickMaxDuration) steps = 1;
+        steps = Mathf.Min(steps, MaxStepsPerMove);
         return steps * (offset < 0f ? -1 : 1);
     }
 
@@ -151,6 +216,24 @@ public class Manager_Game : Singleton<Manager_Game>
         else if (Level.HasMoveLimit && MovesUsed >= Level.MoveLimit) SetState(GameState.Failed);
     }
 
+#if UNITY_EDITOR
+    // Tester only: end the level now, as if it had been won or lost.
+    public void DebugEndLevel(bool won)
+    {
+        if (State == GameState.Playing) SetState(won ? GameState.Won : GameState.Failed);
+    }
+#endif
+
+    // Saved on the win itself, so quitting before pressing Next level keeps the progress.
+    // Replaying an older level never moves CurrentLevel backwards.
+    private void SaveProgress()
+    {
+        var data = OfflineData.Instance;
+        data.PassedLevels = Mathf.Max(data.PassedLevels, CurrentLevel);
+        data.CurrentLevel = Mathf.Max(data.CurrentLevel, CurrentLevel + 1);
+        data.Save();
+    }
+
     private void SetState(GameState state)
     {
         if (State == state) return;
@@ -158,22 +241,16 @@ public class Manager_Game : Singleton<Manager_Game>
         Manager_Input.Instance.AcceptInput = State == GameState.Playing;
         OnStateChanged(state);
 
-        // No UI yet: move on automatically.
         if (state == GameState.Won)
         {
             Debug.Log($"[Game] Level {CurrentLevel} complete in {MovesUsed} moves.");
-            StartCoroutine(AfterDelay(Tuning.WinAdvanceDelay, AdvanceLevel));
+            SaveProgress();
         }
         else if (state == GameState.Failed)
         {
-            Debug.Log($"[Game] Level {CurrentLevel} failed: out of moves.");
-            StartCoroutine(AfterDelay(Tuning.FailRestartDelay, RestartLevel));
+            Debug.Log($"[Game] Level {CurrentLevel} failed after {MovesUsed} moves.");
+            Manager_Audio.Instance?.PlaySound(SoundType.OutOfMoves);
+            Haptics.Play(HapticType.Heavy);
         }
-    }
-
-    private static IEnumerator AfterDelay(float seconds, Action action)
-    {
-        yield return new WaitForSeconds(seconds);
-        action();
     }
 }

@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": 6,
+  "name": "Detour",
+  "instruction": "Match all nine tiles before you run out of moves.",
+  "size": 3,
+  "board": [
+    0,
+    5,
+    2,
+    6,
+    3,
+    4,
+    1,
+    7,
+    8
+  ],
+  "moveBudget": 8,
+  "tutorial": "",
+  "verifiedMoves": 4,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    }
+  ],
+  "minimumMoves": 4
+}

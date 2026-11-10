@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": 1,
+  "name": "First shift",
+  "instruction": "Swipe the middle row right. The last tile wraps to the left.",
+  "size": 3,
+  "board": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    3,
+    6,
+    7,
+    8
+  ],
+  "moveBudget": 0,
+  "tutorial": "row",
+  "verifiedMoves": 1,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    }
+  ],
+  "minimumMoves": 1
+}
