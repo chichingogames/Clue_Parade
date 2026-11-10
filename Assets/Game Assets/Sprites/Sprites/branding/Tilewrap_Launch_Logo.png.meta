@@ -1,0 +1,728 @@
+fileFormatVersion: 2
+guid: abb1e05ea0d2f9f46a190fe50e4ea887
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4740074758898505680
+    second: Tilewrap_Launch_Logo_0
+  - first:
+      213: 2681378164625292519
+    second: Tilewrap_Launch_Logo_1
+  - first:
+      213: -2347835026311290588
+    second: Tilewrap_Launch_Logo_2
+  - first:
+      213: 6193332618278988012
+    second: Tilewrap_Launch_Logo_3
+  - first:
+      213: 1009630690650445803
+    second: Tilewrap_Launch_Logo_4
+  - first:
+      213: -5945600822820355677
+    second: Tilewrap_Launch_Logo_5
+  - first:
+      213: -4716025851710995933
+    second: Tilewrap_Launch_Logo_6
+  - first:
+      213: -9213588196011804686
+    second: Tilewrap_Launch_Logo_7
+  - first:
+      213: -2039878110319594893
+    second: Tilewrap_Launch_Logo_8
+  - first:
+      213: -5842190834674992935
+    second: Tilewrap_Launch_Logo_9
+  - first:
+      213: 8472753595658544422
+    second: Tilewrap_Launch_Logo_10
+  - first:
+      213: -663129962823094433
+    second: Tilewrap_Launch_Logo_11
+  - first:
+      213: 7737765514212015077
+    second: Tilewrap_Launch_Logo_12
+  - first:
+      213: -9025273776976134276
+    second: Tilewrap_Launch_Logo_13
+  - first:
+      213: -5200014034413922177
+    second: Tilewrap_Launch_Logo_14
+  - first:
+      213: -7769959221774351933
+    second: Tilewrap_Launch_Logo_15
+  - first:
+      213: 3172039951183544132
+    second: Tilewrap_Launch_Logo_16
+  - first:
+      213: -307033906165830727
+    second: Tilewrap_Launch_Logo_17
+  - first:
+      213: -4412973108409199602
+    second: Tilewrap_Launch_Logo_18
+  - first:
+      213: 7546948280224925548
+    second: Tilewrap_Launch_Logo_19
+  - first:
+      213: -2641950578540977700
+    second: Tilewrap_Launch_Logo_20
+  - first:
+      213: 2159469201214616307
+    second: Tilewrap_Launch_Logo_21
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_0
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 1044
+        width: 124
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0382f0bee1fd73eb0800000000000000
+      internalID: -4740074758898505680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_1
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 907
+        width: 63
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ecbaf2fb3b263520800000000000000
+      internalID: 2681378164625292519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_2
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 971
+        width: 25
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 421ee71ab70da6fd0800000000000000
+      internalID: -2347835026311290588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_3
+      rect:
+        serializedVersion: 2
+        x: 501
+        y: 907
+        width: 64
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce8eb50e33323f550800000000000000
+      internalID: 6193332618278988012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_4
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 971
+        width: 25
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be75d8e83cde20e00800000000000000
+      internalID: 1009630690650445803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_5
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 907
+        width: 56
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a1c5838d8bfc7da0800000000000000
+      internalID: -5945600822820355677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_6
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 907
+        width: 25
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3220535797f4d8eb0800000000000000
+      internalID: -4716025851710995933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_7
+      rect:
+        serializedVersion: 2
+        x: 443
+        y: 907
+        width: 57
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f7fbf5f952c22080800000000000000
+      internalID: -9213588196011804686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_8
+      rect:
+        serializedVersion: 2
+        x: 566
+        y: 907
+        width: 25
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3723e499aa5e0b3e0800000000000000
+      internalID: -2039878110319594893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_9
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 907
+        width: 63
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d8772d936e5ceea0800000000000000
+      internalID: -5842190834674992935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_10
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 880
+        width: 64
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62524a23184459570800000000000000
+      internalID: 8472753595658544422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_11
+      rect:
+        serializedVersion: 2
+        x: 724
+        y: 907
+        width: 62
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5fe20eefc61cc6f0800000000000000
+      internalID: -663129962823094433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_12
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 839
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ebffdd1db0126b60800000000000000
+      internalID: 7737765514212015077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_13
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 840
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7f70ba5159cfb280800000000000000
+      internalID: -9025273776976134276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_14
+      rect:
+        serializedVersion: 2
+        x: 473
+        y: 840
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7856bb59c6d5d7b0800000000000000
+      internalID: -5200014034413922177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_15
+      rect:
+        serializedVersion: 2
+        x: 501
+        y: 840
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c18eda314f8b2490800000000000000
+      internalID: -7769959221774351933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_16
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 839
+        width: 14
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44f74a78789550c20800000000000000
+      internalID: 3172039951183544132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_17
+      rect:
+        serializedVersion: 2
+        x: 559
+        y: 840
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bb2cf00a423dbbf0800000000000000
+      internalID: -307033906165830727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_18
+      rect:
+        serializedVersion: 2
+        x: 582
+        y: 839
+        width: 15
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e041bedb658f1c2c0800000000000000
+      internalID: -4412973108409199602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_19
+      rect:
+        serializedVersion: 2
+        x: 606
+        y: 840
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c674d05b9752cb860800000000000000
+      internalID: 7546948280224925548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_20
+      rect:
+        serializedVersion: 2
+        x: 631
+        y: 840
+        width: 6
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd16deb42f7e55bd0800000000000000
+      internalID: -2641950578540977700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tilewrap_Launch_Logo_21
+      rect:
+        serializedVersion: 2
+        x: 646
+        y: 839
+        width: 17
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f23bc11cc9f7fd10800000000000000
+      internalID: 2159469201214616307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Tilewrap_Launch_Logo_0: -4740074758898505680
+      Tilewrap_Launch_Logo_1: 2681378164625292519
+      Tilewrap_Launch_Logo_10: 8472753595658544422
+      Tilewrap_Launch_Logo_11: -663129962823094433
+      Tilewrap_Launch_Logo_12: 7737765514212015077
+      Tilewrap_Launch_Logo_13: -9025273776976134276
+      Tilewrap_Launch_Logo_14: -5200014034413922177
+      Tilewrap_Launch_Logo_15: -7769959221774351933
+      Tilewrap_Launch_Logo_16: 3172039951183544132
+      Tilewrap_Launch_Logo_17: -307033906165830727
+      Tilewrap_Launch_Logo_18: -4412973108409199602
+      Tilewrap_Launch_Logo_19: 7546948280224925548
+      Tilewrap_Launch_Logo_2: -2347835026311290588
+      Tilewrap_Launch_Logo_20: -2641950578540977700
+      Tilewrap_Launch_Logo_21: 2159469201214616307
+      Tilewrap_Launch_Logo_3: 6193332618278988012
+      Tilewrap_Launch_Logo_4: 1009630690650445803
+      Tilewrap_Launch_Logo_5: -5945600822820355677
+      Tilewrap_Launch_Logo_6: -4716025851710995933
+      Tilewrap_Launch_Logo_7: -9213588196011804686
+      Tilewrap_Launch_Logo_8: -2039878110319594893
+      Tilewrap_Launch_Logo_9: -5842190834674992935
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

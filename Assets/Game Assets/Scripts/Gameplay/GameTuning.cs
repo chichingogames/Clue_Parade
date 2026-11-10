@@ -26,7 +26,13 @@ public class GameTuning : MonoBehaviour
     [SerializeField, Range(2, 5)] private int _minBoardSize = Tuning.MinBoardSizeDefault;
     [SerializeField, Range(2, 5)] private int _maxBoardSize = Tuning.MaxBoardSizeDefault;
 
-    [Header("Intro (on launch): HUD, then board")]
+    [Header("Loading screen (on launch)")]
+    [Tooltip("Seconds the loading bar takes to fill.")]
+    [SerializeField, Min(0.01f)] private float _loadingDuration = Tuning.LoadingDurationDefault;
+    [Tooltip("Loading screen fade-out. The level opens (board and HUD intros start) as it begins.")]
+    [SerializeField, Min(0.01f)] private float _loadingFadeDuration = Tuning.LoadingFadeDurationDefault;
+
+    [Header("Intro (after the loading screen): HUD, then board")]
     [Tooltip("Seconds before the first HUD element starts scaling up.")]
     [SerializeField, Min(0f)] private float _uiIntroDelay = Tuning.UiIntroDelayDefault;
     [Tooltip("Scale-up time of each HUD element (ease OutBack).")]
@@ -75,6 +81,8 @@ public class GameTuning : MonoBehaviour
     public float TileSpawnDuration => _tileSpawnDuration;
     public float TileSpawnStagger => _tileSpawnStagger;
     public float CheckPopDuration => _checkPopDuration;
+    public float LoadingDuration => _loadingDuration;
+    public float LoadingFadeDuration => _loadingFadeDuration;
     public float HudTopReserve => _hudTopReserve;
     public float HudBottomReserve => _hudBottomReserve;
 

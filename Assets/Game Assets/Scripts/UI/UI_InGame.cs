@@ -54,8 +54,14 @@ public class UI_InGame : MonoBehaviour
     [Tooltip("Scaled up from 0 one after another when the game opens, in this order. Timing: GameTuning > UI intro.")]
     [SerializeField] private RectTransform[] _introItems = new RectTransform[0];
 
+    private bool _introPlayed;
+
     private void Awake()
     {
+        // Hidden until the first level opens (after the loading screen), then PlayIntro scales them up.
+        foreach (var item in _introItems)
+            if (item != null) item.localScale = Vector3.zero;
+
         _soundButton.onClick.AddListener(ToggleSound);
         _nextButton.onClick.AddListener(() =>
         {
@@ -67,13 +73,12 @@ public class UI_InGame : MonoBehaviour
         _restartButton.onClick.AddListener(() => Manager_Game.Instance.RestartLevel());
     }
 
-    // Runs once per launch: UI_InGame lives in the only scene and is never reloaded, so moving
-    // between levels does not replay it. Start runs before the first frame renders, so nothing
-    // flashes at full size first.
-    private void Start() => PlayIntro();
-
+    // Runs once per launch, on the first level start (Manager_Game.Launch, as the loading screen
+    // fades), together with the board intro. UI_InGame lives in the only scene and is never
+    // reloaded, so moving between levels does not replay it.
     private void PlayIntro()
     {
+        _introPlayed = true;
         for (int i = 0; i < _introItems.Length; i++)
         {
             var item = _introItems[i];
@@ -118,7 +123,11 @@ public class UI_InGame : MonoBehaviour
         if (Manager_Audio.Instance != null) Manager_Audio.Instance.OnSoundChanged -= HandleSoundChanged;
     }
 
-    private void HandleLevelStarted(int levelNumber) => Refresh();
+    private void HandleLevelStarted(int levelNumber)
+    {
+        if (!_introPlayed) PlayIntro();
+        Refresh();
+    }
 
     private void HandleStateChanged(GameState state) => Refresh();
 

@@ -60,8 +60,24 @@ public class Manager_Game : Singleton<Manager_Game>
         base.OnDestroy();
     }
 
-    // Opens the saved level (OfflineData.CurrentLevel).
-    private void Start() => StartLevel(OfflineData.Instance.CurrentLevel);
+    // Launch: the first level opens once, on the saved level (OfflineData.CurrentLevel). Right away,
+    // unless the loading screen (UI_Loading) held it in Awake; it then calls Launch() as it fades out.
+    public bool HasLaunched { get; private set; }
+    private bool _launchHeld;
+
+    public void HoldLaunch() => _launchHeld = true;
+
+    public void Launch()
+    {
+        if (HasLaunched) return;
+        HasLaunched = true;
+        if (Level == null) StartLevel(OfflineData.Instance.CurrentLevel);   // the Tester may have loaded one already
+    }
+
+    private void Start()
+    {
+        if (!_launchHeld) Launch();
+    }
 
     public void StartLevel(int levelNumber)
     {

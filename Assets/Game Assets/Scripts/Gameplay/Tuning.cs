@@ -23,6 +23,8 @@ public static class Tuning
     public const float TileSpawnDurationDefault = 0.28f;  // each tile's scale-up when a level loads
     public const float TileSpawnStaggerDefault = 0.045f;  // extra delay per diagonal step (row + col) from the top-left
     public const float CheckPopDurationDefault = 0.22f;   // a matched check's scale-up (after its tile spawns, or when a move matches it)
+    public const float LoadingDurationDefault = 1.6f;     // loading bar fill time
+    public const float LoadingFadeDurationDefault = 0.4f; // loading screen fade-out, while the board and HUD intros start
     public const float HudTopReserveDefault = 0.23f;      // fraction of the safe area kept free above the board (logo, level, pills)
     public const float HudBottomReserveDefault = 0.29f;   // fraction kept free below it (message panel, buttons)
 
@@ -49,6 +51,8 @@ public static class Tuning
     public static float TileSpawnDuration => Source != null ? Source.TileSpawnDuration : TileSpawnDurationDefault;
     public static float TileSpawnStagger => Source != null ? Source.TileSpawnStagger : TileSpawnStaggerDefault;
     public static float CheckPopDuration => Source != null ? Source.CheckPopDuration : CheckPopDurationDefault;
+    public static float LoadingDuration => Source != null ? Source.LoadingDuration : LoadingDurationDefault;
+    public static float LoadingFadeDuration => Source != null ? Source.LoadingFadeDuration : LoadingFadeDurationDefault;
     public static float HudTopReserve => Source != null ? Source.HudTopReserve : HudTopReserveDefault;
     public static float HudBottomReserve => Source != null ? Source.HudBottomReserve : HudBottomReserveDefault;
 }

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3ccf889fe8183e14e9a50b6d53248e0c
+guid: f60b3fd4b2f1a2746a95a77b3f9e21df
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2037753310760226711
-    second: Shift_and_Sort_Icon_1024_0
+      213: -3606470511200757770
+    second: Tilewrap_Launch_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Shift_and_Sort_Icon_1024_0
+      name: Tilewrap_Launch_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1024
-        height: 1024
+        width: 1080
+        height: 1920
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 960b24c092278b3e0800000000000000
-      internalID: -2037753310760226711
+      spriteID: 6f715fe8d2e33fdc0800000000000000
+      internalID: -3606470511200757770
       vertices: []
       indices: 
       edges: []
@@ -164,7 +164,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Shift_and_Sort_Icon_1024_0: -2037753310760226711
+      Tilewrap_Launch_0: -3606470511200757770
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

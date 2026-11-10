@@ -100,8 +100,12 @@ Scene load (Game.unity)
  │   ├ Application.targetFrameRate = 60
  │   └ DOTween.SetTweensCapacity(500, 100)
  ├ (each Singleton's own Awake → Initialize() → no-op, already initialized)
- └ Manager_Game.Start
-     └ StartLevel(OfflineData.CurrentLevel)
+ ├ UI_Loading.Awake                   → Manager_Game.HoldLaunch() (skipped if Loading Screen is inactive / Skip In Editor)
+ ├ Manager_Game.Start                 → Launch() now, unless held
+ └ UI_Loading.Start                   → DOTween sequence: bar fills (LoadingDuration, InOutSine) → Manager_Game.Launch()
+                                        → fade out (LoadingFadeDuration) under which the board + HUD intros play → SetActive(false)
+Manager_Game.Launch (once)
+     └ StartLevel(OfflineData.CurrentLevel)       (skipped if the Tester already loaded a level)
          ├ SetState(Loading)                 → Manager_Input.AcceptInput = false
          ├ Manager_Level.Load(1)             → JsonLevelSource.Load (null if no file / invalid) ?? ProceduralLevelSource.Load
          │    JSON: Resources.Load<TextAsset>("Levels/level-001") → TryParse → targets = first N of RowShapes/ColumnColors
@@ -174,7 +178,7 @@ skips its `Destroy`. Here it is per instance.
 
 | Manager | Owns | Calls | Called by |
 |---|---|---|---|
-| `Manager_Game` | `GameState`, `CurrentLevel` (opens on `OfflineData.CurrentLevel`; on Won `SaveProgress()` writes CurrentLevel = max(saved, n+1) and PassedLevels = max(saved, n), so replaying an old level never moves progress back; `StartLevel` from the tester never saves), `Level`, `MovesUsed`; press/drag state (`_pressOnBoard`, `_lineHeld`, `_lineIsRow`); drag→steps rule; win/fail; undo history (`_history`, one entry per swipe; `CanUndo`, `Undo()` works from Playing, Won and Failed and refunds the moves). Advancing/restarting is the player's call (`AdvanceLevel`, `RestartLevel` from UI_InGame). `ApplyMove(isRow, index, steps)` is a move from code with the same counting and end check as a swipe (refused unless Playing and idle). Editor-only `DebugEndLevel(won)` | `Manager_Level.Load`, `Manager_Board.*`, `Manager_Input.AcceptInput` | `Manager_Input` events; `Start`; `UI_InGame` buttons; `TestManager` |
+| `Manager_Game` | `GameState`, `CurrentLevel` (opens on `OfflineData.CurrentLevel` via `Launch()`, once: from `Start`, or from `UI_Loading` when it called `HoldLaunch()`; `HasLaunched`; on Won `SaveProgress()` writes CurrentLevel = max(saved, n+1) and PassedLevels = max(saved, n), so replaying an old level never moves progress back; `StartLevel` from the tester never saves), `Level`, `MovesUsed`; press/drag state (`_pressOnBoard`, `_lineHeld`, `_lineIsRow`); drag→steps rule; win/fail; undo history (`_history`, one entry per swipe; `CanUndo`, `Undo()` works from Playing, Won and Failed and refunds the moves). Advancing/restarting is the player's call (`AdvanceLevel`, `RestartLevel` from UI_InGame). `ApplyMove(isRow, index, steps)` is a move from code with the same counting and end check as a swipe (refused unless Playing and idle). Editor-only `DebugEndLevel(won)` | `Manager_Level.Load`, `Manager_Board.*`, `Manager_Input.AcceptInput` | `Manager_Input` events; `Start`; `UI_InGame` buttons; `TestManager` |
 | `Manager_Board` | `BoardState State`; `Cell[,]`, `Tile[,]`, `TargetMarker[]`s; the held line (`_heldTiles`, `_offset`, `_ghost`, `_animation`); camera fit | `FileRef`, `Instantiate`, `BoardState.Shift*` | `Manager_Game` |
 | `Manager_Input` | Press tracking; `AcceptInput` (setting false raises `OnCancel` if pressing) | `Pointer.current` (Input System) | `Update`; `Manager_Game` sets `AcceptInput` |
 | `Manager_Level` | Two `ILevelSource`s: `JsonLevelSource` first, `ProceduralLevelSource` when it returns null | `FileRef.PlayableShapes/Colors` | `Manager_Game.StartLevel` |
@@ -195,6 +199,11 @@ the Tester's **Log Sounds & Haptics** logs each pulse.
 `LevelComplete` (board solved) > `LineComplete` (more complete rows + columns than at pick-up) > `TileMatch` (variant =
 cells newly matched since pick-up, 1..4+ → clip 01..04). The pick-up snapshot is `SnapshotMatches()` in `BeginDrag`.
 `OutOfMoves` plays from `Manager_Game.SetState(Failed)`, at commit.
+
+**Loading screen** (`UI_Loading`, on `Canvas/Loading Screen`): full-screen `Tilewrap_Loading` art, a "LOADING" label and a
+timed progress bar (the fill's `anchorMax.x`, starting as a dot). It holds `Manager_Game`'s launch, so nothing is built and
+input stays off (`State` = Loading) until the bar is full; its art blocks HUD taps. The studio splash comes before it and is
+not part of this script. The HUD's `_introItems` are hidden from `UI_InGame.Awake` and scale in on the first `OnLevelStarted`.
 
 **Intro and spawn** (`Manager_Board.Build`, after `FitCamera` / `OnLayoutChanged` so both measure the board at full size):
 `PlayIntro()` once per launch scales `_boardRoot` up (`_intro`; `Clear` completes it if a level changes mid-intro), then
@@ -256,7 +265,8 @@ Current tuning (scene values):
 | BoardIntroDelay / BoardIntroDuration | 0.22 / 0.45 | launch only: `_boardRoot` scales 0 → 1 (OutBack); `IsAnimating` is true meanwhile, so presses are refused |
 | TileSpawnDuration / TileSpawnStagger | 0.28 / 0.045 | every `Build`: each tile scales 0 → its size (OutBack), delayed by (row + col) × stagger; on launch the wave starts when the board is half grown |
 | CheckPopDuration | 0.22 | a matched check's scale-up (`Cell.SetMatched`, OutBack). On Build each check waits for its tile's spawn to end; in play it pops when the settle matches it |
-| UiIntroDelay / UiIntroDuration / UiIntroStagger | 0.1 / 0.35 / 0.06 | launch intro: wait before the first HUD element, scale-up time per element, gap between elements |
+| LoadingDuration / LoadingFadeDuration | 1.6 / 0.4 | loading bar fill time; loading screen fade-out, which starts as the level opens |
+| UiIntroDelay / UiIntroDuration / UiIntroStagger | 0.1 / 0.35 / 0.06 | launch intro (after the loading screen): wait before the first HUD element, scale-up time per element, gap between elements |
 | HudTopReserve / HudBottomReserve | 0.23 / 0.29 | fractions of the safe-area height kept free above / below the board for the HUD. `FitCamera` fits board + targets into the band between them. |
 | FramePadding | 0.15 | frame border, cells per side |
 | MarkerOffset | 0.65 | target centre distance from board edge, cells (+0.5 used in camera fit) |
@@ -274,6 +284,7 @@ Current tuning (scene values):
 | `AssetBuilder` | ShiftSort/Build Assets | Writes `Placeholder/BoardFrame.png` (512 px, 128 px corner) and `Panel.png` (256 px, 64 px corner): SDF rounded boxes, ppu = width, 9-slice border = corner + 8, FullRect mesh, mipmaps; plus `Solid.png` (ppu 128). `ApplyPanel(renderer, size, cornerRadius)` shows Panel 9-sliced with a given corner (slots 0.94 / r 0.1, markers 0.8 / r 0.16); re-imports `Sprites/Sprites/{tiles,targets,fx}` as Single sprites with **ppu = texture width** (1 sprite = 1 world unit), no mips; builds Cell/Tile/TargetMarker prefabs; fills `FileRef` | an existing placeholder PNG, an existing prefab, a non-null prefab slot, a non-empty table |
 | `SceneBuilder` | ShiftSort/Build Scene | Requires `Game.unity` active. Adds `GameTuning`, `SingletonManager`, the 4 managers; fills `_singletonsToInitialize` (Level, Board, Input, Game) if empty; creates `GamePlay/Board/{Frame, Mask, Cells, Tiles, Markers}` and wires `Manager_Board` refs if empty; camera ortho + cream background; `Canvas/Container/{InGame/Board Area (UI_BoardArea), PopUps}` (`SafeArea` on `Container`), `Dark Area` (inactive, black 70%), `Loading Screen`, `Transition Screen`; `EventSystem` with `InputSystemUIInputModule`; `Tester` (tag `EditorOnly`) with `TestManager` | existing objects (matched by name/path), filled refs, a non-empty init list |
 | `UIBuilder` | ShiftSort/Build UI (also run by Build Scene) | Imports `ui/` and `branding/` as Single sprites, ppu 100, with 9-slice borders (buttons 64/40, pills 44/43, panels 52); creates dynamic TMP font assets `Fonts/OpenSans-{Bold,ExtraBold} SDF`; builds the HUD under `Canvas/Container/InGame` (Top Bar, Board Area/Pills, Bottom Stack) and wires every `UI_InGame` field | font assets that exist; the whole HUD once `InGame` has `UI_InGame` (delete Top Bar, Board Area/Pills, Bottom Stack and the component to rebuild) |
+| `UIBuilder.BuildLoading` | ShiftSort/Build Loading Screen (also run by Build Scene) | Fills `Canvas/Loading Screen`: full-stretch, last sibling, `CanvasGroup` + `UI_Loading`, Art, Progress Bar (9-slice 12 px; fill 6 px), Fill, Label; wires `_progressFill` | the screen once it has `UI_Loading` (remove the component, `CanvasGroup` and `Art` to rebuild) |
 | `BuildNaming` (+ `BuildNameSettings`) | ShiftSort/Build Name Settings | `[InitializeOnLoad]` registers `BuildPlayerWindow.RegisterBuildPlayerHandler`: an Android build from the Build window is saved as `[ProductName]_[bundleVersion]_[date]_[AdditionalInformation].apk/.aab` in the folder you picked (parts cleaned: spaces → '-', '_' and invalid characters dropped; empty info drops its '_'). Settings asset `Scripts/Editor/BuildNameSettings.asset` (info text, date format, live preview). Scripted builds: `BuildNaming.Apply(ref options)` | other platforms, Export Project |
 | `LevelValidator` | ShiftSort/Validate Levels | For every `Resources/Levels/level-NNN.json`: parses it, checks it doesn't start solved, replays `solution` through `BoardState` and checks it solves within `moveBudget`; warns about numbering gaps. Run after adding or editing a level file. | nothing (read-only) |
 
@@ -395,7 +406,7 @@ GamePlay
     Cells / Tiles / Markers   runtime-filled, emptied on each Build
 Canvas                 Screen Space Overlay, CanvasScaler 1080×1920 match 0.5
   Container            SafeArea (anchors = Screen.safeArea, applied once in Awake)
-    InGame             UI_InGame (HUD; every field wired by UIBuilder). On launch (Start, once) its _introItems
+    InGame             UI_InGame (HUD; every field wired by UIBuilder). On the first level start (once) its _introItems
                        scale 0 → 1 in order (DOScale, OutBack): Logo, Level, Sound, Matched, Moves, Message, Undo, Restart
       Top Bar          Logo, Level (TMP), Sound Button/Icon; anchored to the top of the safe area
       Board Area       UI_BoardArea: tracks the board's on-screen rect (OnLayoutChanged)
@@ -404,7 +415,11 @@ Canvas                 Screen Space Overlay, CanvasScaler 1080×1920 match 0.5
                        UI_BoardArea (Horizontal Only) gives it the board's width. VerticalLayoutGroup + ContentSizeFitter:
                        Message Panel (Title, Body), Next Button (only when Won), Button Row (Undo Button, Restart Button)
     PopUps
- , Dark Area (inactive), Loading Screen, Transition Screen
+ , Dark Area (inactive), Transition Screen
+  Loading Screen       UI_Loading + CanvasGroup; last child of Canvas, full screen (outside the safe area). Built by UIBuilder.BuildLoading
+    Art                Tilewrap_Loading, AspectRatioFitter Envelope Parent (9:16, crops overflow); raycast target (blocks the HUD)
+      Progress Bar     506×25 sliced, anchored 1470 px from the art's top; Fill Area (inset 9 / 6.5) → Fill (UI_Loading._progressFill)
+        Label          "LOADING", TMP OpenSans ExtraBold 30, spacing 30, #D4B9C5, just above the bar
 EventSystem            EventSystem + InputSystemUIInputModule
 Tester                 TestManager; tagged EditorOnly, so stripped from builds
 ```
@@ -451,6 +466,9 @@ Gotchas:
 - **Unfocused Editor = frozen Play mode.** Frames stop at 1–2, tweens never finish, and `IsAnimating` sticks at true,
   so every press is rejected. Run `unity command editor.playmode.set_run_in_background --enabled true $P` first. This is
   a session override; it does not touch `ProjectSettings`.
+- **The loading screen delays the level ~2 s** after Play starts (nothing is built and input is off until
+  `Manager_Game.HasLaunched`). Wait for it, or tick `Skip In Editor` on `Canvas/Loading Screen` (UI_Loading). A domain
+  reload on entering Play usually takes longer than the screen, so to inspect it, reactivate it and set the fill by hand.
 - **Command names use dots** (`scene.get_hierarchy`, `editor.playmode.start`). The tag names (`scenes`, `editor/playmode`)
   are not commands.
 - **Tester:** select `Tester` in Play mode for buttons: Load/Next/Previous/Restart Level, Force Win/Fail, Play Solution
@@ -476,7 +494,7 @@ Gotchas:
 | Item | Kind | Detail |
 |---|---|---|
 | Nearly everything is uncommitted | state | Game code, scene, prefabs, art, `FileRef`, DOTween and this file are untracked or modified on top of `2241067`. |
-| Popups, loading/transition screens | never built | The HUD exists (`UI_InGame`); win/fail are shown in its message panel, not popups. No `Manager_PopUp`, `Popup`/`BasePopUp`; `PopUps`, `Dark Area`, `Loading Screen`, `Transition Screen` are empty. |
+| Popups, transition screen | never built | The HUD exists (`UI_InGame`) and the loading screen (`UI_Loading`); win/fail are shown in the HUD's message panel, not popups. No `Manager_PopUp`, `Popup`/`BasePopUp`; `PopUps`, `Dark Area`, `Transition Screen` are empty. The loading bar is timed, not tied to real loading. |
 | Sound setting | one switch | `Manager_Audio.SoundOn` is saved (`OfflineData.IsSoundOn`). No separate music / SFX switches. Haptics have no setting (always on, by design). |
 | Target markers vs mockups | differs | Markers still use the generated slot square with a tint; the mockups show small icons with no background and `target_complete_background` (green pill with check) when complete. |
 | `LiveData` | not needed yet | `OfflineData` exists (§4.1); there is no session-only state worth a `LiveData` class. |

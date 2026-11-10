@@ -63,6 +63,80 @@ public static class UIBuilder
         Debug.Log("[UIBuilder] HUD built.");
     }
 
+    // ---------- Loading screen ----------
+
+    // Branding art is 1080x1920; the progress bar sits on the loading art between the board
+    // illustration and "A GAME BY" (centre 1470 px from the top), at its native size.
+    private const float BrandingAspect = 1080f / 1920f;
+    private const float ProgressBarY = 1f - 1470f / 1920f;
+    private static readonly Color LoadingLabelColor = new Color32(0xD4, 0xB9, 0xC5, 0xFF);   // the art's "A GAME BY" color
+
+    // Fills Canvas/Loading Screen (SceneBuilder's placeholder): outside Container, so the art covers
+    // the whole screen, not just the safe area; moved to the last sibling so it draws over everything.
+    // Skipped once it has UI_Loading.
+    [MenuItem("ShiftSort/Build Loading Screen")]
+    public static void BuildLoading()
+    {
+        ImportUiArt();
+        var rootGo = GameObject.Find("/Canvas/Loading Screen");
+        if (rootGo == null)
+        {
+            Debug.LogError("[UIBuilder] Canvas/Loading Screen is missing. Run ShiftSort > Build Scene first.");
+            return;
+        }
+        if (rootGo.GetComponent<UI_Loading>() != null)
+        {
+            Debug.Log("[UIBuilder] Loading Screen already has UI_Loading; left as is.");
+            return;
+        }
+
+        var root = (RectTransform)rootGo.transform;
+        Undo.RecordObject(root, "Build Loading Screen");
+        root.anchorMin = Vector2.zero;
+        root.anchorMax = Vector2.one;
+        root.offsetMin = Vector2.zero;
+        root.offsetMax = Vector2.zero;
+        root.SetAsLastSibling();
+        Undo.AddComponent<CanvasGroup>(root.gameObject);
+        var ui = Undo.AddComponent<UI_Loading>(root.gameObject);
+
+        // Full-screen art; also blocks taps on the HUD underneath.
+        var art = FullScreenArt(root, "Art", "branding/Tilewrap_Loading");
+        art.GetComponent<Image>().raycastTarget = true;
+
+        // Bar 506x25 with a 488x12 fill inset 9 px / 6.5 px (both sprites 9-sliced, rounded ends).
+        var anchor = new Vector2(0.5f, ProgressBarY);
+        var bar = Rect(art, "Progress Bar", anchor, anchor, Center, Vector2.zero, new Vector2(506f, 25f));
+        AddImage(bar, Art("branding/Progress Bar"), sliced: true, sourceHeight: 1f, height: 1f);
+        var fillArea = Rect(bar, "Fill Area", Vector2.zero, Vector2.one, Center, Vector2.zero, new Vector2(-18f, -13f));
+        var fill = Rect(fillArea, "Fill", Vector2.zero, Vector2.one, new Vector2(0f, 0.5f), Vector2.zero, Vector2.zero);
+        AddImage(fill, Art("branding/Tilewrap_Progress_Fill"), sliced: true, sourceHeight: 1f, height: 1f);
+
+        // "LOADING" just above the bar, letter-spaced like the art's "A GAME BY".
+        var label = AddText(Rect(bar, "Label", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 0f),
+                                 new Vector2(0f, 22f), new Vector2(506f, 44f)),
+                            GetOrCreateFont("OpenSans-ExtraBold"), "LOADING", 30f, LoadingLabelColor);
+        label.characterSpacing = 30f;
+
+        var so = new SerializedObject(ui);
+        so.FindProperty("_progressFill").objectReferenceValue = fill;
+        so.ApplyModifiedPropertiesWithoutUndo();
+
+        EditorSceneManager.MarkSceneDirty(rootGo.scene);
+        Debug.Log("[UIBuilder] Loading screen built.");
+    }
+
+    // Fills the screen keeping the art's 9:16 aspect, cropping the overflow (like a cover background).
+    private static RectTransform FullScreenArt(RectTransform parent, string name, string sprite)
+    {
+        var rect = Rect(parent, name, Vector2.zero, Vector2.one, Center, Vector2.zero, Vector2.zero);
+        AddImage(rect, Art(sprite));
+        var fitter = Undo.AddComponent<AspectRatioFitter>(rect.gameObject);
+        fitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+        fitter.aspectRatio = BrandingAspect;
+        return rect;
+    }
+
     // ---------- Sections ----------
 
     private static void BuildTopBar(RectTransform inGame, SerializedObject so, TMP_FontAsset heading)
@@ -331,6 +405,8 @@ public static class UIBuilder
         if (path.Contains("/buttons/")) return new Vector4(64f, 40f, 64f, 40f);
         if (path.Contains("/hud/pill_")) return new Vector4(44f, 43f, 44f, 43f);
         if (path.Contains("/panels/")) return new Vector4(52f, 52f, 52f, 52f);
+        if (path.EndsWith("/branding/Progress Bar.png")) return new Vector4(12f, 12f, 12f, 12f);
+        if (path.EndsWith("/branding/Tilewrap_Progress_Fill.png")) return new Vector4(6f, 6f, 6f, 6f);
         return Vector4.zero;
     }
 

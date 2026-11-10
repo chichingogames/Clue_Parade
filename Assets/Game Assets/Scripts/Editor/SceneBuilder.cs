@@ -31,6 +31,7 @@ public static class SceneBuilder
         BuildEventSystem();
         BuildTester();
         UIBuilder.Build();
+        UIBuilder.BuildLoading();
 
         EditorSceneManager.MarkSceneDirty(scene);
         Debug.Log("[SceneBuilder] Scene structure is up to date.");
@@ -196,7 +197,7 @@ public static class SceneBuilder
             darkArea.gameObject.SetActive(false);
         }
 
-        GetOrCreateUI(canvasGo.transform, "Loading Screen");             // UI_LoadingScreen
+        GetOrCreateUI(canvasGo.transform, "Loading Screen");             // UI_Loading (UIBuilder.BuildLoading)
         GetOrCreateUI(canvasGo.transform, "Transition Screen");          // UI_TransitionScreen
     }
 
