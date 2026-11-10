@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": 3,
   "name": "Crossed signals",
-  "instruction": "Match shapes across and colors down. You’ll need both directions.",
+  "instruction": "Match shapes across and colors down. You\u2019ll need both directions.",
   "size": 3,
   "board": [
     0,

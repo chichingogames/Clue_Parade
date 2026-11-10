@@ -182,6 +182,7 @@ skips its `Destroy`. Here it is per instance.
 | `Manager_Board` | `BoardState State`; `Cell[,]`, `Tile[,]`, `TargetMarker[]`s; the held line (`_heldTiles`, `_offset`, `_ghost`, `_animation`); camera fit | `FileRef`, `Instantiate`, `BoardState.Shift*` | `Manager_Game` |
 | `Manager_Input` | Press tracking; `AcceptInput` (setting false raises `OnCancel` if pressing) | `Pointer.current` (Input System) | `Update`; `Manager_Game` sets `AcceptInput` |
 | `Manager_Level` | Two `ILevelSource`s: `JsonLevelSource` first, `ProceduralLevelSource` when it returns null | `FileRef.PlayableShapes/Colors` | `Manager_Game.StartLevel` |
+| `Manager_Tutorial` | Levels 1-4 (`TutorialLessons.For(n)`: lesson title/body before and after the first swipe, `IdleHint`, `PulseMoves`). A level is **guided** when its file has `tutorial` `"row"`/`"column"`; the shown swipe is `solution[0]`. Guided: cues under `GamePlay/Board/Tutorial` (built per level: line + wrapping-tile outlines, dashed destination, arrow past the edge, pulsing outlines on the two targets the tile will match, a looping hand stopped on `OnLinePickedUp`), shown only while Playing with 0 moves (Undo brings them back); `AllowsLine` / `AllowsMove` (Manager_Game asks on pick-up and release: another line is not picked up, the wrong direction snaps back); on the win `IsConfirming` holds the "matched!" text for `TutorialConfirmation` after the settle, then the win card. `TryGetMessage` (UI_InGame), `OnChanged`, `OnPulseMoves` (first spent move, level 4). Idle hint (level 3): `Manager_Board.PulseTargets` every `TutorialIdleHint` s without a move | `Manager_Board` (`BoardRoot`, `CellPosition`, `GetRow/ColumnMarker`, `PulseTargets`), `FileRef.Tutorial*` sprites | `Manager_Game` (rules), `UI_InGame` (text, events) |
 | `Manager_Audio` | Refs to the scene's `Sound/Music` (looping; its Volume = music level, never written by code) and `Sound/SFX` (`PlayOneShot(clip, SoundData.Volume)`; its Volume = master effects level) AudioSources; `SoundOn` (mutes both) + `OnSoundChanged`. `PlaySound(type, variant = -1)`: -1 = random clip. Editor-only `DebugLogSounds` (Tester: Log Sounds) | `FileRef.Music`, `FileRef.TryGetSound` | `Manager_Board.PlaySettleSounds`, `Manager_Game` (Restart, Undo, OutOfMoves), `UI_InGame` (UiTap, sound button) |
 
 `Manager_Board` layout API: `GetWorldBounds(withTargets)` / `GetScreenRect(withTargets)` give the board's area (frame only, or
@@ -267,7 +268,7 @@ Current tuning (scene values):
 | CheckPopDuration | 0.22 | a matched check's scale-up (`Cell.SetMatched`, OutBack). On Build each check waits for its tile's spawn to end; in play it pops when the settle matches it |
 | LoadingDuration / LoadingFadeDuration | 1.6 / 0.4 | loading bar fill time; loading screen fade-out, which starts as the level opens |
 | UiIntroDelay / UiIntroDuration / UiIntroStagger | 0.1 / 0.35 / 0.06 | launch intro (after the loading screen): wait before the first HUD element, scale-up time per element, gap between elements |
-| HudTopReserve / HudBottomReserve | 0.23 / 0.29 | fractions of the safe-area height kept free above / below the board for the HUD. `FitCamera` fits board + targets into the band between them. |
+| HudTopReserve / HudBottomReserve | 0.33 / 0.18 | fractions of the safe-area height kept free above / below the board for the HUD. `FitCamera` fits board + targets into the band between them. |
 | FramePadding | 0.15 | frame border, cells per side |
 | MarkerOffset | 0.65 | target centre distance from board edge, cells (+0.5 used in camera fit) |
 | DragStartThreshold | 0.02 | fraction of the shorter screen side before a line follows the pointer |
@@ -381,7 +382,7 @@ loads `level-{n:000}` directly, and a missing number falls back to a generated l
 | `size` | N (2..4). The targets are not stored: rows are the first N of `JsonLevelSource.RowShapes` (Circle, Square, Triangle, Star) and columns the first N of `ColumnColors` (Coral, Teal, Yellow, Blue). Those arrays are the file contract: append-only. |
 | `board` | N² tile ids, row-major from the top-left. **A tile's id is the cell it belongs in when solved** (`id = row·N + col`), so the tile is `(RowShapes[id / N], ColumnColors[id % N])` and the solved board is `0, 1, 2, …`. Must be a permutation of `0..N²-1`. |
 | `moveBudget` | → `MoveLimit`; 0 = unlimited |
-| `name`, `instruction`, `tutorial` | → `LevelDefinition.Name / Instruction / Tutorial` (no UI shows them yet). `tutorial` is `""`, `"row"` or `"column"`. |
+| `name`, `instruction`, `tutorial` | → `LevelDefinition.Name / Instruction / Tutorial` (`Name`, `Instruction` are not shown; `Tutorial` drives `Manager_Tutorial`). `tutorial` is `""`, `"row"` or `"column"`. |
 | `solution` | `{axis: "row"/"column", line, direction}`, direction +1 = right/down (same as `BoardState.Shift*`). Read by `LevelValidator` and the tester's Play Solution. |
 | `verifiedMoves`, `minimumMoves` | ignored |
 
@@ -392,8 +393,8 @@ loads `level-{n:000}` directly, and a missing number falls back to a generated l
 ```
 Main Camera            orthographic; position and size set at runtime by Manager_Board.FitCamera
 Global Light 2D        template
-Managers               GameTuning, SingletonManager, Manager_Audio, Manager_Level, Manager_Board, Manager_Input, Manager_Game
-                       (init order: Audio, Level, Board, Input, Game)
+Managers               GameTuning, SingletonManager, Manager_Audio, Manager_Level, Manager_Board, Manager_Input, Manager_Game, Manager_Tutorial
+                       (init order: Audio, Level, Board, Input, Game, Tutorial)
 Sound                  audio objects (SceneBuilder.BuildSound), wired into Manager_Audio._music / _sfx
   Music                AudioSource, loop, volume 0.45: set the background music level here
   SFX                  AudioSource: its volume is the master level for all effects
@@ -410,10 +411,13 @@ Canvas                 Screen Space Overlay, CanvasScaler 1080×1920 match 0.5
                        scale 0 → 1 in order (DOScale, OutBack): Logo, Level, Sound, Matched, Moves, Message, Undo, Restart
       Top Bar          Logo, Level (TMP), Sound Button/Icon; anchored to the top of the safe area
       Board Area       UI_BoardArea: tracks the board's on-screen rect (OnLayoutChanged)
-        Pills          Matched Pill, Moves Pill: just above the column targets
+        Message Panel  Title, Body: 14 above the column targets, Board Area's width (goal, tutorial lesson, win, out of moves)
+        Pills          Matched Pill, Moves Pill (child Warning: white pill mask, UI_InGame._movesWarning): above the message panel.
+                       Moves left <= _lowMovesAt (2) while Playing: Warning breathes white <-> red, text red <-> white
+                       (DOTween yoyo, GameTuning > HUD > MovesWarningBreath). Failed: solid red, white text. Otherwise hidden.
       Bottom Stack     pinned to the bottom of the safe area (anchor bottom, pivot bottom, y 40), grows upward;
                        UI_BoardArea (Horizontal Only) gives it the board's width. VerticalLayoutGroup + ContentSizeFitter:
-                       Message Panel (Title, Body), Next Button (only when Won), Button Row (Undo Button, Restart Button)
+                       Next Button (only when Won), Button Row (Undo Button, Restart Button)
     PopUps
  , Dark Area (inactive), Transition Screen
   Loading Screen       UI_Loading + CanvasGroup; last child of Canvas, full screen (outside the safe area). Built by UIBuilder.BuildLoading
@@ -498,7 +502,8 @@ Gotchas:
 | Sound setting | one switch | `Manager_Audio.SoundOn` is saved (`OfflineData.IsSoundOn`). No separate music / SFX switches. Haptics have no setting (always on, by design). |
 | Target markers vs mockups | differs | Markers still use the generated slot square with a tint; the mockups show small icons with no background and `target_complete_background` (green pill with check) when complete. |
 | `LiveData` | not needed yet | `OfflineData` exists (§4.1); there is no session-only state worth a `LiveData` class. |
-| Level text | data only | `Name`, `Instruction`, `Tutorial` reach `LevelDefinition` but nothing shows them; generated levels (13+) have no move limit and no text. |
+| Level text | data only | `Name`, `Instruction` reach `LevelDefinition` but nothing shows them (the tutorial copy is in `TutorialLessons`, keyed by level number); generated levels (13+) have no move limit and no text. |
+| Tutorial pack extras | not built | `moves_left_first_swipe_ring` (a punch scale is used instead), reduced-motion static guide, dimming of the non-guided tiles, the "All N levels complete" final card. Lesson text shares the one message panel above the board (the mockups show a goal panel plus a lesson panel). |
 | Delivered art not used | never built | board trays, background, `fx` except the badge, `target_complete_background`. The frame, slots and marker backgrounds use the generated `BoardFrame.png` / `Panel.png` with hard-coded tints in `AssetBuilder` / `SceneBuilder`. |
 | Pooling | never built | Per-level destroy/instantiate; a ghost tile is instantiated per drag. |
 | `Manager_Board.ShiftRow/ShiftColumn` | built, unreachable | Public one-shot wrappers; no caller in game code (CLI tests only). |

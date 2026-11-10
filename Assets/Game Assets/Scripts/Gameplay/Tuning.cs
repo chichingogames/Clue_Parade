@@ -25,8 +25,13 @@ public static class Tuning
     public const float CheckPopDurationDefault = 0.22f;   // a matched check's scale-up (after its tile spawns, or when a move matches it)
     public const float LoadingDurationDefault = 1.6f;     // loading bar fill time
     public const float LoadingFadeDurationDefault = 0.4f; // loading screen fade-out, while the board and HUD intros start
-    public const float HudTopReserveDefault = 0.23f;      // fraction of the safe area kept free above the board (logo, level, pills)
-    public const float HudBottomReserveDefault = 0.29f;   // fraction kept free below it (message panel, buttons)
+    public const float HudTopReserveDefault = 0.33f;      // fraction of the safe area kept free above the board (logo, level, pills, message panel)
+    public const float HudBottomReserveDefault = 0.18f;   // fraction kept free below it (Next level, Undo, Restart)
+    public const float MovesWarningBreathDefault = 0.6f;  // low-moves pill: seconds from white to red (and the same back)
+    public const float TutorialHandLoopDefault = 1.7f;    // one loop of the guided-swipe hand cue (levels 1-2)
+    public const float TutorialConfirmationDefault = 0.45f; // guided levels: the "matched!" message before the win card
+    public const float TutorialIdleHintDefault = 8f;      // idle seconds before the target icons pulse (lesson with IdleHint)
+    public const float TutorialMovesPulseDefault = 0.55f; // moves pill pulse on the first spent move (lesson with PulseMoves)
 
     private static GameTuning Source => GameTuning.Active;
 
@@ -55,4 +60,9 @@ public static class Tuning
     public static float LoadingFadeDuration => Source != null ? Source.LoadingFadeDuration : LoadingFadeDurationDefault;
     public static float HudTopReserve => Source != null ? Source.HudTopReserve : HudTopReserveDefault;
     public static float HudBottomReserve => Source != null ? Source.HudBottomReserve : HudBottomReserveDefault;
+    public static float MovesWarningBreath => Source != null ? Source.MovesWarningBreath : MovesWarningBreathDefault;
+    public static float TutorialHandLoop => Source != null ? Source.TutorialHandLoop : TutorialHandLoopDefault;
+    public static float TutorialConfirmation => Source != null ? Source.TutorialConfirmation : TutorialConfirmationDefault;
+    public static float TutorialIdleHint => Source != null ? Source.TutorialIdleHint : TutorialIdleHintDefault;
+    public static float TutorialMovesPulse => Source != null ? Source.TutorialMovesPulse : TutorialMovesPulseDefault;
 }

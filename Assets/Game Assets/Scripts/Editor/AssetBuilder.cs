@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEditor;
@@ -149,6 +150,13 @@ public static class AssetBuilder
 
     // ---------- Art ----------
 
+    // 9-slice borders (px, all four sides) of the art drawn Sliced, from the art's Sprite_Manifest.json.
+    private static readonly Dictionary<string, float> SliceBorders = new Dictionary<string, float>
+    {
+        { "fx_guide_outline", 34f },
+        { "fx_line_pulse", 34f },
+    };
+
     // Every art sprite is imported so that its full texture is 1 world unit wide (ppu = width);
     // Manager_Board then scales tiles and markers in cell units.
     private static void ImportArt()
@@ -158,11 +166,14 @@ public static class AssetBuilder
             string path = AssetDatabase.GUIDToAssetPath(guid);
             var importer = (TextureImporter)AssetImporter.GetAtPath(path);
             importer.GetSourceTextureWidthAndHeight(out int width, out _);
+            SliceBorders.TryGetValue(Path.GetFileNameWithoutExtension(path), out float border);
+            var borderLTRB = Vector4.one * border;
 
             bool changed = importer.textureType != TextureImporterType.Sprite
                            || importer.spriteImportMode != SpriteImportMode.Single
                            || !Mathf.Approximately(importer.spritePixelsPerUnit, width)
-                           || importer.mipmapEnabled;
+                           || importer.mipmapEnabled
+                           || importer.spriteBorder != borderLTRB;
             if (!changed) continue;
 
             importer.textureType = TextureImporterType.Sprite;
@@ -170,6 +181,15 @@ public static class AssetBuilder
             importer.spritePixelsPerUnit = width;
             importer.alphaIsTransparency = true;
             importer.mipmapEnabled = false;
+            importer.spriteBorder = borderLTRB;
+            if (border > 0f)
+            {
+                // Drawn Sliced (SpriteRenderer.size), which needs a FullRect mesh.
+                var settings = new TextureImporterSettings();
+                importer.ReadTextureSettings(settings);
+                settings.spriteMeshType = SpriteMeshType.FullRect;
+                importer.SetTextureSettings(settings);
+            }
             importer.SaveAndReimport();
         }
     }
@@ -307,6 +327,11 @@ public static class AssetBuilder
         SetIfEmpty(so.FindProperty("_cellPrefab"), cell);
         SetIfEmpty(so.FindProperty("_tilePrefab"), tile);
         SetIfEmpty(so.FindProperty("_targetMarkerPrefab"), marker);
+
+        SetIfEmpty(so.FindProperty("_tutorialHand"), LoadArt("fx/fx_tutorial_swipe_hand"));
+        SetIfEmpty(so.FindProperty("_tutorialLineOutline"), LoadArt("fx/fx_guide_outline"));
+        SetIfEmpty(so.FindProperty("_tutorialDestination"), LoadArt("fx/fx_tutorial_wrap_destination"));
+        SetIfEmpty(so.FindProperty("_tutorialArrow"), LoadArt("fx/fx_guide_arrow"));
 
         var shapes = (TileShape[])Enum.GetValues(typeof(TileShape));
         var colors = (TileColor[])Enum.GetValues(typeof(TileColor));

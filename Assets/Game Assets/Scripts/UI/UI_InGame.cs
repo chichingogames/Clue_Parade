@@ -12,12 +12,14 @@ using UnityEngine.UI;
 // Tuning.HudTop/BottomReserve bands, which is the room this HUD has.
 public class UI_InGame : MonoBehaviour
 {
-    private const string PlayingTitle = "Match shapes across and colors down";
-    private const string PlayingBody = "Swipe rows or columns to line them up.";
-    private const string WonTitle = "Board complete";
-    private const string WonBody = "Every tile matches its shape and color.";
+    // Wording from the Tilewrap tutorial pack (Tutorial_Unity_Handoff.md). Tutorial levels (1-4)
+    // replace the playing text with their lesson (Manager_Tutorial).
+    private const string PlayingTitle = "Match every tile to both targets.";
+    private const string PlayingBody = "Shapes match across each row. Colors match down each column.";
+    private const string WonTitle = "Level complete!";
+    private const string WonBody = "All {0} tiles match both targets.";
     private const string FailedTitle = "Out of moves";
-    private const string FailedBody = "Undo for one more move, or restart the board.";
+    private const string FailedBody = "Undo to get a move back, or restart.";
 
     [Header("Top bar")]
     [SerializeField] private TMP_Text _levelText;
@@ -35,7 +37,11 @@ public class UI_InGame : MonoBehaviour
     [SerializeField] private Color _movesColor = new Color32(0x6E, 0x5B, 0x4A, 0xFF);
     [SerializeField] private Color _movesLowColor = new Color32(0xB1, 0x4A, 0x3F, 0xFF);
     [Tooltip("The moves pill turns red at this many moves left or fewer.")]
-    [SerializeField, Min(0)] private int _lowMovesAt = 1;
+    [SerializeField, Min(0)] private int _lowMovesAt = 2;
+    [Tooltip("White pill-shaped overlay between the moves pill and its text, tinted for the warning. " +
+             "Low on moves: breathes white <-> red (text red <-> white). Out of moves: solid red, white text.")]
+    [SerializeField] private Image _movesWarning;
+    [SerializeField] private Color _movesWarningTextColor = Color.white;
 
     [Header("Message")]
     [SerializeField] private Image _messagePanel;
@@ -47,6 +53,7 @@ public class UI_InGame : MonoBehaviour
 
     [Header("Buttons")]
     [SerializeField] private Button _nextButton;
+    [SerializeField] private TMP_Text _nextLabel;
     [SerializeField] private Button _undoButton;
     [SerializeField] private Button _restartButton;
 
@@ -56,8 +63,13 @@ public class UI_InGame : MonoBehaviour
 
     private bool _introPlayed;
 
+    private enum MovesWarning { None, Breathing, OutOfMoves }
+    private MovesWarning _warning;
+    private Tween _breath;
+
     private void Awake()
     {
+        if (_movesWarning != null) _movesWarning.gameObject.SetActive(false);
         // Hidden until the first level opens (after the loading screen), then PlayIntro scales them up.
         foreach (var item in _introItems)
             if (item != null) item.localScale = Vector3.zero;
@@ -102,6 +114,11 @@ public class UI_InGame : MonoBehaviour
         game.OnStateChanged += HandleStateChanged;
         game.OnMoveMade += Refresh;
         board.OnBoardSettled += Refresh;
+        if (Manager_Tutorial.Instance != null)
+        {
+            Manager_Tutorial.Instance.OnChanged += Refresh;
+            Manager_Tutorial.Instance.OnPulseMoves += PulseMoves;
+        }
         if (Manager_Audio.Instance != null)
         {
             Manager_Audio.Instance.OnSoundChanged += HandleSoundChanged;
@@ -120,6 +137,11 @@ public class UI_InGame : MonoBehaviour
             game.OnMoveMade -= Refresh;
         }
         if (Manager_Board.Instance != null) Manager_Board.Instance.OnBoardSettled -= Refresh;
+        if (Manager_Tutorial.Instance != null)
+        {
+            Manager_Tutorial.Instance.OnChanged -= Refresh;
+            Manager_Tutorial.Instance.OnPulseMoves -= PulseMoves;
+        }
         if (Manager_Audio.Instance != null) Manager_Audio.Instance.OnSoundChanged -= HandleSoundChanged;
     }
 
@@ -142,16 +164,24 @@ public class UI_InGame : MonoBehaviour
         _matchedText.text = $"{board.MatchedCount} / {board.Size * board.Size} matched";
 
         bool low = level.HasMoveLimit && game.MovesLeft <= _lowMovesAt;
-        _movesText.text = !level.HasMoveLimit ? "Unlimited moves"
+        _movesText.text = !level.HasMoveLimit ? "No move limit"
                         : game.MovesLeft == 1 ? "1 move left"
                         : $"{game.MovesLeft} moves left";
         _movesPill.sprite = low ? _movesLowSprite : _movesSprite;
-        _movesText.color = low ? _movesLowColor : _movesColor;
+        SetMovesWarning(game.State == GameState.Failed ? MovesWarning.OutOfMoves
+                      : game.State == GameState.Playing && low ? MovesWarning.Breathing
+                      : MovesWarning.None);
+        // While the warning shows, it owns the text color.
+        if (_warning == MovesWarning.None) _movesText.color = low ? _movesLowColor : _movesColor;
 
-        switch (game.State)
+        var tutorial = Manager_Tutorial.Instance;
+        bool confirming = tutorial != null && tutorial.IsConfirming;
+        if (tutorial != null && tutorial.TryGetMessage(out string lessonTitle, out string lessonBody))
+            SetMessage(confirming ? _panelWinSprite : _panelNeutralSprite, lessonTitle, lessonBody);
+        else switch (game.State)
         {
             case GameState.Won:
-                SetMessage(_panelWinSprite, WonTitle, WonBody);
+                SetMessage(_panelWinSprite, WonTitle, string.Format(WonBody, board.Size * board.Size));
                 break;
             case GameState.Failed:
                 SetMessage(_panelFailSprite, FailedTitle, FailedBody);
@@ -162,9 +192,52 @@ public class UI_InGame : MonoBehaviour
                 break;
         }
 
-        // Next level only after a win. Hiding it collapses the bottom stack (VerticalLayoutGroup).
-        _nextButton.gameObject.SetActive(game.State == GameState.Won);
+        // Next level only after a win (and after a guided level's confirmation). Hiding it
+        // collapses the bottom stack (VerticalLayoutGroup).
+        _nextButton.gameObject.SetActive(game.State == GameState.Won && !confirming);
+        if (_nextLabel != null) _nextLabel.text = $"Next level {game.CurrentLevel + 1:00}";
         _undoButton.interactable = game.CanUndo;
+    }
+
+    // Low on moves (Playing, MovesLeft <= _lowMovesAt): the warning overlay breathes white <-> red,
+    // the text the other way so it stays readable. Out of moves (Failed): the breathing stops on
+    // solid red with white text. A win, a restart or more moves left (Undo) hides it.
+    private void SetMovesWarning(MovesWarning warning)
+    {
+        if (_movesWarning == null || warning == _warning) return;
+        _warning = warning;
+        _breath?.Kill();
+        _breath = null;
+        _movesWarning.gameObject.SetActive(warning != MovesWarning.None);
+
+        if (warning == MovesWarning.OutOfMoves)
+        {
+            ApplyMovesWarning(1f);
+        }
+        else if (warning == MovesWarning.Breathing)
+        {
+            float t = 0f;
+            ApplyMovesWarning(t);
+            _breath = DOTween.To(() => t, x => { t = x; ApplyMovesWarning(x); }, 1f, Tuning.MovesWarningBreath)
+                .SetEase(Ease.InOutSine)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetLink(_movesWarning.gameObject);
+        }
+    }
+
+    // t 0 = white fill, red text; t 1 = red fill, white text.
+    private void ApplyMovesWarning(float t)
+    {
+        _movesWarning.color = Color.Lerp(Color.white, _movesLowColor, t);
+        _movesText.color = Color.Lerp(_movesLowColor, _movesWarningTextColor, t);
+    }
+
+    // First spent move of the move-budget lesson: the moves pill pulses so the count is noticed.
+    private void PulseMoves()
+    {
+        var pill = _movesPill.rectTransform;
+        pill.DOComplete();
+        pill.DOPunchScale(Vector3.one * 0.12f, Tuning.TutorialMovesPulse, 4, 0.5f).SetLink(pill.gameObject);
     }
 
     private void SetMessage(Sprite panel, string title, string body)

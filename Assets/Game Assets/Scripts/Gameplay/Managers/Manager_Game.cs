@@ -131,6 +131,15 @@ public class Manager_Game : Singleton<Manager_Game>
 
             // Lock to the dominant axis for the rest of this press.
             _lineIsRow = Mathf.Abs(delta.x) >= Mathf.Abs(delta.y);
+
+            // A guided tutorial level only lets its demonstrated line move; this press is ignored.
+            var tutorial = Manager_Tutorial.Instance;
+            if (tutorial != null && !tutorial.AllowsLine(_lineIsRow, _lineIsRow ? _pressRow : _pressCol))
+            {
+                _pressOnBoard = false;
+                return;
+            }
+
             board.BeginDrag(_lineIsRow, _lineIsRow ? _pressRow : _pressCol);
             _lineHeld = true;
         }
@@ -146,6 +155,9 @@ public class Manager_Game : Singleton<Manager_Game>
 
         var board = Manager_Board.Instance;
         int steps = StepsForRelease(DragOffset(screenStart, screenEnd), secondsHeld);
+        int index = _lineIsRow ? _pressRow : _pressCol;
+        var tutorial = Manager_Tutorial.Instance;
+        if (tutorial != null && !tutorial.AllowsMove(_lineIsRow, index, steps)) steps = 0;   // off-guide: snap back
         if (steps == 0)
         {
             board.CancelDrag();
@@ -153,7 +165,7 @@ public class Manager_Game : Singleton<Manager_Game>
         }
 
         board.CommitDrag(steps);
-        CountMove(_lineIsRow, _lineIsRow ? _pressRow : _pressCol, steps);
+        CountMove(_lineIsRow, index, steps);
     }
 
     // A move made from code (tutorials, hints, the tester): same rules and counting as a swipe.

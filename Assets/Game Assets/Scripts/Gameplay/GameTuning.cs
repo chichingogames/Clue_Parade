@@ -55,10 +55,24 @@ public class GameTuning : MonoBehaviour
     [SerializeField, Min(0.01f)] private float _checkPopDuration = Tuning.CheckPopDurationDefault;
 
     [Header("Layout")]
-    [Tooltip("Fraction of the safe-area height kept free above the board for the HUD (logo, level, pills). The camera fits the board into what is left.")]
+    [Tooltip("Fraction of the safe-area height kept free above the board for the HUD (logo, level, pills, message panel). The camera fits the board into what is left.")]
     [SerializeField, Range(0f, 0.45f)] private float _hudTopReserve = Tuning.HudTopReserveDefault;
-    [Tooltip("Fraction of the safe-area height kept free below the board (message panel, buttons).")]
+    [Tooltip("Fraction of the safe-area height kept free below the board (Next level, Undo, Restart).")]
     [SerializeField, Range(0f, 0.45f)] private float _hudBottomReserve = Tuning.HudBottomReserveDefault;
+
+    [Header("HUD")]
+    [Tooltip("Low-moves warning on the moves pill: seconds for one breath from white to red (the same again back).")]
+    [SerializeField, Min(0.05f)] private float _movesWarningBreath = Tuning.MovesWarningBreathDefault;
+
+    [Header("Tutorial (levels 1-4, Manager_Tutorial)")]
+    [Tooltip("Seconds per loop of the hand that demonstrates the guided swipe.")]
+    [SerializeField, Min(0.3f)] private float _tutorialHandLoop = Tuning.TutorialHandLoopDefault;
+    [Tooltip("Guided levels: how long the \"matched!\" message shows after the board settles, before the win card.")]
+    [SerializeField, Min(0f)] private float _tutorialConfirmation = Tuning.TutorialConfirmationDefault;
+    [Tooltip("Seconds without a move before the target icons pulse as a hint.")]
+    [SerializeField, Min(1f)] private float _tutorialIdleHint = Tuning.TutorialIdleHintDefault;
+    [Tooltip("Length of the moves pill pulse on the first spent move.")]
+    [SerializeField, Min(0.05f)] private float _tutorialMovesPulse = Tuning.TutorialMovesPulseDefault;
 
     public float CellSize => _cellSize;
     public float TileScale => _tileScale;
@@ -85,6 +99,11 @@ public class GameTuning : MonoBehaviour
     public float LoadingFadeDuration => _loadingFadeDuration;
     public float HudTopReserve => _hudTopReserve;
     public float HudBottomReserve => _hudBottomReserve;
+    public float MovesWarningBreath => _movesWarningBreath;
+    public float TutorialHandLoop => _tutorialHandLoop;
+    public float TutorialConfirmation => _tutorialConfirmation;
+    public float TutorialIdleHint => _tutorialIdleHint;
+    public float TutorialMovesPulse => _tutorialMovesPulse;
 
     public static GameTuning Active { get; private set; }
 

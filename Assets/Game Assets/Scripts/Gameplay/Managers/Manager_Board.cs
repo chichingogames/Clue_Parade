@@ -24,6 +24,9 @@ public class Manager_Board : Singleton<Manager_Board>
     // on-screen area may have changed. UI that lays out around the board listens to this.
     public event Action OnLayoutChanged = delegate { };
 
+    // Raised when a line is picked up (a player's drag, or a shift from code: undo, ApplyMove).
+    public event Action OnLinePickedUp = delegate { };
+
     public BoardState State { get; private set; }
     public bool IsDragging => _held && _animation == null;
     // True while a line slides or the launch intro scales the board in; presses are refused meanwhile.
@@ -130,6 +133,7 @@ public class Manager_Board : Singleton<Manager_Board>
         _ghost = SpawnTile(_heldTiles[0].Data, Vector3.zero);
         _ghost.name = "Ghost";
         _ghost.gameObject.SetActive(false);
+        OnLinePickedUp();
     }
 
     // offset in cells: row + = right, column + = down.
@@ -317,8 +321,14 @@ public class Manager_Board : Singleton<Manager_Board>
         return true;
     }
 
-    // Accepts fractional and out-of-board indices (used while lines move).
-    private Vector3 CellPosition(float row, float col)
+    // Overlays that sit on the board (tutorial cues) parent here, so they follow its layout and intro.
+    public Transform BoardRoot => _boardRoot;
+
+    public Transform GetRowMarker(int row) => _rowMarkers[row].transform;
+    public Transform GetColumnMarker(int col) => _columnMarkers[col].transform;
+
+    // Accepts fractional and out-of-board indices (used while lines move). Board-local.
+    public Vector3 CellPosition(float row, float col)
     {
         float offset = (Size - 1) * 0.5f;
         return new Vector3((col - offset) * CellSize, (offset - row) * CellSize, 0f);
@@ -360,6 +370,19 @@ public class Manager_Board : Singleton<Manager_Board>
 
         for (int r = 0; r < Size; r++) _rowMarkers[r].SetComplete(State.IsRowComplete(r));
         for (int c = 0; c < Size; c++) _columnMarkers[c].SetComplete(State.IsColumnComplete(c));
+    }
+
+    // A hint: every target icon gives a short scale punch (Manager_Tutorial's idle hint).
+    public void PulseTargets()
+    {
+        foreach (var marker in _rowMarkers) Punch(marker.transform);
+        foreach (var marker in _columnMarkers) Punch(marker.transform);
+
+        void Punch(Transform t)
+        {
+            t.DOComplete();
+            t.DOPunchScale(Vector3.one * 0.18f * CellSize, 0.5f, 6, 0.6f).SetLink(t.gameObject);
+        }
     }
 
     // ---------- Intro ----------

@@ -51,6 +51,7 @@ public static class SceneBuilder
             GetOrAdd<Manager_Board>(go),
             GetOrAdd<Manager_Input>(go),
             GetOrAdd<Manager_Game>(go),
+            GetOrAdd<Manager_Tutorial>(go),
         };
 
         var list = new SerializedObject(singletonManager).FindProperty("_singletonsToInitialize");

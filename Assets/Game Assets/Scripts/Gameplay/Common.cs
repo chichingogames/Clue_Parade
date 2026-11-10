@@ -38,4 +38,6 @@ public static class SortOrder
     public const int MarkerIcon = 2;
     public const int TileBody = 4;
     public const int TileCheck = 5;
+    public const int TutorialCue = 6;
+    public const int TutorialHand = 7;
 }

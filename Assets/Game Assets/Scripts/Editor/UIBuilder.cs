@@ -26,6 +26,7 @@ public static class UIBuilder
     private const float ButtonHeight = 120f;
     private const float PanelHeight = 176f;
     private const float StackSpacing = 22f;
+    private const float BoardGap = 14f;                  // between the column targets, the message panel and the pills
     private const float BottomStackMargin = 40f;         // Bottom Stack's gap above the safe area's bottom edge
 
     [MenuItem("ShiftSort/Build UI")]
@@ -55,6 +56,7 @@ public static class UIBuilder
         var so = new SerializedObject(ui);
 
         BuildTopBar(inGame, so, heading);
+        BuildMessagePanel(boardArea, so, heading, body);
         BuildPills(boardArea, so, body);
         BuildBottomStack(boardArea, so, heading, body);
 
@@ -167,23 +169,58 @@ public static class UIBuilder
         Set(so, "_soundOffSprite", Art("ui/icons/icon_sound_off"));
     }
 
-    // Matched (left) and moves (right), just above the column targets.
+    // Matched (left) and moves (right), above the message panel.
     private static void BuildPills(RectTransform boardArea, SerializedObject so, TMP_FontAsset body)
     {
         var pills = Rect(boardArea, "Pills", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 0f),
-                         new Vector2(0f, 14f), new Vector2(0f, PillHeight));
+                         new Vector2(0f, BoardGap + PanelHeight + BoardGap), new Vector2(0f, PillHeight));
 
         var matched = Pill(pills, "Matched Pill", new Vector2(0f, 0.5f), new Vector2(0f, 0f), 270f, "ui/hud/pill_matches", body, "0 / 9 matched", MatchedColor);
-        var moves = Pill(pills, "Moves Pill", new Vector2(1f, 0.5f), new Vector2(0f, 0f), 290f, "ui/hud/pill_moves", body, "Unlimited moves", MovesColor);
+        var moves = Pill(pills, "Moves Pill", new Vector2(1f, 0.5f), new Vector2(0f, 0f), 290f, "ui/hud/pill_moves", body, "No move limit", MovesColor);
 
         Set(so, "_matchedText", matched.GetComponentInChildren<TMP_Text>());
         Set(so, "_movesPill", moves.GetComponent<Image>());
+
+        // Warning overlay (UI_InGame tints it), between the pill and its text.
+        var warning = AddImage(Rect(moves, "Warning", Vector2.zero, Vector2.one, Center, Vector2.zero, Vector2.zero),
+                               Art("ui/hud/pill_moves_low_warnign_mask"));
+        warning.transform.SetSiblingIndex(0);
+        warning.gameObject.SetActive(false);
+        Set(so, "_movesWarning", warning);
         Set(so, "_movesText", moves.GetComponentInChildren<TMP_Text>());
         Set(so, "_movesSprite", Art("ui/hud/pill_moves"));
         Set(so, "_movesLowSprite", Art("ui/hud/pill_moves_low"));
     }
 
-    // Bottom Stack: message panel, Next level (only shown after a win), then Undo + Restart. A child of
+    // Message panel (goal, tutorial lesson, win / out of moves): a child of Board Area, just above
+    // the column targets, at the board's width (targets included).
+    private static void BuildMessagePanel(RectTransform boardArea, SerializedObject so, TMP_FontAsset heading, TMP_FontAsset body)
+    {
+        var panelRect = Rect(boardArea, "Message Panel", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 0f),
+                             new Vector2(0f, BoardGap), new Vector2(0f, PanelHeight));
+        var panel = AddImage(panelRect, Art("ui/panels/panel_neutral"), sliced: true, sourceHeight: 240f, height: PanelHeight * 1.2f);
+        var title = AddText(Rect(panelRect, "Title", new Vector2(0f, 0.5f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f),
+                                 new Vector2(0f, -8f), new Vector2(-48f, -24f)), heading, "Match shapes across and colors down", 44f, Navy);
+        title.enableAutoSizing = true;
+        title.fontSizeMin = 28f;
+        title.fontSizeMax = 44f;
+        var bodyText = AddText(Rect(panelRect, "Body", new Vector2(0f, 0f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f),
+                                    new Vector2(0f, 16f), new Vector2(-48f, -28f)), body, "Swipe rows or columns to line them up.", 28f, BodyColor);
+        bodyText.enableAutoSizing = true;
+        bodyText.fontSizeMin = 20f;
+        bodyText.fontSizeMax = 28f;
+        bodyText.verticalAlignment = VerticalAlignmentOptions.Top;
+        bodyText.textWrappingMode = TextWrappingModes.Normal;   // tutorial lessons need two lines
+
+        Set(so, "_messagePanel", panel);
+        Set(so, "_messageTitle", title);
+        Set(so, "_messageBody", bodyText);
+        Set(so, "_panelNeutralSprite", Art("ui/panels/panel_neutral"));
+        Set(so, "_panelWinSprite", Art("ui/panels/panel_win"));
+        Set(so, "_panelFailSprite", Art("ui/panels/panel_fail"));
+    }
+
+    // Bottom Stack: Next level (only shown after a win), then Undo + Restart. A child of
     // InGame pinned to the bottom of the safe area; UI_BoardArea (horizontal only) gives it the board's
     // width. It grows upward when Next level appears.
     private static void BuildBottomStack(RectTransform boardArea, SerializedObject so, TMP_FontAsset heading, TMP_FontAsset body)
@@ -202,33 +239,11 @@ public static class UIBuilder
         follow.FindProperty("_horizontalOnly").boolValue = true;
         follow.ApplyModifiedPropertiesWithoutUndo();
 
-        // Message panel
-        var panelRect = Rect(stack, "Message Panel", Center, Center, Center, Vector2.zero, Vector2.zero);
-        Height(panelRect, PanelHeight);
-        var panel = AddImage(panelRect, Art("ui/panels/panel_neutral"), sliced: true, sourceHeight: 240f, height: PanelHeight * 1.2f);
-        var title = AddText(Rect(panelRect, "Title", new Vector2(0f, 0.5f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f),
-                                 new Vector2(0f, -8f), new Vector2(-48f, -24f)), heading, "Match shapes across and colors down", 44f, Navy);
-        title.enableAutoSizing = true;
-        title.fontSizeMin = 28f;
-        title.fontSizeMax = 44f;
-        var bodyText = AddText(Rect(panelRect, "Body", new Vector2(0f, 0f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f),
-                                    new Vector2(0f, 16f), new Vector2(-48f, -28f)), body, "Swipe rows or columns to line them up.", 28f, BodyColor);
-        bodyText.enableAutoSizing = true;
-        bodyText.fontSizeMin = 20f;
-        bodyText.fontSizeMax = 28f;
-        bodyText.verticalAlignment = VerticalAlignmentOptions.Top;
-
-        Set(so, "_messagePanel", panel);
-        Set(so, "_messageTitle", title);
-        Set(so, "_messageBody", bodyText);
-        Set(so, "_panelNeutralSprite", Art("ui/panels/panel_neutral"));
-        Set(so, "_panelWinSprite", Art("ui/panels/panel_win"));
-        Set(so, "_panelFailSprite", Art("ui/panels/panel_fail"));
-
         // Next level (primary)
         var next = StackButton(stack, "Next Button", primary: true, heading, "Next level", "ui/icons/icon_next", iconFirst: false, Navy);
         next.gameObject.SetActive(false);
         Set(so, "_nextButton", next);
+        Set(so, "_nextLabel", next.GetComponentInChildren<TMP_Text>(true));
 
         // Undo + Restart row
         var rowRect = Rect(stack, "Button Row", Center, Center, Center, Vector2.zero, Vector2.zero);
@@ -254,7 +269,7 @@ public static class UIBuilder
             (RectTransform)boardArea.parent.Find("Top Bar/Sound Button"),
             (RectTransform)boardArea.Find("Pills/Matched Pill"),
             (RectTransform)boardArea.Find("Pills/Moves Pill"),
-            panelRect,
+            (RectTransform)boardArea.Find("Message Panel"),
             (RectTransform)undo.transform,
             (RectTransform)restart.transform,
         };

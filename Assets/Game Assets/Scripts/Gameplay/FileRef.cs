@@ -51,6 +51,12 @@ public class FileRef : ScriptableSingleton<FileRef>
     [SerializeField] private ShapeSprite[] _rowTargetSprites = new ShapeSprite[0];
     [SerializeField] private ColorSprite[] _columnTargetSprites = new ColorSprite[0];
 
+    [Header("Tutorial cues (Manager_Tutorial)")]
+    [SerializeField] private Sprite _tutorialHand;
+    [SerializeField] private Sprite _tutorialLineOutline;
+    [SerializeField] private Sprite _tutorialDestination;
+    [SerializeField] private Sprite _tutorialArrow;
+
     [Header("Audio")]
     [SerializeField] private AudioClip _music;
     [SerializeField] private SoundData[] _sounds = new SoundData[0];
@@ -58,6 +64,10 @@ public class FileRef : ScriptableSingleton<FileRef>
     public Cell CellPrefab => _cellPrefab;
     public Tile TilePrefab => _tilePrefab;
     public TargetMarker TargetMarkerPrefab => _targetMarkerPrefab;
+    public Sprite TutorialHand => _tutorialHand;
+    public Sprite TutorialLineOutline => _tutorialLineOutline;
+    public Sprite TutorialDestination => _tutorialDestination;
+    public Sprite TutorialArrow => _tutorialArrow;
     public AudioClip Music => _music;
 
     // False (and no error) when the sound has no clips: a missing sound is silence, not a crash.
