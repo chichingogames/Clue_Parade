@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "id": 16,
+  "name": "Wider Lanes",
+  "instruction": "Start with a line you can bring closer to its targets.",
+  "size": 4,
+  "board": [
+    3,
+    4,
+    1,
+    2,
+    6,
+    7,
+    5,
+    0,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "moveBudget": 7,
+  "tutorial": "",
+  "verifiedMoves": 5,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    }
+  ]
+}

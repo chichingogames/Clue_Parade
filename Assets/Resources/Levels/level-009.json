@@ -1,23 +1,23 @@
 {
   "schemaVersion": 1,
   "id": 9,
-  "name": "Almost there",
-  "instruction": "Most tiles fit. Plan where to make room for the rest.",
+  "name": "Detour",
+  "instruction": "Check both targets as you move tiles into place.",
   "size": 3,
   "board": [
     0,
-    3,
+    5,
     2,
     6,
+    3,
     4,
-    5,
     1,
     7,
     8
   ],
-  "moveBudget": 7,
+  "moveBudget": 9,
   "tutorial": "",
-  "verifiedMoves": 3,
+  "verifiedMoves": 4,
   "solution": [
     {
       "axis": "row",
@@ -31,9 +31,14 @@
     },
     {
       "axis": "row",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "row",
       "line": 0,
       "direction": 1
     }
   ],
-  "minimumMoves": 3
+  "minimumMoves": 4
 }

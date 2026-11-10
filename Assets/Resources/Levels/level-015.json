@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "id": 15,
+  "name": "Break the Pattern",
+  "instruction": "A tile can move even after it earns a checkmark.",
+  "size": 3,
+  "board": [
+    7,
+    1,
+    8,
+    2,
+    4,
+    0,
+    6,
+    5,
+    3
+  ],
+  "moveBudget": 12,
+  "tutorial": "",
+  "verifiedMoves": 6,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    }
+  ],
+  "minimumMoves": 6
+}

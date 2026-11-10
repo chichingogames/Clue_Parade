@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": 29,
+  "name": "Last Warm-Up",
+  "instruction": "Start with a line that can land several matches.",
+  "size": 3,
+  "board": [
+    6,
+    8,
+    2,
+    4,
+    7,
+    5,
+    3,
+    1,
+    0
+  ],
+  "moveBudget": 10,
+  "tutorial": "",
+  "verifiedMoves": 5,
+  "solution": [
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": 1
+    }
+  ],
+  "minimumMoves": 5
+}

@@ -1,44 +1,39 @@
 {
   "schemaVersion": 1,
   "id": 6,
-  "name": "Detour",
-  "instruction": "Match all nine tiles before you run out of moves.",
+  "name": "Cross Practice",
+  "instruction": "Try lining up a row, then check the columns.",
   "size": 3,
   "board": [
-    0,
-    5,
+    1,
     2,
     6,
-    3,
     4,
-    1,
+    5,
+    0,
+    3,
     7,
     8
   ],
-  "moveBudget": 8,
+  "moveBudget": 9,
   "tutorial": "",
-  "verifiedMoves": 4,
+  "verifiedMoves": 3,
   "solution": [
     {
       "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "row",
       "line": 0,
-      "direction": -1
+      "direction": 1
     },
     {
       "axis": "column",
       "line": 0,
-      "direction": 1
-    },
-    {
-      "axis": "row",
-      "line": 1,
       "direction": -1
-    },
-    {
-      "axis": "row",
-      "line": 0,
-      "direction": 1
     }
   ],
-  "minimumMoves": 4
+  "minimumMoves": 3
 }

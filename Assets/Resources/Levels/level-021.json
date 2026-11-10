@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "id": 21,
+  "name": "Double Crossing",
+  "instruction": "A row and column share a tile where they cross.",
+  "size": 3,
+  "board": [
+    0,
+    2,
+    8,
+    5,
+    7,
+    3,
+    6,
+    4,
+    1
+  ],
+  "moveBudget": 12,
+  "tutorial": "",
+  "verifiedMoves": 6,
+  "solution": [
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": 1
+    }
+  ],
+  "minimumMoves": 6
+}

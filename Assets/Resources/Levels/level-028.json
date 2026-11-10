@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": 28,
+  "name": "Full Width",
+  "instruction": "Check both targets as you work across the larger board.",
+  "size": 4,
+  "board": [
+    0,
+    1,
+    2,
+    11,
+    5,
+    10,
+    6,
+    12,
+    9,
+    3,
+    4,
+    8,
+    13,
+    14,
+    15,
+    7
+  ],
+  "moveBudget": 9,
+  "tutorial": "",
+  "verifiedMoves": 7,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 3,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 3,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 3,
+      "direction": 1
+    }
+  ]
+}

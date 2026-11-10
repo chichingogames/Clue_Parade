@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": 14,
+  "name": "Almost there",
+  "instruction": "Most tiles fit. Plan where to make room for the rest.",
+  "size": 3,
+  "board": [
+    0,
+    3,
+    2,
+    6,
+    4,
+    5,
+    1,
+    7,
+    8
+  ],
+  "moveBudget": 7,
+  "tutorial": "",
+  "verifiedMoves": 3,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    }
+  ],
+  "minimumMoves": 3
+}

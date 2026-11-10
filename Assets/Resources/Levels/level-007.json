@@ -1,34 +1,40 @@
 {
   "schemaVersion": 1,
   "id": 7,
-  "name": "Quick reset",
-  "instruction": "Two rows are out of line. Start with either one.",
-  "size": 3,
+  "name": "One size up",
+  "instruction": "The star row and blue column follow the same rules.",
+  "size": 4,
   "board": [
-    2,
     0,
-    1,
+    13,
+    2,
     3,
-    4,
-    5,
+    1,
+    6,
     7,
+    4,
     8,
-    6
+    5,
+    10,
+    11,
+    12,
+    9,
+    14,
+    15
   ],
-  "moveBudget": 6,
+  "moveBudget": 8,
   "tutorial": "",
   "verifiedMoves": 2,
   "solution": [
     {
       "axis": "row",
-      "line": 2,
+      "line": 1,
       "direction": 1
     },
     {
-      "axis": "row",
-      "line": 0,
+      "axis": "column",
+      "line": 1,
       "direction": -1
     }
-  ],
-  "minimumMoves": 2
+  ]
 }

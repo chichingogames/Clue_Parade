@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "id": 13,
+  "name": "False start",
+  "instruction": "An opening that looks messy can lead to a shorter solve.",
+  "size": 3,
+  "board": [
+    3,
+    2,
+    8,
+    1,
+    0,
+    5,
+    7,
+    6,
+    4
+  ],
+  "moveBudget": 8,
+  "tutorial": "",
+  "verifiedMoves": 6,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": -1
+    }
+  ],
+  "minimumMoves": 6
+}

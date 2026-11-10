@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "id": 22,
+  "name": "Wide Crossing",
+  "instruction": "Look at the shape and color targets before choosing a line.",
+  "size": 4,
+  "board": [
+    0,
+    1,
+    13,
+    3,
+    2,
+    6,
+    7,
+    4,
+    8,
+    9,
+    5,
+    11,
+    12,
+    10,
+    14,
+    15
+  ],
+  "moveBudget": 8,
+  "tutorial": "",
+  "verifiedMoves": 6,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    }
+  ]
+}

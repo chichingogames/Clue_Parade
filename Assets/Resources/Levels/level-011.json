@@ -1,59 +1,49 @@
 {
   "schemaVersion": 1,
   "id": 11,
-  "name": "More than one way",
-  "instruction": "Several openings can lead to a good solve.",
+  "name": "Corner Setup",
+  "instruction": "Use one line to set up the next.",
   "size": 3,
   "board": [
-    8,
     4,
-    3,
+    8,
+    2,
+    6,
+    7,
     5,
     0,
-    2,
-    7,
-    6,
-    1
+    1,
+    3
   ],
-  "moveBudget": 11,
+  "moveBudget": 10,
   "tutorial": "",
-  "verifiedMoves": 7,
+  "verifiedMoves": 5,
   "solution": [
     {
       "axis": "column",
-      "line": 1,
-      "direction": -1
-    },
-    {
-      "axis": "row",
-      "line": 1,
-      "direction": -1
-    },
-    {
-      "axis": "row",
-      "line": 0,
-      "direction": 1
-    },
-    {
-      "axis": "column",
-      "line": 1,
-      "direction": -1
-    },
-    {
-      "axis": "row",
       "line": 2,
       "direction": 1
     },
     {
-      "axis": "column",
+      "axis": "row",
       "line": 0,
       "direction": 1
     },
     {
-      "axis": "row",
+      "axis": "column",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "column",
       "line": 0,
       "direction": 1
     }
   ],
-  "minimumMoves": 7
+  "minimumMoves": 5
 }

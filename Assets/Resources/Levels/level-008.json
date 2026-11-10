@@ -1,35 +1,33 @@
 {
   "schemaVersion": 1,
   "id": 8,
-  "name": "Cross traffic",
-  "instruction": "Use both axes to work through the bigger grid.",
-  "size": 4,
+  "name": "Clean Sweep",
+  "instruction": "Look for a swipe that lands several matches at once.",
+  "size": 3,
   "board": [
+    8,
     0,
     1,
-    14,
-    3,
-    7,
-    4,
-    2,
-    6,
-    9,
     5,
-    11,
-    8,
-    12,
-    13,
-    10,
-    15
+    2,
+    4,
+    6,
+    7,
+    3
   ],
-  "moveBudget": 7,
+  "moveBudget": 8,
   "tutorial": "",
-  "verifiedMoves": 3,
+  "verifiedMoves": 4,
   "solution": [
     {
       "axis": "row",
-      "line": 2,
+      "line": 1,
       "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
     },
     {
       "axis": "column",
@@ -39,7 +37,8 @@
     {
       "axis": "row",
       "line": 1,
-      "direction": -1
+      "direction": 1
     }
-  ]
+  ],
+  "minimumMoves": 4
 }

@@ -1,38 +1,35 @@
 {
   "schemaVersion": 1,
   "id": 10,
-  "name": "False start",
-  "instruction": "An opening that looks messy can lead to a shorter solve.",
-  "size": 3,
+  "name": "Cross traffic",
+  "instruction": "Use both axes to work through the bigger grid.",
+  "size": 4,
   "board": [
-    3,
-    2,
-    8,
-    1,
     0,
-    5,
+    1,
+    14,
+    3,
     7,
+    4,
+    2,
     6,
-    4
+    9,
+    5,
+    11,
+    8,
+    12,
+    13,
+    10,
+    15
   ],
-  "moveBudget": 9,
+  "moveBudget": 8,
   "tutorial": "",
-  "verifiedMoves": 6,
+  "verifiedMoves": 3,
   "solution": [
     {
       "axis": "row",
-      "line": 1,
-      "direction": 1
-    },
-    {
-      "axis": "column",
-      "line": 0,
-      "direction": 1
-    },
-    {
-      "axis": "row",
       "line": 2,
-      "direction": -1
+      "direction": 1
     },
     {
       "axis": "column",
@@ -41,14 +38,8 @@
     },
     {
       "axis": "row",
-      "line": 0,
-      "direction": 1
-    },
-    {
-      "axis": "column",
       "line": 1,
       "direction": -1
     }
-  ],
-  "minimumMoves": 6
+  ]
 }
