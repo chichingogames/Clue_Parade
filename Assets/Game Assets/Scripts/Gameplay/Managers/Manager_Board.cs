@@ -20,6 +20,8 @@ public class Manager_Board : Singleton<Manager_Board>
     [SerializeField] private SpriteRenderer _frame;
     [SerializeField] private SpriteMask _mask;
     [SerializeField] private SpriteRenderer _activeRow;
+    [Tooltip("Full-screen booth art behind everything; FitCamera scales it to cover the view.")]
+    [SerializeField] private SpriteRenderer _background;
     [SerializeField] private Transform _cellsRoot;
     [SerializeField] private Transform _tilesRoot;
     [FormerlySerializedAs("_markersRoot")]
@@ -445,6 +447,19 @@ public class Manager_Board : Singleton<Manager_Board>
         // Put the world origin (the reference screen's centre) at the safe area's centre.
         Vector2 offset = (safe.center - new Vector2(Screen.width, Screen.height) * 0.5f) * unitsPerPixel;
         cam.transform.position = new Vector3(-offset.x, -offset.y, cam.transform.position.z);
+
+        // The background stays centred on the reference screen and grows to cover the whole view,
+        // notch and letterbox areas included.
+        if (_background != null && _background.sprite != null)
+        {
+            float halfHeight = cam.orthographicSize;
+            float halfWidth = halfHeight * cam.aspect;
+            Vector2 reach = new Vector2(Mathf.Abs(cam.transform.position.x) + halfWidth, Mathf.Abs(cam.transform.position.y) + halfHeight);
+            Vector2 art = _background.sprite.bounds.size * 0.5f;
+            float scale = Mathf.Max(1f, Mathf.Max(reach.x / art.x, reach.y / art.y));
+            _background.transform.position = Vector3.zero;
+            _background.transform.localScale = new Vector3(scale, scale, 1f);
+        }
     }
 
 #if UNITY_EDITOR

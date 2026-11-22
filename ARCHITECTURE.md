@@ -19,8 +19,9 @@ are shown, and it is *confirmed* (checks on its cells) once all its tiles are in
 is confirmed. Per-tile correctness is never shown or sounded, so the clues matter.
 
 Today: authored JSON levels (one so far, played in a loop), hold-and-drag/flick input, steps, win, move budget/fail,
-undo, an interim HUD (UI_InGame, the old Shift & Sort layout showing step, moves, goal and clues), music and sound
-effects, and a save (OfflineData). The HUD still has to be rebuilt from the art pack's 1080×1920 layout (§11).
+undo, the HUD on the art pack's 1080×1920 layout (UI_InGame: level/step, goal, moves, clue notes, characters whose
+pose follows the steps, Undo / Notebook / Hint-Next-Retry, sound switch), the booth background, music and sound effects,
+and a save (OfflineData). Notebook and Hint are placeholders (§11).
 
 The code follows the architecture blueprint in `skeleton.md` (ported from an earlier game, "Color Farm"). That file
 describes the *target*; this file describes what exists.
@@ -52,6 +53,7 @@ Assets/
         JsonLevelSource.cs            Resources/Levels/level-NNN.json → LevelDefinition; LevelFile/LevelStep/LevelClue/LevelMove
         ReferenceLayout.cs            the art pack's 1080×1920 positions in world units (board centre, frame, tags, checks)
         Common.cs                     enums (GameState, HapticType, SoundType), TileData, SortOrder
+      UI/                             UI_InGame (HUD), UI_ReferenceFit (1080×1920 reference fit), UI_Loading
         Tuning.cs  GameTuning.cs      gameplay numbers (const defaults + scene overrides)
         FileRef.cs                    asset registry (ScriptableSingleton)
         TestManager.cs                Inspector cheat panel on the Tester object (body is UNITY_EDITOR only)
@@ -191,9 +193,19 @@ skips its `Destroy`. Here it is per instance.
 frame + category tags on the left; both share `GetLocalBounds`). `FitCamera` does not fit the board: it fits the art
 pack's whole 10.8×19.2 reference screen (`ReferenceLayout`) uniformly into the safe area, world origin at its centre, so
 the board sits where the pack's layout puts it and a HUD built on the same 1080×1920 layout lines up with it.
-`OnLayoutChanged` fires at the end of `Build`. Scene-view gizmos: green = frame, yellow = with tags.
-`UI_BoardArea` (`Canvas/Container/InGame/Board Area`) sizes its RectTransform to that screen rect (anchors as
-unclamped fractions of the parent), so HUD placed around the board anchors to its edges.
+`FitCamera` also scales `GamePlay/Background` (booth art, centred on the reference screen) to cover the whole view.
+`OnLayoutChanged` fires at the end of `Build` (no subscriber since the HUD moved to the reference layout).
+Scene-view gizmos: green = frame, yellow = with tags.
+
+**HUD** (`UI_InGame` on `Canvas/Container/InGame`, its objects under `InGame/Reference`): `UI_ReferenceFit` makes
+`Reference` the 1080×1920 reference screen, centred in the safe area and uniformly scaled to fit it, exactly as `FitCamera`
+fits the world, so HUD positions in layout pixels line up with the board. `Refresh` (on level start, state change, move,
+settle): "Level n · Step k of N" / "· Complete", the active step's goal ("Everyone is ready!" / "Out of moves"), moves left
+(red at ≤ `_lowMovesAt`; "–" / "no limit" without a budget), the step's first two clues (note + item icon from
+`FileRef`; hidden after a win), each character's `Poses[min(ConfirmedSteps, last)]` (a punch-scale hop when it changes) and
+name. `PlaceCharacters` (level start) centres each portrait and name plate over its board column and hides the unused.
+The gold **action button** is Hint (placeholder tap) while playing, Next after a win (`AdvanceLevel`), Retry when out of
+moves (`RestartLevel`). Notebook is a placeholder tap. Sound switch: `Manager_Audio.ToggleSound`.
 
 **Haptics:** `Haptics.Play(HapticType)` (Essentials, static, always on) wraps the CandyCoded `HapticFeedback` package: one pulse
 per event. Settle: Heavy if solved, Medium if a step was confirmed, else Light. `Manager_Game`: OutOfMoves Heavy, Restart Light
@@ -280,8 +292,8 @@ Current tuning (scene values):
 | Builder | Menu | Does | Never overwrites |
 |---|---|---|---|
 | `AssetBuilder` | ShiftSort/Build Assets | Writes the placeholder `Solid.png` (board mask; also the unused Shift & Sort `BoardFrame.png` / `Panel.png`); imports `Sprites/Tilewrap/*` with each asset's PPU, pivot and 9-slice border from `art_manifest.json` (FullRect, no mips, uncompressed) and the old `Sprites/Sprites/{tiles,targets,fx}`; builds Cell / ItemTile / CategoryTag prefabs (+ `TilewrapNunito-ExtraBold SDF Masked.mat`); fills `FileRef` (prefabs, tile surfaces, `_items` with names from `ItemNames`, `_characters` with poses, music, sounds) | an existing placeholder PNG, an existing prefab, a non-null slot, a non-empty table |
-| `SceneBuilder` | ShiftSort/Build Scene | Requires `Game.unity` active. Adds `GameTuning`, `SingletonManager`, the managers; fills `_singletonsToInitialize` (Audio, Level, Board, Input, Game) if empty; creates `GamePlay/Board/{Frame (board_frame), Mask, Active Row, Cells, Tiles, Tags}` and wires `Manager_Board` refs if empty; camera ortho + booth-wall background; `Canvas/Container/{InGame/Board Area (UI_BoardArea), PopUps}` (`SafeArea` on `Container`), `Dark Area` (inactive, black 70%), `Loading Screen`, `Transition Screen`; `EventSystem` with `InputSystemUIInputModule`; `Tester` (tag `EditorOnly`) with `TestManager` | existing objects (matched by name/path), filled refs, a non-empty init list |
-| `UIBuilder` | ShiftSort/Build UI (also run by Build Scene) | Imports `ui/` and `branding/` as Single sprites, ppu 100, with 9-slice borders (buttons 64/40, pills 44/43, panels 52); creates dynamic TMP font assets `Fonts/OpenSans-{Bold,ExtraBold} SDF`; builds the HUD under `Canvas/Container/InGame` (Top Bar, Board Area/Pills, Bottom Stack) and wires every `UI_InGame` field | font assets that exist; the whole HUD once `InGame` has `UI_InGame` (delete Top Bar, Board Area/Pills, Bottom Stack and the component to rebuild) |
+| `SceneBuilder` | ShiftSort/Build Scene | Requires `Game.unity` active. Adds `GameTuning`, `SingletonManager`, the managers; fills `_singletonsToInitialize` (Audio, Level, Board, Input, Game) if empty; creates `GamePlay/Background` (booth art) and `GamePlay/Board/{Frame (board_frame), Mask, Active Row, Cells, Tiles, Tags}` and wires `Manager_Board` refs if empty; camera ortho + booth-wall background; `Canvas/Container/{InGame, PopUps}` (`SafeArea` on `Container`), `Dark Area` (inactive, black 70%), `Loading Screen`, `Transition Screen`; `EventSystem` with `InputSystemUIInputModule`; `Tester` (tag `EditorOnly`) with `TestManager` | existing objects (matched by name/path), filled refs, a non-empty init list |
+| `UIBuilder` | ShiftSort/Build UI (also run by Build Scene) | Imports the old `ui/` and `branding/` art (loading screen, sound/next/retry icons); creates dynamic TMP font assets (`TilewrapNunito-{ExtraBold,SemiBold} SDF`, `OpenSans-*` for the loading screen); builds the HUD under `Canvas/Container/InGame/Reference` from the pack layout (every rect = the CSV's x, y, w, h via `Place`, centre pivot) and wires every `UI_InGame` field and the intro order | font assets that exist; the HUD once `InGame` has `UI_InGame` (delete `InGame/Reference` and the component to rebuild) |
 | `UIBuilder.BuildLoading` | ShiftSort/Build Loading Screen (also run by Build Scene) | Fills `Canvas/Loading Screen`: full-stretch, last sibling, `CanvasGroup` + `UI_Loading`, Art, Progress Bar (9-slice 12 px; fill 6 px), Fill, Label; wires `_progressFill` | the screen once it has `UI_Loading` (remove the component, `CanvasGroup` and `Art` to rebuild) |
 | `BuildNaming` (+ `BuildNameSettings`) | ShiftSort/Build Name Settings | `[InitializeOnLoad]` registers `BuildPlayerWindow.RegisterBuildPlayerHandler`: an Android build from the Build window is saved as `[ProductName]_[bundleVersion]_[date]_[AdditionalInformation].apk/.aab` in the folder you picked (parts cleaned: spaces → '-', '_' and invalid characters dropped; empty info drops its '_'). Settings asset `Scripts/Editor/BuildNameSettings.asset` (info text, date format, live preview). Scripted builds: `BuildNaming.Apply(ref options)` | other platforms, Export Project |
 | `LevelValidator` | ShiftSort/Validate Levels | For every `Resources/Levels/level-NNN.json`: parses it, checks every item and character is in `FileRef`, checks it doesn't start solved, replays `solution` through `BoardState` and checks it solves within `moveBudget`; warns about numbering gaps. Run after adding or editing a level file. | nothing (read-only) |
@@ -296,7 +308,7 @@ prefab, or delete it and rebuild (§10).
 - **Managers decide, views display.** Views have no game logic and no access to managers or `FileRef`.
 - **Ordered init.** Put setup in `Awake2()`. A manager that is not in `_singletonsToInitialize` still initializes from its
   own `Awake`, but in arbitrary order.
-- **Events default to `delegate { }`.** Subscribed: `Manager_Input`'s four events (`Manager_Game`); `OnLevelStarted`, `OnStateChanged`, `OnMoveMade`, `OnBoardSettled` (`UI_InGame`); `OnLayoutChanged` (`UI_BoardArea`), `OnBoardSettled` (`TestManager`, during Play Solution).
+- **Events default to `delegate { }`.** Subscribed: `Manager_Input`'s four events (`Manager_Game`); `OnLevelStarted`, `OnStateChanged`, `OnMoveMade`, `OnBoardSettled` (`UI_InGame`); `OnBoardSettled` (`TestManager`, during Play Solution). `OnLayoutChanged` has no subscriber.
 - **Numbers in `Tuning`, assets in `FileRef`.** No literals in managers, except the generator seed constants and the
   animation easing (`Ease.OutCubic`). All animation and timed delays go through DOTween (no coroutines); every
   tween is `SetLink`ed to its owner and killed on `Clear` / `StartLevel`.
@@ -355,16 +367,19 @@ with `Poses` in that order. Renaming a file breaks every level that names it (Va
 | `Audio/SFX/{sound_type}[_NN].wav` | `Manager_Audio.PlaySound` | `FileRef._sounds` (`SoundData`: Type, Clips[], Volume), filled by `AssetBuilder` from the snake_case of each `SoundType`; Decompress On Load, ADPCM, mono |
 | `Sprites/Tilewrap/**` + `art_manifest.json` | `AssetBuilder.ImportTilewrapArt` | import settings per asset (PPU 200 for most UI, 100 for the rest; pivot; 9-slice border LBRT) |
 | `Sprites/Tilewrap/Items/*.png` (9) | `Manager_Board.SetupTile` | `FileRef.GetItem(level.ItemFor(tile)).Sprite` |
-| `Sprites/Tilewrap/Characters/*.png` (12) | nothing yet | `FileRef._characters[].Poses`; for the HUD's character row |
+| `Sprites/Tilewrap/Characters/*.png` (12) | `UI_InGame.RefreshCharacters` | `FileRef._characters[].Poses[ConfirmedSteps]` |
 | `Sprites/Tilewrap/UI/tile_cream`, `tile_honey` | `Manager_Board.RefreshIndicators` | `FileRef.TileSurface` / `TileSurfaceActive` → `ItemTile.SetSurface` |
 | `Sprites/Tilewrap/UI/board_frame`, `active_row_outline` | scene `Board/Frame`, `Board/Active Row` | serialized; Sliced, sized by `Manager_Board.Build` |
 | `Sprites/Tilewrap/UI/check_complete`, `category_tag` | Cell, CategoryTag prefabs | serialized in the prefabs |
-| `Sprites/Tilewrap/UI/*` (rest), `Backgrounds/booth_background` | **nothing yet** | for the HUD rebuild |
+| `Sprites/Tilewrap/UI/*` (panels, buttons, icons, nameplate, counter, clue note) | HUD | serialized in the scene by `UIBuilder` |
+| `Sprites/Tilewrap/Backgrounds/booth_background` | scene `GamePlay/Background` | serialized; scaled by `Manager_Board.FitCamera` |
+| `Sprites/Tilewrap/UI/badge_notebook`, `icon_settings` | **nothing** | for the Notebook / settings when they exist |
 | `Fonts/TilewrapNunito-ExtraBold SDF` (+ `Masked.mat`) | ItemTile, CategoryTag prefabs | dynamic TMP font asset made by `UIBuilder.GetOrCreateFont`; the masked material by `AssetBuilder` |
 | `Sprites/Placeholder/Solid.png` | scene `Board/Mask` (`SpriteMask`) | serialized |
-| `Sprites/Placeholder/BoardFrame.png`, `Panel.png`, `Sprites/Sprites/{tiles, targets, fx, board, backgrounds}` | **nothing** | Shift & Sort art, still imported; `ui/` and `branding/` are used by the interim HUD and loading screen |
+| `Sprites/Placeholder/BoardFrame.png`, `Panel.png`, `Sprites/Sprites/{tiles, targets, fx, board, backgrounds}` | **nothing** | Shift & Sort art, still imported; `ui/` and `branding/` are used by the HUD icons (sound, next, restart) and loading screen |
 | `Sprites/Previews/*.png` | nothing | reference mockups only |
-| `Fonts/OpenSans-*` SDF | interim HUD, loading screen | made by `UIBuilder` |
+| `Fonts/OpenSans-*` SDF | loading screen | made by `UIBuilder` |
+| `Fonts/TilewrapNunito-{ExtraBold,SemiBold} SDF` | HUD, ItemTile, CategoryTag | made by `UIBuilder.GetOrCreateFont` |
 
 Everything referenced by `FileRef` ships in the build, and so does everything under `Resources/`.
 
@@ -404,8 +419,9 @@ Sound                  audio objects (SceneBuilder.BuildSound), wired into Manag
   Music                AudioSource, loop, volume 0.45: set the background music level here
   SFX                  AudioSource: its volume is the master level for all effects
                          SingletonManager._singletonsToInitialize = [Level, Board, Input, Game]
-                         Manager_Board → _boardRoot, _frame, _mask, _activeRow, _cellsRoot, _tilesRoot, _tagsRoot
+                         Manager_Board → _boardRoot, _frame, _mask, _activeRow, _background, _cellsRoot, _tilesRoot, _tagsRoot
 GamePlay
+  Background           SpriteRenderer (booth_background, order Background = −10), scaled by FitCamera to cover the view
   Board                _boardRoot, placed at ReferenceLayout.BoardCenter by Build (runtime content parents below)
     Frame              SpriteRenderer (board_frame, Sliced, order Frame = over the tiles), size grid + 2·FramePadding
     Mask               SpriteMask (Solid), scaled to the grid
@@ -413,17 +429,18 @@ GamePlay
     Cells / Tiles / Tags   runtime-filled, emptied on each Build
 Canvas                 Screen Space Overlay, CanvasScaler 1080×1920 match 0.5
   Container            SafeArea (anchors = Screen.safeArea, applied once in Awake)
-    InGame             UI_InGame (HUD; every field wired by UIBuilder). On the first level start (once) its _introItems
-                       scale 0 → 1 in order (DOScale, OutBack): Logo, Level, Sound, Matched, Moves, Message, Undo, Restart
-      Top Bar          Logo, Level (TMP), Sound Button/Icon; anchored to the top of the safe area
-      Board Area       UI_BoardArea: tracks the board's on-screen rect (OnLayoutChanged)
-        Message Panel  Title, Body: 14 above the board, Board Area's width (step goal + clues, win, out of moves)
-        Pills          Matched Pill (shows "Step k of n"; field still `_matchedText`), Moves Pill (child Warning: white pill mask, UI_InGame._movesWarning): above the message panel.
-                       Moves left <= _lowMovesAt (2) while Playing: Warning breathes white <-> red, text red <-> white
-                       (DOTween yoyo, GameTuning > HUD > MovesWarningBreath). Failed: solid red, white text. Otherwise hidden.
-      Bottom Stack     pinned to the bottom of the safe area (anchor bottom, pivot bottom, y 40), grows upward;
-                       UI_BoardArea (Horizontal Only) gives it the board's width. VerticalLayoutGroup + ContentSizeFitter:
-                       Next Button (only when Won), Button Row (Undo Button, Restart Button)
+    InGame             UI_InGame (every field wired by UIBuilder). On the first level start (once) its _introItems scale
+                       0 → 1 in order (DOScale, OutBack): Level Stage, Goal, Sound, Moves, Clues Heading, Clue 1, Clue 2,
+                       Character Row, Wrap Instruction, Undo, Notebook, Action
+      Reference        UI_ReferenceFit: 1080×1920, centred in the safe area, uniform scale. Children anchored top-left,
+                       centre pivot, positioned from the pack's Layout_1080x1920.csv
+        Level Stage, Goal            SemiBold 40 / ExtraBold 64 (auto-size ≥ 44), cream, x 90
+        Sound Button                 72×72 cream button + sound icon (not in the pack), between the goal and the moves panel
+        Moves Panel                  panel_moves + Value (78) + Label (34), ink
+        Clues Heading, Clue 1, Clue 2   clue_note + Icon (108) + Text (ExtraBold 40, rich text, auto-size ≥ 28)
+        Character Row                y 446–790, pivot bottom: Characters (3 portraits 244×305), Counter (ledge), Name Plates (3)
+        Wrap Instruction             "Swipe rows or columns. Tiles wrap."
+        Undo / Notebook / Action Button   y 1738, 150 high: button_cream / button_gold, icon, label; ColorTint
     PopUps
  , Dark Area (inactive), Transition Screen
   Loading Screen       UI_Loading + CanvasGroup; last child of Canvas, full screen (outside the safe area). Built by UIBuilder.BuildLoading
@@ -506,10 +523,10 @@ Gotchas:
 | Nearly everything is uncommitted | state | Game code, scene, prefabs, art, `FileRef`, DOTween and this file are untracked or modified on top of `2241067`. |
 | Popups, transition screen | never built | The HUD exists (`UI_InGame`) and the loading screen (`UI_Loading`); win/fail are shown in the HUD's message panel, not popups. No `Manager_PopUp`, `Popup`/`BasePopUp`; `PopUps`, `Dark Area`, `Transition Screen` are empty. The loading bar is timed, not tied to real loading. |
 | Sound setting | one switch | `Manager_Audio.SoundOn` is saved (`OfflineData.IsSoundOn`). No separate music / SFX switches. Haptics have no setting (always on, by design). |
-| HUD vs the art pack | interim | `UI_InGame` is the Shift & Sort HUD showing step, moves, goal and clues (text only). The pack's layout (level/step title, moves panel, clue notes with item icons, characters on nameplates whose pose follows `ConfirmedSteps`, Undo / Notebook / Hint, booth background) is not built yet. `UI_BoardArea` still sizes `Board Area` around the board. |
+| HUD extras | not built | Notebook (and its badge) and Hint are placeholder taps. Steps with more than two clues show only the first two (a warning is logged). The win and fail states reuse the title and the gold button; there is no win/fail popup. Low moves only turn the count red (the old breathing warning is gone). |
 | One level | content | Only `level-001.json`; play loops over it. Later levels need more art (items, characters, poses per solution). |
 | Notebook, Hint | never built | Placeholders in the plan; no code. |
-| Shift & Sort leftovers | unused | `Sprites/Sprites/{tiles, targets, fx, board}`, `Sprites/Placeholder/BoardFrame.png` / `Panel.png` and `AssetBuilder`'s generator for them; the OpenSans HUD art. Remove with the HUD rebuild. |
+| Shift & Sort leftovers | unused | `Sprites/Sprites/{tiles, targets, fx, board, backgrounds}`, most of `ui/` (only the sound / next / restart icons are used) and `Sprites/Placeholder/BoardFrame.png` / `Panel.png` with `AssetBuilder`'s generator for them. `Manager_Board.GetScreenRect` / `OnLayoutChanged` have no caller. |
 | `LiveData` | not needed yet | `OfflineData` exists (§4.1); there is no session-only state worth a `LiveData` class. |
 | Tutorial | removed | The Shift & Sort tutorial (`Manager_Tutorial`, levels 1–4) was retired with its levels; Clue Parade has none yet. |
 | Pooling | never built | Per-level destroy/instantiate; a ghost tile is instantiated per drag. |

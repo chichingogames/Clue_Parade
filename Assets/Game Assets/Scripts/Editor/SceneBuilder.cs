@@ -80,6 +80,15 @@ public static class SceneBuilder
     private static void BuildBoard(GameObject managers)
     {
         var gamePlay = GetOrCreateRoot("GamePlay");
+
+        // Booth art behind everything (Manager_Board.FitCamera scales it to cover the view).
+        var backgroundGo = GetOrCreateChild(gamePlay.transform, "Background", out bool backgroundCreated);
+        var background = GetOrAdd<SpriteRenderer>(backgroundGo.gameObject);
+        if (backgroundCreated)
+        {
+            background.sprite = AssetBuilder.LoadTilewrap("Backgrounds/booth_background");
+            background.sortingOrder = SortOrder.Background;
+        }
         var board = GetOrCreateChild(gamePlay.transform, "Board");
 
         // The pack's wooden frame, drawn over the tiles (Manager_Board.Build sets its size).
@@ -115,6 +124,7 @@ public static class SceneBuilder
         SetIfEmpty(so, "_frame", frame);
         SetIfEmpty(so, "_mask", mask);
         SetIfEmpty(so, "_activeRow", activeRow);
+        SetIfEmpty(so, "_background", background);
         SetIfEmpty(so, "_cellsRoot", cells);
         SetIfEmpty(so, "_tilesRoot", tiles);
         SetIfEmpty(so, "_tagsRoot", tags);
@@ -195,9 +205,7 @@ public static class SceneBuilder
         // Order matters: later siblings draw on top.
         var container = GetOrCreateUI(canvasGo.transform, "Container");
         GetOrAdd<SafeArea>(container.gameObject);
-        var inGame = GetOrCreateUI(container, "InGame");                  // UI_InGame
-        var boardArea = GetOrCreateUI(inGame, "Board Area");              // HUD around the board anchors to this
-        GetOrAdd<UI_BoardArea>(boardArea.gameObject);
+        GetOrCreateUI(container, "InGame");                               // UI_InGame (UIBuilder builds its Reference HUD)
         GetOrCreateUI(container, "PopUps");                               // Manager_PopUp._popUpParent
 
         var darkArea = GetOrCreateUI(canvasGo.transform, "Dark Area", out bool createdDarkArea);

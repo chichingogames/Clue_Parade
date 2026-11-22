@@ -33,6 +33,7 @@ public struct TileData : IEquatable<TileData>
 // and the category tags (which overlap the frame's left edge).
 public static class SortOrder
 {
+    public const int Background = -10;  // booth art behind the board
     public const int Board = 0;
     public const int TileBody = 4;      // ItemTile surface
     public const int TileItem = 5;      // ItemTile item art

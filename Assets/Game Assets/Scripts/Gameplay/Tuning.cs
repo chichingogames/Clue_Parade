@@ -16,7 +16,6 @@ public static class Tuning
     public const float CheckPopDurationDefault = 0.22f;   // a matched check's scale-up (after its tile spawns, or when a move matches it)
     public const float LoadingDurationDefault = 1.6f;     // loading bar fill time
     public const float LoadingFadeDurationDefault = 0.4f; // loading screen fade-out, while the board and HUD intros start
-    public const float MovesWarningBreathDefault = 0.6f;  // low-moves pill: seconds from white to red (and the same back)
 
     private static GameTuning Source => GameTuning.Active;
 
@@ -34,5 +33,4 @@ public static class Tuning
     public static float CheckPopDuration => Source != null ? Source.CheckPopDuration : CheckPopDurationDefault;
     public static float LoadingDuration => Source != null ? Source.LoadingDuration : LoadingDurationDefault;
     public static float LoadingFadeDuration => Source != null ? Source.LoadingFadeDuration : LoadingFadeDurationDefault;
-    public static float MovesWarningBreath => Source != null ? Source.MovesWarningBreath : MovesWarningBreathDefault;
 }

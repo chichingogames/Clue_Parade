@@ -15,7 +15,6 @@ public class GameTuning : MonoBehaviour
     [Tooltip("A release within this many seconds moves at least one cell, even below the commit threshold. 0 disables flicks.")]
     [SerializeField, Min(0f)] private float _flickMaxDuration = Tuning.FlickMaxDurationDefault;
 
-
     [Header("Loading screen (on launch)")]
     [Tooltip("Seconds the loading bar takes to fill.")]
     [SerializeField, Min(0.01f)] private float _loadingDuration = Tuning.LoadingDurationDefault;
@@ -44,12 +43,6 @@ public class GameTuning : MonoBehaviour
     [Tooltip("Scale-up time of a matched check. On level load each check pops once its tile has spawned; in play, when a move matches it.")]
     [SerializeField, Min(0.01f)] private float _checkPopDuration = Tuning.CheckPopDurationDefault;
 
-
-    [Header("HUD")]
-    [Tooltip("Low-moves warning on the moves pill: seconds for one breath from white to red (the same again back).")]
-    [SerializeField, Min(0.05f)] private float _movesWarningBreath = Tuning.MovesWarningBreathDefault;
-
-
     public float ShiftDuration => _shiftDuration;
     public float DragStartThreshold => _dragStartThreshold;
     public float DragCommitThreshold => _dragCommitThreshold;
@@ -64,7 +57,6 @@ public class GameTuning : MonoBehaviour
     public float CheckPopDuration => _checkPopDuration;
     public float LoadingDuration => _loadingDuration;
     public float LoadingFadeDuration => _loadingFadeDuration;
-    public float MovesWarningBreath => _movesWarningBreath;
 
     public static GameTuning Active { get; private set; }
 

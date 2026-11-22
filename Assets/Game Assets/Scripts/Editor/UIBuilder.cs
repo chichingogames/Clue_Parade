@@ -6,59 +6,60 @@ using UnityEngine;
 using UnityEngine.TextCore.LowLevel;
 using UnityEngine.UI;
 
-// Builds the HUD under Canvas/Container/InGame (see UI_InGame) from the art in Sprites/Sprites/ui
-// and branding, and the TMP font assets from Fonts/OpenSans-*.ttf.
+// Builds the HUD under Canvas/Container/InGame/Reference (see UI_InGame) on the Tilewrap pack's
+// 1080x1920 layout (Layout_1080x1920.csv: every x, y, w, h below is in its top-left-origin pixels),
+// and the loading screen from Sprites/Sprites/branding. Fonts: TMP font assets made from Fonts/*.ttf.
 // Re-runnable: sprite import settings are (re)applied, font assets are created only if missing, and
-// the HUD is built only when InGame has no UI_InGame yet. To rebuild it, delete InGame's
-// "Top Bar", "Board Area/Pills" and "Board Area/Bottom Stack" and the UI_InGame component, then run again.
+// the HUD is built only when InGame has no UI_InGame yet. To rebuild it, delete InGame/Reference and
+// the UI_InGame component, then run again.
 public static class UIBuilder
 {
     private const string ArtFolder = "Assets/Game Assets/Sprites/Sprites";
     private const string FontFolder = "Assets/Game Assets/Fonts";
 
-    private static readonly Color Navy = new Color32(0x2B, 0x21, 0x44, 0xFF);
-    private static readonly Color BodyColor = new Color32(0x5B, 0x53, 0x70, 0xFF);
-    private static readonly Color MatchedColor = new Color32(0x3E, 0x6B, 0x4B, 0xFF);
-    private static readonly Color MovesColor = new Color32(0x6E, 0x5B, 0x4A, 0xFF);
+    // Text colors from the pack: cream on the booth wall, ink on cream surfaces.
+    private static readonly Color Cream = new Color32(0xFF, 0xF3, 0xDD, 0xFF);
+    private static readonly Color Ink = new Color32(0x42, 0x1B, 0x19, 0xFF);
 
-    // Sizes in canvas units (reference 1080x1920).
-    private const float PillHeight = 64f;
-    private const float ButtonHeight = 120f;
-    private const float PanelHeight = 176f;
-    private const float StackSpacing = 22f;
-    private const float BoardGap = 14f;                  // between the column targets, the message panel and the pills
-    private const float BottomStackMargin = 40f;         // Bottom Stack's gap above the safe area's bottom edge
+    private const string Bold = "TilewrapNunito-ExtraBold";     // goal, labels, counters, clues
+    private const string Semi = "TilewrapNunito-SemiBold";      // stage and helper copy
 
     [MenuItem("ShiftSort/Build UI")]
     public static void Build()
     {
         ImportUiArt();
-        var heading = GetOrCreateFont("OpenSans-ExtraBold");
-        var body = GetOrCreateFont("OpenSans-Bold");
+        var bold = GetOrCreateFont(Bold);
+        var semi = GetOrCreateFont(Semi);
 
         var inGameGo = GameObject.Find("/Canvas/Container/InGame");
-        var boardAreaGo = GameObject.Find("/Canvas/Container/InGame/Board Area");
-        if (inGameGo == null || boardAreaGo == null)
+        if (inGameGo == null)
         {
-            Debug.LogError("[UIBuilder] Canvas/Container/InGame/Board Area is missing. Run ShiftSort > Build Scene first.");
+            Debug.LogError("[UIBuilder] Canvas/Container/InGame is missing. Run ShiftSort > Build Scene first.");
             return;
         }
-
         if (inGameGo.GetComponent<UI_InGame>() != null)
         {
             Debug.Log("[UIBuilder] InGame already has UI_InGame; HUD left as is.");
             return;
         }
 
-        var inGame = (RectTransform)inGameGo.transform;
-        var boardArea = (RectTransform)boardAreaGo.transform;
+        // The 1080x1920 reference screen, fitted into the safe area like the camera fits the board.
+        var root = Rect(inGameGo.transform, "Reference", Center, Center, Center, Vector2.zero, UI_ReferenceFit.ReferenceSize);
+        Undo.AddComponent<UI_ReferenceFit>(root.gameObject);
+
         var ui = Undo.AddComponent<UI_InGame>(inGameGo);
         var so = new SerializedObject(ui);
+        var intro = new System.Collections.Generic.List<RectTransform>();
 
-        BuildTopBar(inGame, so, heading);
-        BuildMessagePanel(boardArea, so, heading, body);
-        BuildPills(boardArea, so, body);
-        BuildBottomStack(boardArea, so, heading, body);
+        BuildTitle(root, so, bold, semi, intro);
+        BuildClues(root, so, bold, semi, intro);
+        BuildCharacters(root, so, bold, intro);
+        intro.Add(Label(root, "Wrap Instruction", 160, 1636, 850, 65, semi, "Swipe rows or columns. Tiles wrap.", 38, Cream, TextAlignmentOptions.Top));
+        BuildButtons(root, so, bold, intro);
+
+        var items = so.FindProperty("_introItems");
+        items.arraySize = intro.Count;
+        for (int i = 0; i < intro.Count; i++) items.GetArrayElementAtIndex(i).objectReferenceValue = intro[i];
 
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorSceneManager.MarkSceneDirty(inGameGo.scene);
@@ -141,206 +142,191 @@ public static class UIBuilder
 
     // ---------- Sections ----------
 
-    private static void BuildTopBar(RectTransform inGame, SerializedObject so, TMP_FontAsset heading)
+    // Level / step, goal, moves panel, and the sound switch (not in the pack: a small cream button
+    // between the goal and the moves panel, with the Shift & Sort sound icons tinted ink).
+    private static void BuildTitle(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset semi,
+                                   System.Collections.Generic.List<RectTransform> intro)
     {
-        var bar = Rect(inGame, "Top Bar", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f), Vector2.zero, new Vector2(0f, 340f));
+        var stage = Label(root, "Level Stage", 90, 58, 590, 58, semi, "Level 1 · Step 1 of 3", 40, Cream, TextAlignmentOptions.TopLeft);
+        var goal = Label(root, "Goal", 90, 115, 590, 82, bold, "Pack their bags", 64, Cream, TextAlignmentOptions.TopLeft);
+        var goalText = goal.GetComponent<TMP_Text>();
+        goalText.enableAutoSizing = true;          // long goals shrink to fit beside the moves panel
+        goalText.fontSizeMin = 44f;
+        goalText.fontSizeMax = 64f;
+        Set(so, "_levelStage", stage.GetComponent<TMP_Text>());
+        Set(so, "_goal", goalText);
 
-        var logo = AddImage(Rect(bar, "Logo", new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-                                 new Vector2(0f, -28f), new Vector2(600f, 165f)), Art("branding/logo_shift_and_sort"));
-        logo.preserveAspect = true;
-
-        var level = AddText(Rect(bar, "Level", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 1f),
-                                 new Vector2(0f, -205f), new Vector2(0f, 100f)), heading, "LEVEL 01", 70f, Navy);
-        level.characterSpacing = 8f;
-        Set(so, "_levelText", level);
-
-        var soundRect = Rect(bar, "Sound Button", new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f),
-                             new Vector2(-96f, -255f), new Vector2(116f, 116f));
-        var soundBase = AddImage(soundRect, Art("ui/buttons/button_sound_base"));
-        soundBase.raycastTarget = true;
-        var sound = Undo.AddComponent<Button>(soundRect.gameObject);
-        sound.targetGraphic = soundBase;
-        var icon = AddImage(Rect(soundRect, "Icon", Center, Center, Center, new Vector2(0f, 4f), new Vector2(56f, 56f)), Art("ui/icons/icon_sound_on"));
-        icon.color = Navy;
-
-        Set(so, "_soundButton", sound);
-        Set(so, "_soundIcon", icon);
+        var sound = Place(root, "Sound Button", 694, 97, 72, 72);
+        var soundSurface = AddImage(sound, AssetBuilder.LoadTilewrap("UI/button_cream"), sliced: true);
+        soundSurface.pixelsPerUnitMultiplier = 2f;  // 48 px corners would not fit a 72 px button
+        var soundIcon = AddImage(Place(sound, "Icon", 16, 14, 40, 40), Art("ui/icons/icon_sound_on"));
+        soundIcon.color = Ink;
+        soundIcon.preserveAspect = true;
+        Set(so, "_soundButton", MakeButton(sound, soundSurface));
+        Set(so, "_soundIcon", soundIcon);
         Set(so, "_soundOnSprite", Art("ui/icons/icon_sound_on"));
         Set(so, "_soundOffSprite", Art("ui/icons/icon_sound_off"));
+
+        var moves = Place(root, "Moves Panel", 780, 58, 245, 150);
+        AddImage(moves, AssetBuilder.LoadTilewrap("UI/panel_moves"), sliced: true);
+        var value = Label(moves, "Value", 23, 15, 199, 83, bold, "8", 78, Ink, TextAlignmentOptions.Top);
+        var label = Label(moves, "Label", 15, 97, 215, 41, bold, "moves left", 34, Ink, TextAlignmentOptions.Top);
+        Set(so, "_movesValue", value.GetComponent<TMP_Text>());
+        Set(so, "_movesLabel", label.GetComponent<TMP_Text>());
+
+        intro.Add(stage);
+        intro.Add(goal);
+        intro.Add(sound);
+        intro.Add(moves);
     }
 
-    // Matched (left) and moves (right), above the message panel.
-    private static void BuildPills(RectTransform boardArea, SerializedObject so, TMP_FontAsset body)
+    // "CLUES" and two clue notes: item icon on the left, the clue (rich text) on the right.
+    private static void BuildClues(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset semi,
+                                   System.Collections.Generic.List<RectTransform> intro)
     {
-        var pills = Rect(boardArea, "Pills", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 0f),
-                         new Vector2(0f, BoardGap + PanelHeight + BoardGap), new Vector2(0f, PillHeight));
+        var heading = Label(root, "Clues Heading", 90, 204, 280, 62, semi, "CLUES", 40, Cream, TextAlignmentOptions.TopLeft);
+        Set(so, "_cluesHeading", heading.gameObject);
+        intro.Add(heading);
 
-        var matched = Pill(pills, "Matched Pill", new Vector2(0f, 0.5f), new Vector2(0f, 0f), 270f, "ui/hud/pill_matches", body, "0 / 9 matched", MatchedColor);
-        var moves = Pill(pills, "Moves Pill", new Vector2(1f, 0.5f), new Vector2(0f, 0f), 290f, "ui/hud/pill_moves", body, "No move limit", MovesColor);
-
-        Set(so, "_matchedText", matched.GetComponentInChildren<TMP_Text>());
-        Set(so, "_movesPill", moves.GetComponent<Image>());
-
-        // Warning overlay (UI_InGame tints it), between the pill and its text.
-        var warning = AddImage(Rect(moves, "Warning", Vector2.zero, Vector2.one, Center, Vector2.zero, Vector2.zero),
-                               Art("ui/hud/pill_moves_low_warnign_mask"));
-        warning.transform.SetSiblingIndex(0);
-        warning.gameObject.SetActive(false);
-        Set(so, "_movesWarning", warning);
-        Set(so, "_movesText", moves.GetComponentInChildren<TMP_Text>());
-        Set(so, "_movesSprite", Art("ui/hud/pill_moves"));
-        Set(so, "_movesLowSprite", Art("ui/hud/pill_moves_low"));
-    }
-
-    // Message panel (goal, tutorial lesson, win / out of moves): a child of Board Area, just above
-    // the column targets, at the board's width (targets included).
-    private static void BuildMessagePanel(RectTransform boardArea, SerializedObject so, TMP_FontAsset heading, TMP_FontAsset body)
-    {
-        var panelRect = Rect(boardArea, "Message Panel", new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0.5f, 0f),
-                             new Vector2(0f, BoardGap), new Vector2(0f, PanelHeight));
-        var panel = AddImage(panelRect, Art("ui/panels/panel_neutral"), sliced: true, sourceHeight: 240f, height: PanelHeight * 1.2f);
-        var title = AddText(Rect(panelRect, "Title", new Vector2(0f, 0.5f), new Vector2(1f, 1f), new Vector2(0.5f, 0.5f),
-                                 new Vector2(0f, -8f), new Vector2(-48f, -24f)), heading, "Match shapes across and colors down", 44f, Navy);
-        title.enableAutoSizing = true;
-        title.fontSizeMin = 28f;
-        title.fontSizeMax = 44f;
-        var bodyText = AddText(Rect(panelRect, "Body", new Vector2(0f, 0f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f),
-                                    new Vector2(0f, 16f), new Vector2(-48f, -28f)), body, "Swipe rows or columns to line them up.", 28f, BodyColor);
-        bodyText.enableAutoSizing = true;
-        bodyText.fontSizeMin = 20f;
-        bodyText.fontSizeMax = 28f;
-        bodyText.verticalAlignment = VerticalAlignmentOptions.Top;
-        bodyText.textWrappingMode = TextWrappingModes.Normal;   // tutorial lessons need two lines
-
-        Set(so, "_messagePanel", panel);
-        Set(so, "_messageTitle", title);
-        Set(so, "_messageBody", bodyText);
-        Set(so, "_panelNeutralSprite", Art("ui/panels/panel_neutral"));
-        Set(so, "_panelWinSprite", Art("ui/panels/panel_win"));
-        Set(so, "_panelFailSprite", Art("ui/panels/panel_fail"));
-    }
-
-    // Bottom Stack: Next level (only shown after a win), then Undo + Restart. A child of
-    // InGame pinned to the bottom of the safe area; UI_BoardArea (horizontal only) gives it the board's
-    // width. It grows upward when Next level appears.
-    private static void BuildBottomStack(RectTransform boardArea, SerializedObject so, TMP_FontAsset heading, TMP_FontAsset body)
-    {
-        var stack = Rect(boardArea.parent, "Bottom Stack", new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0.5f, 0f),
-                         new Vector2(0f, BottomStackMargin), new Vector2(0f, 0f));
-        var layout = Undo.AddComponent<VerticalLayoutGroup>(stack.gameObject);
-        layout.spacing = StackSpacing;
-        layout.childControlWidth = true;
-        layout.childControlHeight = true;
-        layout.childForceExpandWidth = true;
-        layout.childForceExpandHeight = false;
-        var fitter = Undo.AddComponent<ContentSizeFitter>(stack.gameObject);
-        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-        var follow = new SerializedObject(Undo.AddComponent<UI_BoardArea>(stack.gameObject));
-        follow.FindProperty("_horizontalOnly").boolValue = true;
-        follow.ApplyModifiedPropertiesWithoutUndo();
-
-        // Next level (primary)
-        var next = StackButton(stack, "Next Button", primary: true, heading, "Next level", "ui/icons/icon_next", iconFirst: false, Navy);
-        next.gameObject.SetActive(false);
-        Set(so, "_nextButton", next);
-        Set(so, "_nextLabel", next.GetComponentInChildren<TMP_Text>(true));
-
-        // Undo + Restart row
-        var rowRect = Rect(stack, "Button Row", Center, Center, Center, Vector2.zero, Vector2.zero);
-        Height(rowRect, ButtonHeight);
-        var row = Undo.AddComponent<HorizontalLayoutGroup>(rowRect.gameObject);
-        row.spacing = 24f;
-        row.childControlWidth = true;
-        row.childControlHeight = true;
-        row.childForceExpandWidth = true;
-        row.childForceExpandHeight = true;
-
-        var undo = StackButton(rowRect, "Undo Button", primary: false, heading, "Undo", "ui/icons/icon_undo", iconFirst: true, Color.white);
-        var restart = StackButton(rowRect, "Restart Button", primary: false, heading, "Restart", "ui/icons/icon_restart", iconFirst: true, Color.white);
-        Set(so, "_undoButton", undo);
-        Set(so, "_restartButton", restart);
-
-        // Launch intro order: top to bottom.
-        var intro = so.FindProperty("_introItems");
-        RectTransform[] order =
+        float[] xs = { 48, 546 };
+        var clues = so.FindProperty("_clues");
+        clues.arraySize = xs.Length;
+        for (int i = 0; i < xs.Length; i++)
         {
-            (RectTransform)boardArea.parent.Find("Top Bar/Logo"),
-            (RectTransform)boardArea.parent.Find("Top Bar/Level"),
-            (RectTransform)boardArea.parent.Find("Top Bar/Sound Button"),
-            (RectTransform)boardArea.Find("Pills/Matched Pill"),
-            (RectTransform)boardArea.Find("Pills/Moves Pill"),
-            (RectTransform)boardArea.Find("Message Panel"),
-            (RectTransform)undo.transform,
-            (RectTransform)restart.transform,
-        };
-        intro.arraySize = order.Length;
-        for (int i = 0; i < order.Length; i++) intro.GetArrayElementAtIndex(i).objectReferenceValue = order[i];
+            var note = Place(root, $"Clue {i + 1}", xs[i], 248, 486, 202);
+            AddImage(note, AssetBuilder.LoadTilewrap("UI/clue_note"), sliced: true);
+            var icon = AddImage(Place(note, "Icon", 34, 63, 108, 108), AssetBuilder.LoadTilewrap("Items/bag_red"));
+            icon.preserveAspect = true;
+            var text = Label(note, "Text", 157, 52, 310, 125, bold, "Mia carries the\n<color=#ED3937>red</color> bag.", 40, Ink,
+                             TextAlignmentOptions.MidlineLeft).GetComponent<TMP_Text>();
+            text.textWrappingMode = TextWrappingModes.Normal;
+            text.enableAutoSizing = true;          // longer clues shrink to stay inside the note
+            text.fontSizeMin = 28f;
+            text.fontSizeMax = 40f;
+
+            var slot = clues.GetArrayElementAtIndex(i);
+            slot.FindPropertyRelative("Root").objectReferenceValue = note.gameObject;
+            slot.FindPropertyRelative("Icon").objectReferenceValue = icon;
+            slot.FindPropertyRelative("Text").objectReferenceValue = text;
+            intro.Add(note);
+        }
+    }
+
+    // Character Row (x 0..1080, y 446..790): the characters, the counter ledge in front of them, and the
+    // name plates on the ledge. UI_InGame centres each character and plate over its board column.
+    private static void BuildCharacters(RectTransform root, SerializedObject so, TMP_FontAsset bold,
+                                        System.Collections.Generic.List<RectTransform> intro)
+    {
+        const float top = 446f;
+        var row = Place(root, "Character Row", 0, top, 1080, 344);
+        row.pivot = new Vector2(0.5f, 0f);                      // the intro grows it up from the ledge
+        row.anchoredPosition = new Vector2(540f, -(top + 344f));
+
+        var portraits = Place(row, "Characters", 0, 0, 1080, 344);
+        AddImage(Place(row, "Counter", 20, 726 - top, 1040, 64), AssetBuilder.LoadTilewrap("UI/counter_ledge"), sliced: true);
+        var plates = Place(row, "Name Plates", 0, 0, 1080, 344);
+
+        float[] xs = { 162, 458, 754 };      // the pack's 3 characters; plates are 30 px inside each
+        string[] names = { "mia", "leo", "zoe" };
+        var characters = so.FindProperty("_characters");
+        characters.arraySize = xs.Length;
+        for (int i = 0; i < xs.Length; i++)
+        {
+            var portrait = AddImage(Place(portraits, $"Character {i + 1}", xs[i], 0, 244, 305),
+                                    AssetBuilder.LoadTilewrap($"Characters/character_{names[i]}_neutral"));
+            portrait.preserveAspect = true;
+
+            var plate = Place(plates, $"Name Plate {i + 1}", xs[i] + 30, 712 - top, 184, 64);
+            AddImage(plate, AssetBuilder.LoadTilewrap("UI/nameplate"), sliced: true);
+            var name = Label(plate, "Name", 14, 4, 156, 48, bold, Capitalize(names[i]), 40, Ink, TextAlignmentOptions.Top);
+
+            var slot = characters.GetArrayElementAtIndex(i);
+            slot.FindPropertyRelative("Portrait").objectReferenceValue = portrait;
+            slot.FindPropertyRelative("Plate").objectReferenceValue = plate;
+            slot.FindPropertyRelative("Name").objectReferenceValue = name.GetComponent<TMP_Text>();
+        }
+        intro.Add(row);
+    }
+
+    // Undo, Notebook (placeholder) and the gold action button (Hint / Next / Retry).
+    private static void BuildButtons(RectTransform root, SerializedObject so, TMP_FontAsset bold,
+                                     System.Collections.Generic.List<RectTransform> intro)
+    {
+        var undo = PackButton(root, "Undo Button", 40, 300, "button_cream", "icon_undo", new Rect(30, 30, 80, 90),
+                              new Rect(112, 39, 175, 73), "Undo", 48, bold, out _, out _);
+        var notebook = PackButton(root, "Notebook Button", 358, 352, "button_cream", "icon_notebook", new Rect(30, 30, 76, 90),
+                                  new Rect(112, 39, 227, 73), "Notebook", 44, bold, out _, out _);
+        var action = PackButton(root, "Action Button", 733, 307, "button_gold", "icon_hint", new Rect(39, 30, 74, 90),
+                                new Rect(125, 39, 182, 73), "Hint", 48, bold, out var actionIcon, out var actionLabel);
+
+        Set(so, "_undoButton", undo);
+        Set(so, "_notebookButton", notebook);
+        Set(so, "_actionButton", action);
+        Set(so, "_actionIcon", actionIcon);
+        Set(so, "_actionLabel", actionLabel);
+        Set(so, "_hintIcon", AssetBuilder.LoadTilewrap("UI/icon_hint"));
+        Set(so, "_nextIcon", Art("ui/icons/icon_next"));
+        Set(so, "_retryIcon", Art("ui/icons/icon_restart"));
+
+        intro.Add((RectTransform)undo.transform);
+        intro.Add((RectTransform)notebook.transform);
+        intro.Add((RectTransform)action.transform);
     }
 
     // ---------- Pieces ----------
 
-    private static RectTransform Pill(RectTransform parent, string name, Vector2 anchor, Vector2 position, float width,
-                                      string sprite, TMP_FontAsset font, string text, Color color)
+    // A pack button at y 1738, 150 high: sliced surface, icon and left-aligned label (boxes relative
+    // to the button's top-left).
+    private static UnityEngine.UI.Button PackButton(RectTransform root, string name, float x, float width, string surface,
+                                                    string icon, Rect iconBox, Rect labelBox, string text, float size,
+                                                    TMP_FontAsset font, out UnityEngine.UI.Image iconImage, out TMP_Text label)
     {
-        var rect = Rect(parent, name, anchor, anchor, anchor, position, new Vector2(width, PillHeight));
-        AddImage(rect, Art(sprite), sliced: true, sourceHeight: 88f, height: PillHeight);
-        AddText(Rect(rect, "Text", Vector2.zero, Vector2.one, Center, Vector2.zero, new Vector2(-24f, 0f)), font, text, 26f, color);
-        return rect;
+        var rect = Place(root, name, x, 1738, width, 150);
+        var image = AddImage(rect, AssetBuilder.LoadTilewrap($"UI/{surface}"), sliced: true);
+        iconImage = AddImage(Place(rect, "Icon", iconBox.x, iconBox.y, iconBox.width, iconBox.height), AssetBuilder.LoadTilewrap($"UI/{icon}"));
+        iconImage.preserveAspect = true;
+        label = Label(rect, "Label", labelBox.x, labelBox.y, labelBox.width, labelBox.height, font, text, size, Ink,
+                      TextAlignmentOptions.MidlineLeft).GetComponent<TMP_Text>();
+        return MakeButton(rect, image);
     }
 
-    private static Button StackButton(RectTransform parent, string name, bool primary, TMP_FontAsset font,
-                                      string label, string iconSprite, bool iconFirst, Color contentColor)
+    // Color-tint button as in the pack (pressed 0.91 / 0.88 / 0.84), no keyboard navigation.
+    private static UnityEngine.UI.Button MakeButton(RectTransform rect, UnityEngine.UI.Image surface)
     {
-        var rect = Rect(parent, name, Center, Center, Center, Vector2.zero, Vector2.zero);
-        Height(rect, ButtonHeight);
-
-        string kind = primary ? "primary" : "secondary";
-        var image = AddImage(rect, Art($"ui/buttons/button_{kind}_normal"), sliced: true, sourceHeight: 136f, height: ButtonHeight);
-        image.raycastTarget = true;
-
-        var button = Undo.AddComponent<Button>(rect.gameObject);
-        button.targetGraphic = image;
-        button.transition = Selectable.Transition.SpriteSwap;
-        button.spriteState = new SpriteState
-        {
-            pressedSprite = Art($"ui/buttons/button_{kind}_pressed"),
-            highlightedSprite = Art($"ui/buttons/button_{kind}_normal"),
-            selectedSprite = Art($"ui/buttons/button_{kind}_normal"),
-            disabledSprite = Art("ui/buttons/button_disabled"),
-        };
+        surface.raycastTarget = true;
+        var button = Undo.AddComponent<UnityEngine.UI.Button>(rect.gameObject);
+        button.targetGraphic = surface;
+        button.transition = UnityEngine.UI.Selectable.Transition.ColorTint;
+        var colors = button.colors;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color(1f, 0.99f, 0.96f);
+        colors.pressedColor = new Color(0.91f, 0.88f, 0.84f);
+        colors.selectedColor = Color.white;
+        colors.disabledColor = new Color(0.7f, 0.7f, 0.7f, 0.65f);
+        colors.fadeDuration = 0.08f;
+        button.colors = colors;
         var nav = button.navigation;
-        nav.mode = Navigation.Mode.None;
+        nav.mode = UnityEngine.UI.Navigation.Mode.None;
         button.navigation = nav;
-
-        // Icon + label, centered together (lifted a little: the art has a shadow lip at the bottom).
-        var content = Rect(rect, "Content", Vector2.zero, Vector2.one, Center, new Vector2(0f, 5f), Vector2.zero);
-        var h = Undo.AddComponent<HorizontalLayoutGroup>(content.gameObject);
-        h.spacing = 12f;
-        h.childAlignment = TextAnchor.MiddleCenter;
-        h.childControlWidth = true;
-        h.childControlHeight = true;
-        h.childForceExpandWidth = false;
-        h.childForceExpandHeight = false;
-
-        if (iconFirst) ContentIcon(content, iconSprite, contentColor);
-        var text = AddText(Rect(content, "Label", Center, Center, Center, Vector2.zero, Vector2.zero), font, label, 36f, contentColor);
-        var fit = Undo.AddComponent<LayoutElement>(text.gameObject);
-        fit.preferredHeight = 60f;
-        if (!iconFirst) ContentIcon(content, iconSprite, contentColor);
-
         return button;
     }
 
-    private static Image ContentIcon(RectTransform parent, string sprite, Color color)
+    // A rect at (x, y, w, h) in layout pixels from the parent's top-left; pivot at its centre so the
+    // intro scales it in place.
+    private static RectTransform Place(Transform parent, string name, float x, float y, float w, float h) =>
+        Rect(parent, name, new Vector2(0f, 1f), new Vector2(0f, 1f), Center, new Vector2(x + w * 0.5f, -(y + h * 0.5f)), new Vector2(w, h));
+
+    private static RectTransform Label(RectTransform parent, string name, float x, float y, float w, float h,
+                                       TMP_FontAsset font, string text, float size, Color color, TextAlignmentOptions alignment)
     {
-        var icon = AddImage(Rect(parent, "Icon", Center, Center, Center, Vector2.zero, Vector2.zero), Art(sprite));
-        icon.color = color;
-        icon.preserveAspect = true;
-        var element = Undo.AddComponent<LayoutElement>(icon.gameObject);
-        element.preferredWidth = 40f;
-        element.preferredHeight = 40f;
-        return icon;
+        var rect = Place(parent, name, x, y, w, h);
+        var tmp = AddText(rect, font, text, size, color);
+        tmp.alignment = alignment;
+        tmp.overflowMode = TextOverflowModes.Overflow;
+        return rect;
     }
+
+    private static string Capitalize(string text) => char.ToUpperInvariant(text[0]) + text.Substring(1);
 
     // ---------- Helpers ----------
 
@@ -369,7 +355,9 @@ public static class UIBuilder
         element.minHeight = height;
     }
 
-    // sliced: 9-slice with the corner size scaled so the art's corners keep their proportions at this height.
+    // sliced: 9-slice. With sourceHeight / height the corners are rescaled to keep the art's proportions
+    // at that height (the loading screen's art); without, the sprite's own PPU sets them (the pack's art,
+    // imported at its logical size).
     private static Image AddImage(RectTransform rect, Sprite sprite, bool sliced = false, float sourceHeight = 0f, float height = 0f)
     {
         var image = Undo.AddComponent<Image>(rect.gameObject);
@@ -378,7 +366,7 @@ public static class UIBuilder
         if (sliced)
         {
             image.type = Image.Type.Sliced;
-            image.pixelsPerUnitMultiplier = sourceHeight / height;
+            if (sourceHeight > 0f && height > 0f) image.pixelsPerUnitMultiplier = sourceHeight / height;
         }
         return image;
     }
