@@ -12,80 +12,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc7246d20b704104c83ba8911a7d3484, type: 3}
   m_Name: FileRef
   m_EditorClassIdentifier: Assembly-CSharp::FileRef
-  _cellPrefab: {fileID: 6202675774534852809, guid: 41738945ffb35d645a18727c82e67f9a, type: 3}
-  _tilePrefab: {fileID: 7203315545098251666, guid: a72788e8d341cf14ea606acf1bbc8d78, type: 3}
-  _targetMarkerPrefab: {fileID: 5999239083927954089, guid: 5dc34a41aedb324449c2713a5e0ad550, type: 3}
-  _tileSprites:
-  - Shape: 0
-    Color: 0
-    Sprite: {fileID: 21300000, guid: 490ca190335b4104398418a42f7e2961, type: 3}
-  - Shape: 0
-    Color: 1
-    Sprite: {fileID: 21300000, guid: 5f57064e5a575e04ba032e41ba788ff4, type: 3}
-  - Shape: 0
-    Color: 2
-    Sprite: {fileID: 21300000, guid: a7d9422caccd96c44962d9a469a266eb, type: 3}
-  - Shape: 0
-    Color: 3
-    Sprite: {fileID: 21300000, guid: 05c2b75a56d761f45bac3c78f317e0cf, type: 3}
-  - Shape: 1
-    Color: 0
-    Sprite: {fileID: 21300000, guid: e4d172a5f7251f0458da2fcc3ac8e7ab, type: 3}
-  - Shape: 1
-    Color: 1
-    Sprite: {fileID: 21300000, guid: 70a6ffa488796ae418f38bffce73baac, type: 3}
-  - Shape: 1
-    Color: 2
-    Sprite: {fileID: 21300000, guid: c3f71be18f43bfe4ba540b2c0ca43574, type: 3}
-  - Shape: 1
-    Color: 3
-    Sprite: {fileID: 21300000, guid: 23d2c84f668cac0418b09f7fb4183f2c, type: 3}
-  - Shape: 2
-    Color: 0
-    Sprite: {fileID: 21300000, guid: 19c6277482857ff49907648f5f62761d, type: 3}
-  - Shape: 2
-    Color: 1
-    Sprite: {fileID: 21300000, guid: 46b0de259b7f82c4ebfb253347784709, type: 3}
-  - Shape: 2
-    Color: 2
-    Sprite: {fileID: 21300000, guid: 0ba007d9a347f5948ae8c03cae01fa4e, type: 3}
-  - Shape: 2
-    Color: 3
-    Sprite: {fileID: 21300000, guid: d7c03a8535691914d9fcb75a761fa019, type: 3}
-  - Shape: 5
-    Color: 0
-    Sprite: {fileID: 21300000, guid: b8b30263ef0173649ae81d1b1ac5350e, type: 3}
-  - Shape: 5
-    Color: 1
-    Sprite: {fileID: 21300000, guid: 4446098152b386348b7884ee3def7788, type: 3}
-  - Shape: 5
-    Color: 2
-    Sprite: {fileID: 21300000, guid: ae89d49a4fbed0841b32bb359dc863f9, type: 3}
-  - Shape: 5
-    Color: 3
-    Sprite: {fileID: 21300000, guid: 9231ec76ed93df84296e663d20b550d8, type: 3}
-  _rowTargetSprites:
-  - Shape: 0
-    Sprite: {fileID: 21300000, guid: d6f779e8c0ca3fd4aa04e606c575ca2a, type: 3}
-  - Shape: 1
-    Sprite: {fileID: 21300000, guid: fa20fbddc2495074d9ee5b05b53dae3b, type: 3}
-  - Shape: 2
-    Sprite: {fileID: 21300000, guid: bcb1345392214dd40ab370387813a8ab, type: 3}
-  - Shape: 5
-    Sprite: {fileID: 21300000, guid: 83284733d05f9e541843d054f5c5f2fe, type: 3}
-  _columnTargetSprites:
-  - Color: 0
-    Sprite: {fileID: 21300000, guid: b267597c2d0a9cc42a66e736cedd4319, type: 3}
-  - Color: 1
-    Sprite: {fileID: 21300000, guid: a1ec68455b96f844e8b7e3ea7d7ab37b, type: 3}
-  - Color: 2
-    Sprite: {fileID: 21300000, guid: 882fa8ade61e7bd4d989dfdf55dd059f, type: 3}
-  - Color: 3
-    Sprite: {fileID: 21300000, guid: 328b2fa4d6047174189313006694e642, type: 3}
-  _tutorialHand: {fileID: 21300000, guid: 669b74c85bb2c684e9f0a2acdf0c182f, type: 3}
-  _tutorialLineOutline: {fileID: 21300000, guid: 7a72950237f1ff34792b29c1e077b584, type: 3}
-  _tutorialDestination: {fileID: 21300000, guid: 04743b888c5548d47a1fd594d9b590ec, type: 3}
-  _tutorialArrow: {fileID: 21300000, guid: dadee7e79fb2c8a4cae5d0efe2b0bd32, type: 3}
+  _cellPrefab: {fileID: 6197378983108523049, guid: 41738945ffb35d645a18727c82e67f9a, type: 3}
+  _itemTilePrefab: {fileID: 279195418471529925, guid: b494cab78972f0d4baa1031fdba98741, type: 3}
+  _categoryTagPrefab: {fileID: 4768428737706648718, guid: c5aa0cb4ee209b64ca3bb706b61873f7, type: 3}
+  _tileSurface: {fileID: 21300000, guid: 8a7e0a4ab4e0fe34f913358db37dab97, type: 3}
+  _tileSurfaceActive: {fileID: 21300000, guid: d8ece12c2f55c924099d30473db3f1f3, type: 3}
+  _items:
+  - Id: bag_blue
+    Name: Blue bag
+    Sprite: {fileID: 21300000, guid: b6fd4d8485362fa459b8c21896a56153, type: 3}
+  - Id: bag_purple
+    Name: Purple bag
+    Sprite: {fileID: 21300000, guid: 72841c5619e015a46b39e953f5c0fae8, type: 3}
+  - Id: bag_red
+    Name: Red bag
+    Sprite: {fileID: 21300000, guid: 735fea9fc7da75a458c25dffa3cc586d, type: 3}
+  - Id: gear_basketball_blue
+    Name: Basketball
+    Sprite: {fileID: 21300000, guid: e080cb4b94e4b0949a79953b67b06fec, type: 3}
+  - Id: gear_guitar_brown
+    Name: Guitar
+    Sprite: {fileID: 21300000, guid: 4ee6cd9ab06a09647987bd7089a4976c, type: 3}
+  - Id: gear_skateboard_yellow
+    Name: Skateboard
+    Sprite: {fileID: 21300000, guid: 9a8cae9b2bdda864d9e26336ea714edc, type: 3}
+  - Id: hat_beanie_teal
+    Name: Teal beanie
+    Sprite: {fileID: 21300000, guid: 69adc406c5d203740b84b13c69ed276f, type: 3}
+  - Id: hat_cap_red
+    Name: Red cap
+    Sprite: {fileID: 21300000, guid: f84db6ff7b53faf4fad355429ab01c84, type: 3}
+  - Id: hat_sunhat_purple
+    Name: Sunhat
+    Sprite: {fileID: 21300000, guid: e0f4da28df279444996b2386696c51c1, type: 3}
+  _characters:
+  - Id: leo
+    Name: Leo
+    Poses:
+    - {fileID: 21300000, guid: a0b875e41451195449ba47a8ffc30137, type: 3}
+    - {fileID: 21300000, guid: 0dc9ce556af1d394ebad2a6833eab9b2, type: 3}
+    - {fileID: 21300000, guid: be10895865a6e1a4eb9cbfd9f83d91e9, type: 3}
+    - {fileID: 21300000, guid: 2dd5910069b14344098aa41435ecdd79, type: 3}
+  - Id: mia
+    Name: Mia
+    Poses:
+    - {fileID: 21300000, guid: 1cd7fa0128859e0449cfd35368d5d1de, type: 3}
+    - {fileID: 21300000, guid: 45ed89bf32d82594eb34b44923a9fdc4, type: 3}
+    - {fileID: 21300000, guid: c471a5cb6f0aa83498bd4398eae645b1, type: 3}
+    - {fileID: 21300000, guid: 0054cc151b27cf749b93b9bf8d4465a1, type: 3}
+  - Id: zoe
+    Name: Zoe
+    Poses:
+    - {fileID: 21300000, guid: b91ab0d717faacb4ca650a434fee4539, type: 3}
+    - {fileID: 21300000, guid: 4f160890ae6ccd04585369b05672ea3d, type: 3}
+    - {fileID: 21300000, guid: 2f71c952ac570fb4cab5e221feeb8b8d, type: 3}
+    - {fileID: 21300000, guid: 7b72c811f2a848f4e9ad2cc62b969555, type: 3}
   _music: {fileID: 8300000, guid: d9b939ba5a2f03e49841571aa0847a79, type: 3}
   _sounds:
   - Type: 0

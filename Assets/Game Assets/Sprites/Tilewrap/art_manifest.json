@@ -1,0 +1,1654 @@
+{
+  "version": "1.0",
+  "referenceResolution": {
+    "x": 1080,
+    "y": 1920
+  },
+  "pixelsPerUnit": 100,
+  "assets": [
+    {
+      "id": "booth_background",
+      "path": "Backgrounds/booth_background.png",
+      "width": 1080,
+      "height": 1920,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "hat_sunhat_purple",
+      "path": "Sprites/Items/hat_sunhat_purple.png",
+      "width": 416,
+      "height": 264,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "hat_cap_red",
+      "path": "Sprites/Items/hat_cap_red.png",
+      "width": 366,
+      "height": 261,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "hat_beanie_teal",
+      "path": "Sprites/Items/hat_beanie_teal.png",
+      "width": 344,
+      "height": 310,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "gear_skateboard_yellow",
+      "path": "Sprites/Items/gear_skateboard_yellow.png",
+      "width": 383,
+      "height": 279,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "gear_basketball_blue",
+      "path": "Sprites/Items/gear_basketball_blue.png",
+      "width": 312,
+      "height": 312,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "gear_guitar_brown",
+      "path": "Sprites/Items/gear_guitar_brown.png",
+      "width": 334,
+      "height": 345,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "bag_blue",
+      "path": "Sprites/Items/bag_blue.png",
+      "width": 351,
+      "height": 356,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "bag_purple",
+      "path": "Sprites/Items/bag_purple.png",
+      "width": 353,
+      "height": 356,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "bag_red",
+      "path": "Sprites/Items/bag_red.png",
+      "width": 353,
+      "height": 356,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_mia_neutral",
+      "path": "Sprites/Characters/character_mia_neutral.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_leo_neutral",
+      "path": "Sprites/Characters/character_leo_neutral.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_zoe_neutral",
+      "path": "Sprites/Characters/character_zoe_neutral.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_mia_gear",
+      "path": "Sprites/Characters/character_mia_gear.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_leo_gear",
+      "path": "Sprites/Characters/character_leo_gear.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_zoe_gear",
+      "path": "Sprites/Characters/character_zoe_gear.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_mia_bag",
+      "path": "Sprites/Characters/character_mia_bag.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_leo_bag",
+      "path": "Sprites/Characters/character_leo_bag.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_zoe_bag",
+      "path": "Sprites/Characters/character_zoe_bag.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_mia_complete",
+      "path": "Sprites/Characters/character_mia_complete.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_leo_complete",
+      "path": "Sprites/Characters/character_leo_complete.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "character_zoe_complete",
+      "path": "Sprites/Characters/character_zoe_complete.png",
+      "width": 512,
+      "height": 640,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "panel_moves",
+      "path": "Sprites/UI/panel_moves.png",
+      "width": 480,
+      "height": 290,
+      "border": [
+        80,
+        90,
+        80,
+        80
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "button_cream",
+      "path": "Sprites/UI/button_cream.png",
+      "width": 600,
+      "height": 284,
+      "border": [
+        96,
+        96,
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "button_gold",
+      "path": "Sprites/UI/button_gold.png",
+      "width": 600,
+      "height": 284,
+      "border": [
+        96,
+        96,
+        96,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "nameplate",
+      "path": "Sprites/UI/nameplate.png",
+      "width": 380,
+      "height": 128,
+      "border": [
+        80,
+        54,
+        80,
+        54
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "category_tag",
+      "path": "Sprites/UI/category_tag.png",
+      "width": 240,
+      "height": 176,
+      "border": [
+        60,
+        60,
+        60,
+        60
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "clue_note",
+      "path": "Sprites/UI/clue_note.png",
+      "width": 960,
+      "height": 400,
+      "border": [
+        140,
+        90,
+        140,
+        96
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "tile_cream",
+      "path": "Sprites/UI/tile_cream.png",
+      "width": 600,
+      "height": 520,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "tile_honey",
+      "path": "Sprites/UI/tile_honey.png",
+      "width": 600,
+      "height": 520,
+      "border": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "board_frame",
+      "path": "Sprites/UI/board_frame.png",
+      "width": 940,
+      "height": 820,
+      "border": [
+        60,
+        65,
+        60,
+        60
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "counter_ledge",
+      "path": "Sprites/UI/counter_ledge.png",
+      "width": 1040,
+      "height": 64,
+      "border": [
+        45,
+        25,
+        45,
+        25
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "active_row_outline",
+      "path": "Sprites/UI/active_row_outline.png",
+      "width": 900,
+      "height": 260,
+      "border": [
+        34,
+        34,
+        34,
+        34
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 100
+    },
+    {
+      "id": "badge_notebook",
+      "path": "Sprites/UI/badge_notebook.png",
+      "width": 128,
+      "height": 128,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "check_complete",
+      "path": "Sprites/UI/check_complete.png",
+      "width": 160,
+      "height": 160,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "icon_undo",
+      "path": "Sprites/UI/icon_undo.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "icon_notebook",
+      "path": "Sprites/UI/icon_notebook.png",
+      "width": 208,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "icon_hint",
+      "path": "Sprites/UI/icon_hint.png",
+      "width": 192,
+      "height": 224,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    },
+    {
+      "id": "icon_settings",
+      "path": "Sprites/UI/icon_settings.png",
+      "width": 192,
+      "height": 192,
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "pixelsPerUnit": 200
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Environment",
+      "kind": "image",
+      "parent": "",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "asset": "booth_background"
+    },
+    {
+      "name": "LevelStage",
+      "kind": "text",
+      "parent": "",
+      "x": 90,
+      "y": 58,
+      "w": 660,
+      "h": 58,
+      "text": "Level 1 · Step 2 of 3",
+      "fontSize": 40,
+      "color": "#FFF3DD",
+      "align": "left",
+      "weight": 600
+    },
+    {
+      "name": "Goal",
+      "kind": "text",
+      "parent": "",
+      "x": 90,
+      "y": 115,
+      "w": 670,
+      "h": 82,
+      "text": "Pack their bags",
+      "fontSize": 64,
+      "color": "#FFF3DD",
+      "align": "left",
+      "weight": 800
+    },
+    {
+      "name": "MovesPanel",
+      "kind": "image",
+      "parent": "",
+      "x": 780,
+      "y": 58,
+      "w": 245,
+      "h": 150,
+      "asset": "panel_moves",
+      "sliced": true
+    },
+    {
+      "name": "MovesValue",
+      "kind": "text",
+      "parent": "",
+      "x": 803,
+      "y": 73,
+      "w": 199,
+      "h": 83,
+      "text": "11",
+      "fontSize": 78,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "MovesLabel",
+      "kind": "text",
+      "parent": "",
+      "x": 795,
+      "y": 155,
+      "w": 215,
+      "h": 41,
+      "text": "moves left",
+      "fontSize": 34,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "CluesHeading",
+      "kind": "text",
+      "parent": "",
+      "x": 90,
+      "y": 204,
+      "w": 280,
+      "h": 62,
+      "text": "CLUES",
+      "fontSize": 40,
+      "color": "#FFF3DD",
+      "align": "left",
+      "weight": 600
+    },
+    {
+      "name": "ClueMiaPanel",
+      "kind": "image",
+      "parent": "",
+      "x": 48,
+      "y": 248,
+      "w": 486,
+      "h": 202,
+      "asset": "clue_note",
+      "sliced": true
+    },
+    {
+      "name": "ClueZoePanel",
+      "kind": "image",
+      "parent": "",
+      "x": 546,
+      "y": 248,
+      "w": 486,
+      "h": 202,
+      "asset": "clue_note",
+      "sliced": true
+    },
+    {
+      "name": "ClueMiaBag",
+      "kind": "image",
+      "parent": "",
+      "x": 82,
+      "y": 311,
+      "w": 108,
+      "h": 108,
+      "asset": "bag_red"
+    },
+    {
+      "name": "ClueZoeBag",
+      "kind": "image",
+      "parent": "",
+      "x": 580,
+      "y": 311,
+      "w": 108,
+      "h": 108,
+      "asset": "bag_purple"
+    },
+    {
+      "name": "ClueMiaText",
+      "kind": "text",
+      "parent": "",
+      "x": 205,
+      "y": 300,
+      "w": 310,
+      "h": 125,
+      "text": "Mia carries the\n<color=#ED3937>red</color> bag.",
+      "fontSize": 40,
+      "color": "#421b19",
+      "align": "left",
+      "weight": 800
+    },
+    {
+      "name": "ClueZoeText",
+      "kind": "text",
+      "parent": "",
+      "x": 703,
+      "y": 300,
+      "w": 310,
+      "h": 125,
+      "text": "Zoe carries the\n<color=#9E3FD1>purple</color> bag.",
+      "fontSize": 40,
+      "color": "#421b19",
+      "align": "left",
+      "weight": 800
+    },
+    {
+      "name": "Character_mia",
+      "kind": "image",
+      "parent": "",
+      "x": 162,
+      "y": 446,
+      "w": 244,
+      "h": 305,
+      "asset": "character_mia_gear"
+    },
+    {
+      "name": "Character_leo",
+      "kind": "image",
+      "parent": "",
+      "x": 458,
+      "y": 446,
+      "w": 244,
+      "h": 305,
+      "asset": "character_leo_gear"
+    },
+    {
+      "name": "Character_zoe",
+      "kind": "image",
+      "parent": "",
+      "x": 754,
+      "y": 446,
+      "w": 244,
+      "h": 305,
+      "asset": "character_zoe_gear"
+    },
+    {
+      "name": "Counter",
+      "kind": "image",
+      "parent": "",
+      "x": 20,
+      "y": 726,
+      "w": 1040,
+      "h": 64,
+      "asset": "counter_ledge",
+      "sliced": true
+    },
+    {
+      "name": "NamePlate_mia",
+      "kind": "image",
+      "parent": "",
+      "x": 192,
+      "y": 712,
+      "w": 184,
+      "h": 64,
+      "asset": "nameplate",
+      "sliced": true
+    },
+    {
+      "name": "Name_mia",
+      "kind": "text",
+      "parent": "",
+      "x": 206,
+      "y": 716,
+      "w": 156,
+      "h": 48,
+      "text": "Mia",
+      "fontSize": 40,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "NamePlate_leo",
+      "kind": "image",
+      "parent": "",
+      "x": 488,
+      "y": 712,
+      "w": 184,
+      "h": 64,
+      "asset": "nameplate",
+      "sliced": true
+    },
+    {
+      "name": "Name_leo",
+      "kind": "text",
+      "parent": "",
+      "x": 502,
+      "y": 716,
+      "w": 156,
+      "h": 48,
+      "text": "Leo",
+      "fontSize": 40,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "NamePlate_zoe",
+      "kind": "image",
+      "parent": "",
+      "x": 784,
+      "y": 712,
+      "w": 184,
+      "h": 64,
+      "asset": "nameplate",
+      "sliced": true
+    },
+    {
+      "name": "Name_zoe",
+      "kind": "text",
+      "parent": "",
+      "x": 798,
+      "y": 716,
+      "w": 156,
+      "h": 48,
+      "text": "Zoe",
+      "fontSize": 40,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "BoardClip",
+      "kind": "clip",
+      "parent": "",
+      "x": 136,
+      "y": 820,
+      "w": 888,
+      "h": 768
+    },
+    {
+      "name": "Tile_r0_c0",
+      "kind": "group",
+      "parent": "BoardClip",
+      "x": 0,
+      "y": 0,
+      "w": 296,
+      "h": 256
+    },
+    {
+      "name": "Tile_r0_c0_Surface",
+      "kind": "image",
+      "parent": "Tile_r0_c0",
+      "x": 0,
+      "y": 0,
+      "w": 296,
+      "h": 256,
+      "asset": "tile_cream",
+      "sliced": true
+    },
+    {
+      "name": "Tile_r0_c0_Item",
+      "kind": "image",
+      "parent": "Tile_r0_c0",
+      "x": 22,
+      "y": 10,
+      "w": 252,
+      "h": 184,
+      "asset": "hat_sunhat_purple"
+    },
+    {
+      "name": "Tile_r0_c0_Label",
+      "kind": "text",
+      "parent": "Tile_r0_c0",
+      "x": 7,
+      "y": 199,
+      "w": 282,
+      "h": 50,
+      "text": "Sunhat",
+      "fontSize": 38,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "Tile_r0_c1",
+      "kind": "group",
+      "parent": "BoardClip",
+      "x": 296,
+      "y": 0,
+      "w": 296,
+      "h": 256
+    },
+    {
+      "name": "Tile_r0_c1_Surface",
+      "kind": "image",
+      "parent": "Tile_r0_c1",
+      "x": 0,
+      "y": 0,
+      "w": 296,
+      "h": 256,
+      "asset": "tile_cream",
+      "sliced": true
+    },
+    {
+      "name": "Tile_r0_c1_Item",
+      "kind": "image",
+      "parent": "Tile_r0_c1",
+      "x": 22,
+      "y": 10,
+      "w": 252,
+      "h": 184,
+      "asset": "hat_cap_red"
+    },
+    {
+      "name": "Tile_r0_c1_Label",
+      "kind": "text",
+      "parent": "Tile_r0_c1",
+      "x": 7,
+      "y": 199,
+      "w": 282,
+      "h": 50,
+      "text": "Red cap",
+      "fontSize": 38,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "Tile_r0_c2",
+      "kind": "group",
+      "parent": "BoardClip",
+      "x": 592,
+      "y": 0,
+      "w": 296,
+      "h": 256
+    },
+    {
+      "name": "Tile_r0_c2_Surface",
+      "kind": "image",
+      "parent": "Tile_r0_c2",
+      "x": 0,
+      "y": 0,
+      "w": 296,
+      "h": 256,
+      "asset": "tile_cream",
+      "sliced": true
+    },
+    {
+      "name": "Tile_r0_c2_Item",
+      "kind": "image",
+      "parent": "Tile_r0_c2",
+      "x": 22,
+      "y": 10,
+      "w": 252,
+      "h": 184,
+      "asset": "hat_beanie_teal"
+    },
+    {
+      "name": "Tile_r0_c2_Label",
+      "kind": "text",
+      "parent": "Tile_r0_c2",
+      "x": 7,
+      "y": 199,
+      "w": 282,
+      "h": 50,
+      "text": "Teal beanie",
+      "fontSize": 38,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "Tile_r1_c0",
+      "kind": "group",
+      "parent": "BoardClip",
+      "x": 0,
+      "y": 256,
+      "w": 296,
+      "h": 256
+    },
+    {
+      "name": "Tile_r1_c0_Surface",
+      "kind": "image",
+      "parent": "Tile_r1_c0",
+      "x": 0,
+      "y": 0,
+      "w": 296,
+      "h": 256,
+      "asset": "tile_cream",
+      "sliced": true
+    },
+    {
+      "name": "Tile_r1_c0_Item",
+      "kind": "image",
+      "parent": "Tile_r1_c0",
+      "x": 22,
+      "y": 10,
+      "w": 252,
+      "h": 184,
+      "asset": "gear_skateboard_yellow"
+    },
+    {
+      "name": "Tile_r1_c0_Label",
+      "kind": "text",
+      "parent": "Tile_r1_c0",
+      "x": 7,
+      "y": 199,
+      "w": 282,
+      "h": 50,
+      "text": "Skateboard",
+      "fontSize": 38,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "Tile_r1_c0_Check",
+      "kind": "image",
+      "parent": "Tile_r1_c0",
+      "x": 231,
+      "y": 10,
+      "w": 58,
+      "h": 58,
+      "asset": "check_complete"
+    },
+    {
+      "name": "Tile_r1_c1",
+      "kind": "group",
+      "parent": "BoardClip",
+      "x": 296,
+      "y": 256,
+      "w": 296,
+      "h": 256
+    },
+    {
+      "name": "Tile_r1_c1_Surface",
+      "kind": "image",
+      "parent": "Tile_r1_c1",
+      "x": 0,
+      "y": 0,
+      "w": 296,
+      "h": 256,
+      "asset": "tile_cream",
+      "sliced": true
+    },
+    {
+      "name": "Tile_r1_c1_Item",
+      "kind": "image",
+      "parent": "Tile_r1_c1",
+      "x": 53,
+      "y": 15,
+      "w": 190,
+      "h": 190,
+      "asset": "gear_basketball_blue"
+    },
+    {
+      "name": "Tile_r1_c1_Label",
+      "kind": "text",
+      "parent": "Tile_r1_c1",
+      "x": 7,
+      "y": 199,
+      "w": 282,
+      "h": 50,
+      "text": "Basketball",
+      "fontSize": 38,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "Tile_r1_c1_Check",
+      "kind": "image",
+      "parent": "Tile_r1_c1",
+      "x": 231,
+      "y": 10,
+      "w": 58,
+      "h": 58,
+      "asset": "check_complete"
+    },
+    {
+      "name": "Tile_r1_c2",
+      "kind": "group",
+      "parent": "BoardClip",
+      "x": 592,
+      "y": 256,
+      "w": 296,
+      "h": 256
+    },
+    {
+      "name": "Tile_r1_c2_Surface",
+      "kind": "image",
+      "parent": "Tile_r1_c2",
+      "x": 0,
+      "y": 0,
+      "w": 296,
+      "h": 256,
+      "asset": "tile_cream",
+      "sliced": true
+    },
+    {
+      "name": "Tile_r1_c2_Item",
+      "kind": "image",
+      "parent": "Tile_r1_c2",
+      "x": 22,
+      "y": 10,
+      "w": 252,
+      "h": 184,
+      "asset": "gear_guitar_brown"
+    },
+    {
+      "name": "Tile_r1_c2_Label",
+      "kind": "text",
+      "parent": "Tile_r1_c2",
+      "x": 7,
+      "y": 199,
+      "w": 282,
+      "h": 50,
+      "text": "Guitar",
+      "fontSize": 38,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "Tile_r1_c2_Check",
+      "kind": "image",
+      "parent": "Tile_r1_c2",
+      "x": 231,
+      "y": 10,
+      "w": 58,
+      "h": 58,
+      "asset": "check_complete"
+    },
+    {
+      "name": "Tile_r2_c0",
+      "kind": "group",
+      "parent": "BoardClip",
+      "x": 0,
+      "y": 512,
+      "w": 296,
+      "h": 256
+    },
+    {
+      "name": "Tile_r2_c0_Surface",
+      "kind": "image",
+      "parent": "Tile_r2_c0",
+      "x": 0,
+      "y": 0,
+      "w": 296,
+      "h": 256,
+      "asset": "tile_honey",
+      "sliced": true
+    },
+    {
+      "name": "Tile_r2_c0_Item",
+      "kind": "image",
+      "parent": "Tile_r2_c0",
+      "x": 22,
+      "y": 10,
+      "w": 252,
+      "h": 184,
+      "asset": "bag_blue"
+    },
+    {
+      "name": "Tile_r2_c0_Label",
+      "kind": "text",
+      "parent": "Tile_r2_c0",
+      "x": 7,
+      "y": 191,
+      "w": 282,
+      "h": 50,
+      "text": "Blue bag",
+      "fontSize": 38,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "Tile_r2_c1",
+      "kind": "group",
+      "parent": "BoardClip",
+      "x": 296,
+      "y": 512,
+      "w": 296,
+      "h": 256
+    },
+    {
+      "name": "Tile_r2_c1_Surface",
+      "kind": "image",
+      "parent": "Tile_r2_c1",
+      "x": 0,
+      "y": 0,
+      "w": 296,
+      "h": 256,
+      "asset": "tile_honey",
+      "sliced": true
+    },
+    {
+      "name": "Tile_r2_c1_Item",
+      "kind": "image",
+      "parent": "Tile_r2_c1",
+      "x": 22,
+      "y": 10,
+      "w": 252,
+      "h": 184,
+      "asset": "bag_purple"
+    },
+    {
+      "name": "Tile_r2_c1_Label",
+      "kind": "text",
+      "parent": "Tile_r2_c1",
+      "x": 7,
+      "y": 191,
+      "w": 282,
+      "h": 50,
+      "text": "Purple bag",
+      "fontSize": 38,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "Tile_r2_c2",
+      "kind": "group",
+      "parent": "BoardClip",
+      "x": 592,
+      "y": 512,
+      "w": 296,
+      "h": 256
+    },
+    {
+      "name": "Tile_r2_c2_Surface",
+      "kind": "image",
+      "parent": "Tile_r2_c2",
+      "x": 0,
+      "y": 0,
+      "w": 296,
+      "h": 256,
+      "asset": "tile_honey",
+      "sliced": true
+    },
+    {
+      "name": "Tile_r2_c2_Item",
+      "kind": "image",
+      "parent": "Tile_r2_c2",
+      "x": 22,
+      "y": 10,
+      "w": 252,
+      "h": 184,
+      "asset": "bag_red"
+    },
+    {
+      "name": "Tile_r2_c2_Label",
+      "kind": "text",
+      "parent": "Tile_r2_c2",
+      "x": 7,
+      "y": 191,
+      "w": 282,
+      "h": 50,
+      "text": "Red bag",
+      "fontSize": 38,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "BoardFrame",
+      "kind": "image",
+      "parent": "",
+      "x": 110,
+      "y": 796,
+      "w": 940,
+      "h": 820,
+      "asset": "board_frame",
+      "sliced": true
+    },
+    {
+      "name": "ActiveBagRow",
+      "kind": "image",
+      "parent": "",
+      "x": 136,
+      "y": 1332,
+      "w": 888,
+      "h": 256,
+      "asset": "active_row_outline",
+      "sliced": true
+    },
+    {
+      "name": "Category_Hats",
+      "kind": "image",
+      "parent": "",
+      "x": 15,
+      "y": 901,
+      "w": 122,
+      "h": 88,
+      "asset": "category_tag",
+      "sliced": true
+    },
+    {
+      "name": "CategoryLabel_Hats",
+      "kind": "text",
+      "parent": "",
+      "x": 22,
+      "y": 911,
+      "w": 105,
+      "h": 62,
+      "text": "Hats",
+      "fontSize": 40,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "Category_Gear",
+      "kind": "image",
+      "parent": "",
+      "x": 15,
+      "y": 1157,
+      "w": 122,
+      "h": 88,
+      "asset": "category_tag",
+      "sliced": true
+    },
+    {
+      "name": "CategoryLabel_Gear",
+      "kind": "text",
+      "parent": "",
+      "x": 22,
+      "y": 1167,
+      "w": 105,
+      "h": 62,
+      "text": "Gear",
+      "fontSize": 40,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "Category_Bags",
+      "kind": "image",
+      "parent": "",
+      "x": 15,
+      "y": 1413,
+      "w": 122,
+      "h": 88,
+      "asset": "category_tag",
+      "sliced": true
+    },
+    {
+      "name": "CategoryLabel_Bags",
+      "kind": "text",
+      "parent": "",
+      "x": 22,
+      "y": 1423,
+      "w": 105,
+      "h": 62,
+      "text": "Bags",
+      "fontSize": 40,
+      "color": "#421b19",
+      "align": "center",
+      "weight": 800
+    },
+    {
+      "name": "WrapInstruction",
+      "kind": "text",
+      "parent": "",
+      "x": 160,
+      "y": 1636,
+      "w": 850,
+      "h": 65,
+      "text": "Swipe rows or columns. Tiles wrap.",
+      "fontSize": 38,
+      "color": "#FFF3DD",
+      "align": "center",
+      "weight": 600
+    },
+    {
+      "name": "Button_Undo",
+      "kind": "button",
+      "parent": "",
+      "x": 40,
+      "y": 1738,
+      "w": 300,
+      "h": 150
+    },
+    {
+      "name": "Undo_Surface",
+      "kind": "image",
+      "parent": "Button_Undo",
+      "x": 0,
+      "y": 0,
+      "w": 300,
+      "h": 150,
+      "asset": "button_cream",
+      "sliced": true
+    },
+    {
+      "name": "Undo_Icon",
+      "kind": "image",
+      "parent": "Button_Undo",
+      "x": 30,
+      "y": 30,
+      "w": 80,
+      "h": 90,
+      "asset": "icon_undo"
+    },
+    {
+      "name": "Undo_Label",
+      "kind": "text",
+      "parent": "Button_Undo",
+      "x": 112,
+      "y": 39,
+      "w": 175,
+      "h": 73,
+      "text": "Undo",
+      "fontSize": 48,
+      "color": "#421b19",
+      "align": "left",
+      "weight": 800
+    },
+    {
+      "name": "Button_Notebook",
+      "kind": "button",
+      "parent": "",
+      "x": 358,
+      "y": 1738,
+      "w": 352,
+      "h": 150
+    },
+    {
+      "name": "Notebook_Surface",
+      "kind": "image",
+      "parent": "Button_Notebook",
+      "x": 0,
+      "y": 0,
+      "w": 352,
+      "h": 150,
+      "asset": "button_cream",
+      "sliced": true
+    },
+    {
+      "name": "Notebook_Icon",
+      "kind": "image",
+      "parent": "Button_Notebook",
+      "x": 30,
+      "y": 30,
+      "w": 76,
+      "h": 90,
+      "asset": "icon_notebook"
+    },
+    {
+      "name": "Notebook_Label",
+      "kind": "text",
+      "parent": "Button_Notebook",
+      "x": 112,
+      "y": 39,
+      "w": 227,
+      "h": 73,
+      "text": "Notebook",
+      "fontSize": 44,
+      "color": "#421b19",
+      "align": "left",
+      "weight": 800
+    },
+    {
+      "name": "Button_Hint",
+      "kind": "button",
+      "parent": "",
+      "x": 733,
+      "y": 1738,
+      "w": 307,
+      "h": 150
+    },
+    {
+      "name": "Hint_Surface",
+      "kind": "image",
+      "parent": "Button_Hint",
+      "x": 0,
+      "y": 0,
+      "w": 307,
+      "h": 150,
+      "asset": "button_gold",
+      "sliced": true
+    },
+    {
+      "name": "Hint_Icon",
+      "kind": "image",
+      "parent": "Button_Hint",
+      "x": 39,
+      "y": 30,
+      "w": 74,
+      "h": 90,
+      "asset": "icon_hint"
+    },
+    {
+      "name": "Hint_Label",
+      "kind": "text",
+      "parent": "Button_Hint",
+      "x": 125,
+      "y": 39,
+      "w": 182,
+      "h": 73,
+      "text": "Hint",
+      "fontSize": 48,
+      "color": "#421b19",
+      "align": "left",
+      "weight": 800
+    },
+    {
+      "name": "NotebookBadge",
+      "kind": "image",
+      "parent": "",
+      "x": 649,
+      "y": 1747,
+      "w": 54,
+      "h": 54,
+      "asset": "badge_notebook"
+    },
+    {
+      "name": "NotebookBadgeValue",
+      "kind": "text",
+      "parent": "",
+      "x": 649,
+      "y": 1750,
+      "w": 54,
+      "h": 45,
+      "text": "3",
+      "fontSize": 32,
+      "color": "#FFF6E8",
+      "align": "center",
+      "weight": 800
+    }
+  ]
+}

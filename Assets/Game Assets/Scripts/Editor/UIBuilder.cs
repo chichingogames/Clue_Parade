@@ -450,7 +450,7 @@ public static class UIBuilder
     }
 
     // Dynamic SDF font asset next to the TTF; glyphs are added as text needs them.
-    private static TMP_FontAsset GetOrCreateFont(string fontName)
+    public static TMP_FontAsset GetOrCreateFont(string fontName)
     {
         string path = $"{FontFolder}/{fontName} SDF.asset";
         var existing = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);

@@ -3,8 +3,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// The HUD: level title, sound toggle, matched / moves pills, the message panel and the
-// Next level / Undo / Restart buttons. Pure view: reads Manager_Game, and its buttons call
+// The HUD: level title, sound toggle, step / moves pills, the message panel (step goal and clues)
+// and the Next level / Undo / Restart buttons. Interim Clue Parade HUD on the Shift & Sort layout,
+// until it is rebuilt from the Tilewrap pack's 1080x1920 layout. Pure view: reads Manager_Game, and its buttons call
 // Manager_Game commands. Built by ShiftSort > Build UI (UIBuilder), which wires every field.
 //
 // Layout: the top bar is anchored to the top of the safe area and the bottom stack to its bottom
@@ -12,12 +13,8 @@ using UnityEngine.UI;
 // Tuning.HudTop/BottomReserve bands, which is the room this HUD has.
 public class UI_InGame : MonoBehaviour
 {
-    // Wording from the Tilewrap tutorial pack (Tutorial_Unity_Handoff.md). Tutorial levels (1-4)
-    // replace the playing text with their lesson (Manager_Tutorial).
-    private const string PlayingTitle = "Match every tile to both targets.";
-    private const string PlayingBody = "Shapes match across each row. Colors match down each column.";
-    private const string WonTitle = "Level complete!";
-    private const string WonBody = "All {0} tiles match both targets.";
+    private const string WonTitle = "Everyone is ready!";
+    private const string WonBody = "Every clue is solved.";
     private const string FailedTitle = "Out of moves";
     private const string FailedBody = "Undo to get a move back, or restart.";
 
@@ -114,11 +111,6 @@ public class UI_InGame : MonoBehaviour
         game.OnStateChanged += HandleStateChanged;
         game.OnMoveMade += Refresh;
         board.OnBoardSettled += Refresh;
-        if (Manager_Tutorial.Instance != null)
-        {
-            Manager_Tutorial.Instance.OnChanged += Refresh;
-            Manager_Tutorial.Instance.OnPulseMoves += PulseMoves;
-        }
         if (Manager_Audio.Instance != null)
         {
             Manager_Audio.Instance.OnSoundChanged += HandleSoundChanged;
@@ -137,11 +129,6 @@ public class UI_InGame : MonoBehaviour
             game.OnMoveMade -= Refresh;
         }
         if (Manager_Board.Instance != null) Manager_Board.Instance.OnBoardSettled -= Refresh;
-        if (Manager_Tutorial.Instance != null)
-        {
-            Manager_Tutorial.Instance.OnChanged -= Refresh;
-            Manager_Tutorial.Instance.OnPulseMoves -= PulseMoves;
-        }
         if (Manager_Audio.Instance != null) Manager_Audio.Instance.OnSoundChanged -= HandleSoundChanged;
     }
 
@@ -161,7 +148,8 @@ public class UI_InGame : MonoBehaviour
         if (level == null || board == null) return;
 
         _levelText.text = $"LEVEL {game.CurrentLevel:00}";
-        _matchedText.text = $"{board.MatchedCount} / {board.Size * board.Size} matched";
+        int step = Mathf.Min(board.ActiveStep + 1, board.StepCount);
+        _matchedText.text = $"Step {step} of {board.StepCount}";
 
         bool low = level.HasMoveLimit && game.MovesLeft <= _lowMovesAt;
         _movesText.text = !level.HasMoveLimit ? "No move limit"
@@ -174,27 +162,25 @@ public class UI_InGame : MonoBehaviour
         // While the warning shows, it owns the text color.
         if (_warning == MovesWarning.None) _movesText.color = low ? _movesLowColor : _movesColor;
 
-        var tutorial = Manager_Tutorial.Instance;
-        bool confirming = tutorial != null && tutorial.IsConfirming;
-        if (tutorial != null && tutorial.TryGetMessage(out string lessonTitle, out string lessonBody))
-            SetMessage(confirming ? _panelWinSprite : _panelNeutralSprite, lessonTitle, lessonBody);
-        else switch (game.State)
+        switch (game.State)
         {
             case GameState.Won:
-                SetMessage(_panelWinSprite, WonTitle, string.Format(WonBody, board.Size * board.Size));
+                SetMessage(_panelWinSprite, WonTitle, WonBody);
                 break;
             case GameState.Failed:
                 SetMessage(_panelFailSprite, FailedTitle, FailedBody);
                 break;
             default:
-                SetMessage(_panelNeutralSprite, PlayingTitle,
-                           string.IsNullOrEmpty(level.Instruction) ? PlayingBody : level.Instruction);
+                // The active step's goal, and its clues one per line.
+                var active = level.Steps[Mathf.Min(board.ActiveStep, level.Steps.Length - 1)];
+                var clues = new string[active.clues.Length];
+                for (int i = 0; i < clues.Length; i++) clues[i] = active.clues[i].text;
+                SetMessage(_panelNeutralSprite, active.goal, string.Join("\n", clues));
                 break;
         }
 
-        // Next level only after a win (and after a guided level's confirmation). Hiding it
-        // collapses the bottom stack (VerticalLayoutGroup).
-        _nextButton.gameObject.SetActive(game.State == GameState.Won && !confirming);
+        // Next level only after a win. Hiding it collapses the bottom stack (VerticalLayoutGroup).
+        _nextButton.gameObject.SetActive(game.State == GameState.Won);
         if (_nextLabel != null) _nextLabel.text = $"Next level {game.CurrentLevel + 1:00}";
         _undoButton.interactable = game.CanUndo;
     }
@@ -230,14 +216,6 @@ public class UI_InGame : MonoBehaviour
     {
         _movesWarning.color = Color.Lerp(Color.white, _movesLowColor, t);
         _movesText.color = Color.Lerp(_movesLowColor, _movesWarningTextColor, t);
-    }
-
-    // First spent move of the move-budget lesson: the moves pill pulses so the count is noticed.
-    private void PulseMoves()
-    {
-        var pill = _movesPill.rectTransform;
-        pill.DOComplete();
-        pill.DOPunchScale(Vector3.one * 0.12f, Tuning.TutorialMovesPulse, 4, 0.5f).SetLink(pill.gameObject);
     }
 
     private void SetMessage(Sprite panel, string title, string body)

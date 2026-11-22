@@ -1,34 +1,28 @@
 // Pure board model: no Unity objects. Cells are [row, col]; row 0 is the top row.
-// A cell is matched when its shape equals its row target and its color equals its column target.
+// Each tile knows the cell it belongs in (TileData.Id = row * Size + col). A cell is "home" when it
+// holds that tile.
+//
+// Steps: the level confirms one row per step, in StepRows order. Everything about progress is
+// derived from the board, never stored: ConfirmedSteps counts the leading steps whose rows are
+// complete, so a move that breaks an earlier row takes the level back to that step, and Undo
+// repairs it. StepRows covers every row once, so all steps confirmed == solved.
 public class BoardState
 {
     private readonly TileData[,] _cells;
 
     public int Size { get; }
-    public TileShape[] RowTargets { get; }
-    public TileColor[] ColumnTargets { get; }
+    public int[] StepRows { get; }
 
     public TileData this[int row, int col] => _cells[row, col];
 
-    public BoardState(int size, TileShape[] rowTargets, TileColor[] columnTargets, TileData[,] cells)
+    public BoardState(int size, int[] stepRows, TileData[,] cells)
     {
         Size = size;
-        RowTargets = (TileShape[])rowTargets.Clone();
-        ColumnTargets = (TileColor[])columnTargets.Clone();
+        StepRows = (int[])stepRows.Clone();
         _cells = (TileData[,])cells.Clone();
     }
 
-    public BoardState(LevelDefinition level)
-        : this(level.Size, level.RowTargets, level.ColumnTargets, level.StartCells) { }
-
-    public static BoardState Solved(int size, TileShape[] rowTargets, TileColor[] columnTargets)
-    {
-        var cells = new TileData[size, size];
-        for (int r = 0; r < size; r++)
-            for (int c = 0; c < size; c++)
-                cells[r, c] = new TileData(rowTargets[r], columnTargets[c]);
-        return new BoardState(size, rowTargets, columnTargets, cells);
-    }
+    public BoardState(LevelDefinition level) : this(level.Size, level.StepRows, level.StartCells) { }
 
     // dir +1 = right, -1 = left. The tile pushed off one end wraps to the other.
     public void ShiftRow(int row, int dir)
@@ -46,36 +40,43 @@ public class BoardState
         for (int r = 0; r < Size; r++) _cells[r, col] = line[r];
     }
 
-    public bool IsCellMatched(int row, int col) =>
-        _cells[row, col].Shape == RowTargets[row] && _cells[row, col].Color == ColumnTargets[col];
+    public bool IsHome(int row, int col) => _cells[row, col].Id == row * Size + col;
 
     public bool IsRowComplete(int row)
     {
         for (int c = 0; c < Size; c++)
-            if (_cells[row, c].Shape != RowTargets[row]) return false;
+            if (!IsHome(row, c)) return false;
         return true;
     }
 
-    public bool IsColumnComplete(int col)
-    {
-        for (int r = 0; r < Size; r++)
-            if (_cells[r, col].Color != ColumnTargets[col]) return false;
-        return true;
-    }
+    public int StepCount => StepRows.Length;
 
-    public int MatchedCount
+    // Leading steps whose rows are complete.
+    public int ConfirmedSteps
     {
         get
         {
-            int count = 0;
-            for (int r = 0; r < Size; r++)
-                for (int c = 0; c < Size; c++)
-                    if (IsCellMatched(r, c)) count++;
-            return count;
+            int confirmed = 0;
+            while (confirmed < StepRows.Length && IsRowComplete(StepRows[confirmed])) confirmed++;
+            return confirmed;
         }
     }
 
-    public bool IsSolved => MatchedCount == Size * Size;
+    // Index into StepRows of the step being played; StepCount when every step is confirmed.
+    public int ActiveStep => ConfirmedSteps;
+
+    // The row the active step asks for, or -1 when the board is solved.
+    public int ActiveRow => ConfirmedSteps < StepRows.Length ? StepRows[ConfirmedSteps] : -1;
+
+    public bool IsRowConfirmed(int row)
+    {
+        int confirmed = ConfirmedSteps;
+        for (int i = 0; i < confirmed; i++)
+            if (StepRows[i] == row) return true;
+        return false;
+    }
+
+    public bool IsSolved => ConfirmedSteps == StepRows.Length;
 
     public TileData[,] CopyCells() => (TileData[,])_cells.Clone();
 

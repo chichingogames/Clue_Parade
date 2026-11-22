@@ -1,11 +1,10 @@
 using DG.Tweening;
 using UnityEngine;
 
-// One board slot. Instantiated N×N by Manager_Board; stays put while tiles slide over it.
-// Matching is positional, so the "matched" check lives here, not on the tile.
+// One board position. Instantiated N×N by Manager_Board; stays put while tiles slide under it.
+// Shows the check of a confirmed row, which is about the position, not the tile.
 public class Cell : MonoBehaviour
 {
-    [SerializeField] private SpriteRenderer _background;
     [SerializeField] private GameObject _check;
 
     public int Row { get; private set; }

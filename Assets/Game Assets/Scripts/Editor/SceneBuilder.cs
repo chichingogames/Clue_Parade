@@ -51,7 +51,6 @@ public static class SceneBuilder
             GetOrAdd<Manager_Board>(go),
             GetOrAdd<Manager_Input>(go),
             GetOrAdd<Manager_Game>(go),
-            GetOrAdd<Manager_Tutorial>(go),
         };
 
         var list = new SerializedObject(singletonManager).FindProperty("_singletonsToInitialize");
@@ -83,14 +82,24 @@ public static class SceneBuilder
         var gamePlay = GetOrCreateRoot("GamePlay");
         var board = GetOrCreateChild(gamePlay.transform, "Board");
 
+        // The pack's wooden frame, drawn over the tiles (Manager_Board.Build sets its size).
         var frameGo = GetOrCreateChild(board, "Frame", out bool frameCreated);
         var frame = GetOrAdd<SpriteRenderer>(frameGo.gameObject);
         if (frameCreated)
         {
-            frame.sprite = AssetBuilder.LoadSprite(AssetBuilder.BoardFrameSprite);
-            frame.drawMode = SpriteDrawMode.Sliced;     // Manager_Board.Build sets its size
-            frame.color = new Color(0.23f, 0.19f, 0.34f);
-            frame.sortingOrder = SortOrder.Board;
+            frame.sprite = AssetBuilder.LoadTilewrap("UI/board_frame");
+            frame.drawMode = SpriteDrawMode.Sliced;
+            frame.sortingOrder = SortOrder.Frame;
+        }
+
+        // Outline around the active step's row (Manager_Board positions and sizes it).
+        var activeRowGo = GetOrCreateChild(board, "Active Row", out bool activeRowCreated);
+        var activeRow = GetOrAdd<SpriteRenderer>(activeRowGo.gameObject);
+        if (activeRowCreated)
+        {
+            activeRow.sprite = AssetBuilder.LoadTilewrap("UI/active_row_outline");
+            activeRow.drawMode = SpriteDrawMode.Sliced;
+            activeRow.sortingOrder = SortOrder.ActiveRow;
         }
 
         var maskGo = GetOrCreateChild(board, "Mask", out bool maskCreated);
@@ -99,15 +108,16 @@ public static class SceneBuilder
 
         var cells = GetOrCreateChild(board, "Cells");
         var tiles = GetOrCreateChild(board, "Tiles");
-        var markers = GetOrCreateChild(board, "Markers");
+        var tags = GetOrCreateChild(board, "Tags");
 
         var so = new SerializedObject(managers.GetComponent<Manager_Board>());
         SetIfEmpty(so, "_boardRoot", board);
         SetIfEmpty(so, "_frame", frame);
         SetIfEmpty(so, "_mask", mask);
+        SetIfEmpty(so, "_activeRow", activeRow);
         SetIfEmpty(so, "_cellsRoot", cells);
         SetIfEmpty(so, "_tilesRoot", tiles);
-        SetIfEmpty(so, "_markersRoot", markers);
+        SetIfEmpty(so, "_tagsRoot", tags);
         so.ApplyModifiedProperties();
     }
 
@@ -142,7 +152,7 @@ public static class SceneBuilder
         if (cam == null) return;
         cam.orthographic = true;
         cam.clearFlags = CameraClearFlags.SolidColor;
-        cam.backgroundColor = new Color(0.97f, 0.93f, 0.87f);
+        cam.backgroundColor = new Color32(0x6E, 0x41, 0x55, 0xFF);   // the booth wall, until the background art is in
     }
 
     private static Transform GetOrCreateChild(Transform parent, string name) =>

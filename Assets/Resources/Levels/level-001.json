@@ -1,29 +1,49 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": 1,
-  "name": "First shift",
-  "instruction": "Swipe the middle row right. The last tile wraps to the left.",
-  "size": 3,
-  "board": [
-    0,
-    1,
-    2,
-    4,
-    5,
-    3,
-    6,
-    7,
-    8
+  "name": "Ready for the fair",
+  "characters": ["mia", "leo", "zoe"],
+  "categories": ["Hats", "Gear", "Bags"],
+  "items": [
+    "hat_cap_red", "hat_beanie_teal", "hat_sunhat_purple",
+    "gear_skateboard_yellow", "gear_basketball_blue", "gear_guitar_brown",
+    "bag_red", "bag_blue", "bag_purple"
   ],
-  "moveBudget": 0,
-  "tutorial": "row",
-  "verifiedMoves": 1,
-  "solution": [
+  "board": [
+    2, 0, 1,
+    4, 5, 3,
+    7, 8, 6
+  ],
+  "steps": [
     {
-      "axis": "row",
-      "line": 1,
-      "direction": 1
+      "row": 1,
+      "goal": "Hand out the gear",
+      "clues": [
+        { "item": "gear_skateboard_yellow", "text": "Mia rides the <color=#E0A800>skateboard</color>." },
+        { "item": "gear_guitar_brown", "text": "Zoe plays the <color=#B8692E>guitar</color>." }
+      ]
+    },
+    {
+      "row": 2,
+      "goal": "Pack their bags",
+      "clues": [
+        { "item": "bag_red", "text": "Mia carries the <color=#ED3937>red</color> bag." },
+        { "item": "bag_purple", "text": "Zoe carries the <color=#9E3FD1>purple</color> bag." }
+      ]
+    },
+    {
+      "row": 0,
+      "goal": "Hats on!",
+      "clues": [
+        { "item": "hat_beanie_teal", "text": "Leo wears the <color=#1FA99D>teal</color> beanie." },
+        { "item": "hat_sunhat_purple", "text": "Zoe keeps the sun off with a <color=#9E3FD1>sunhat</color>." }
+      ]
     }
   ],
-  "minimumMoves": 1
+  "moveBudget": 8,
+  "solution": [
+    { "axis": "row", "line": 1, "direction": 1 },
+    { "axis": "row", "line": 2, "direction": 1 },
+    { "axis": "row", "line": 0, "direction": -1 }
+  ]
 }

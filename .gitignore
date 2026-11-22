@@ -65,3 +65,6 @@ TestResults*.xml
 # OS
 .DS_Store
 Thumbs.db
+
+# Agent CLI captures (AgentScripts/*.cs are kept)
+AgentScripts/Out/

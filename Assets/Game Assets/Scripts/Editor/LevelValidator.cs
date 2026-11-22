@@ -3,8 +3,10 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
-// Checks every Resources/Levels/level-NNN.json: it parses, it isn't already solved, its reference
-// solution solves it, and the solution fits the move budget. Also reports gaps in the numbering.
+// Checks every Resources/Levels/level-NNN.json: it parses, every item and character has art in
+// FileRef, it doesn't start solved, and its reference solution solves it within the move budget.
+// Also reports gaps in the numbering (play stops at the
+// first gap and loops back to level 1).
 public static class LevelValidator
 {
     private const string LevelsFolder = "Assets/Resources/" + JsonLevelSource.ResourcesFolder;
@@ -36,7 +38,7 @@ public static class LevelValidator
         }
 
         for (int n = 1; n < highest; n++)
-            if (!found.Contains(n)) Debug.LogWarning($"[LevelValidator] No file for level {n}; it will be generated.");
+            if (!found.Contains(n)) Debug.LogWarning($"[LevelValidator] No file for level {n}: levels after it are never played.");
 
         string summary = $"[LevelValidator] {ok} level(s) OK, {failed} failed.";
         if (failed > 0) Debug.LogError(summary);
@@ -47,6 +49,7 @@ public static class LevelValidator
     private static string Check(string json, int number)
     {
         if (!JsonLevelSource.TryParse(json, number, out var level, out var file, out string error)) return error;
+        if (!JsonLevelSource.TryCheckArt(level, FileRef.Instance, out error)) return error;
 
         var board = new BoardState(level);
         if (board.IsSolved) return "the board starts solved";

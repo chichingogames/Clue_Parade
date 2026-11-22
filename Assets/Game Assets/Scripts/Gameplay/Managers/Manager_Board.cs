@@ -1,21 +1,29 @@
 using System;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-// Owns the BoardState and its views: builds the board from Cell/Tile/TargetMarker prefabs,
-// drags and shifts lines, and animates. Board-local space: centered on _boardRoot, row 0 at the top.
+// Owns the BoardState and its views: builds the board from Cell / ItemTile / CategoryTag prefabs,
+// drags and shifts lines, and animates. Board-local space: centered on _boardRoot, row 0 at the top,
+// cells CellSize wide and high (the ItemTile prefab's size; 2.96 x 2.56 units for the pack's tiles).
 //
 // One line (row or column) at a time can be "held": its tiles are drawn at a fractional offset
 // (in cells; row + = right, column + = down) and wrap around the edge, with a ghost copy showing
-// the part of the wrapping tile that is past the edge. _mask hides everything outside the board.
+// the part of the wrapping tile that is past the edge. _mask hides everything outside the board
+// (the tile labels too, through their stencil material).
+//
+// Steps: the active step's row has the honey surface and the outline; confirmed rows show checks.
+// Both are derived from BoardState after each settle, so undo and broken rows need no special case.
 public class Manager_Board : Singleton<Manager_Board>
 {
     [SerializeField] private Transform _boardRoot;
     [SerializeField] private SpriteRenderer _frame;
     [SerializeField] private SpriteMask _mask;
+    [SerializeField] private SpriteRenderer _activeRow;
     [SerializeField] private Transform _cellsRoot;
     [SerializeField] private Transform _tilesRoot;
-    [SerializeField] private Transform _markersRoot;
+    [FormerlySerializedAs("_markersRoot")]
+    [SerializeField] private Transform _tagsRoot;
 
     // Raised when a line has finished animating and the indicators are up to date.
     public event Action OnBoardSettled = delegate { };
@@ -28,58 +36,64 @@ public class Manager_Board : Singleton<Manager_Board>
     public event Action OnLinePickedUp = delegate { };
 
     public BoardState State { get; private set; }
+    public LevelDefinition Level { get; private set; }
     public bool IsDragging => _held && _animation == null;
     // True while a line slides or the launch intro scales the board in; presses are refused meanwhile.
     public bool IsAnimating => _animation != null || _intro != null;
     public float DragOffset => _offset;
 
     private Cell[,] _cells;
-    private Tile[,] _tiles;
-    private TargetMarker[] _rowMarkers;
-    private TargetMarker[] _columnMarkers;
+    private ItemTile[,] _tiles;
+    private CategoryTag[] _tags;
 
     // Held line
     private bool _held;
     private bool _heldIsRow;
     private int _heldIndex;
-    private Tile[] _heldTiles;       // the line's tiles in their order before the drag
+    private ItemTile[] _heldTiles;   // the line's tiles in their order before the drag
     private float _offset;
-    private Tile _ghost;
+    private ItemTile _ghost;
     private Tween _animation;
 
     // Launch intro: the whole board scales up once, on the first Build.
     private Tween _intro;
     private bool _introPlayed;
 
-    // Board as it was when the line was picked up, to tell which matches a move is new.
-    private bool[,] _matchedAtPickUp;
-    private int _linesAtPickUp;
+    // Steps confirmed when the line was picked up, to tell whether a move confirmed one.
+    private int _stepsAtPickUp;
 
     private int Size => State.Size;
-    private static float CellSize => Tuning.CellSize;
+
+    // One cell = one tile, no gap.
+    public Vector2 CellSize => FileRef.Instance.ItemTilePrefab.Size;
+    private Vector2 GridSize => CellSize * Size;
 
     public void Build(LevelDefinition level)
     {
         Clear();
+        Level = level;
         State = new BoardState(level);
-
         var fileRef = FileRef.Instance;
-        float boardSize = Size * CellSize;
-        // The frame is a 9-sliced panel: sized, not scaled, so its rounded corners stay sharp.
+
+        _boardRoot.localPosition = ReferenceLayout.BoardCenter;
+
+        // The frame is 9-sliced: sized, not scaled, so its corners stay sharp. The mask (a 1-unit
+        // sprite) is scaled to the grid.
         _frame.drawMode = SpriteDrawMode.Sliced;
         _frame.transform.localScale = Vector3.one;
-        _frame.size = Vector2.one * (boardSize + 2f * Tuning.FramePadding * CellSize);
-        _mask.transform.localScale = Vector3.one * boardSize;
+        _frame.size = GridSize + Vector2.one * (2f * ReferenceLayout.FramePadding);
+        _mask.transform.localScale = new Vector3(GridSize.x, GridSize.y, 1f);
+        _activeRow.drawMode = SpriteDrawMode.Sliced;
+        _activeRow.size = new Vector2(GridSize.x, CellSize.y);
 
         _cells = new Cell[Size, Size];
-        _tiles = new Tile[Size, Size];
+        _tiles = new ItemTile[Size, Size];
         for (int r = 0; r < Size; r++)
         {
             for (int c = 0; c < Size; c++)
             {
                 var cell = Instantiate(fileRef.CellPrefab, _cellsRoot);
                 cell.transform.localPosition = CellPosition(r, c);
-                cell.transform.localScale = Vector3.one * CellSize;
                 cell.Setup(r, c);
                 _cells[r, c] = cell;
 
@@ -87,20 +101,14 @@ public class Manager_Board : Singleton<Manager_Board>
             }
         }
 
-        float markerDistance = boardSize * 0.5f + Tuning.MarkerOffset * CellSize;
-
-        _rowMarkers = new TargetMarker[Size];
+        _tags = new CategoryTag[Size];
+        float tagX = -GridSize.x * 0.5f - ReferenceLayout.TagOffset;
         for (int r = 0; r < Size; r++)
         {
-            var position = new Vector3(-markerDistance, CellPosition(r, 0).y);
-            _rowMarkers[r] = SpawnMarker($"Row Target {r}", position, fileRef.GetRowTargetSprite(State.RowTargets[r]));
-        }
-
-        _columnMarkers = new TargetMarker[Size];
-        for (int c = 0; c < Size; c++)
-        {
-            var position = new Vector3(CellPosition(0, c).x, markerDistance);
-            _columnMarkers[c] = SpawnMarker($"Column Target {c}", position, fileRef.GetColumnTargetSprite(State.ColumnTargets[c]));
+            var tag = Instantiate(fileRef.CategoryTagPrefab, _tagsRoot);
+            tag.transform.localPosition = new Vector3(tagX, CellPosition(r, 0).y, 0f);
+            tag.Setup(level.Categories[r]);
+            _tags[r] = tag;
         }
 
         FitCamera();
@@ -118,12 +126,12 @@ public class Manager_Board : Singleton<Manager_Board>
     {
         if (_held) return;
 
-        SnapshotMatches();
+        _stepsAtPickUp = State.ConfirmedSteps;
         _held = true;
         _heldIsRow = isRow;
         _heldIndex = index;
         _offset = 0f;
-        _heldTiles = new Tile[Size];
+        _heldTiles = new ItemTile[Size];
         for (int i = 0; i < Size; i++)
         {
             _heldTiles[i] = isRow ? _tiles[index, i] : _tiles[i, index];
@@ -204,29 +212,9 @@ public class Manager_Board : Singleton<Manager_Board>
         OnBoardSettled();
     }
 
-    private void SnapshotMatches()
-    {
-        _matchedAtPickUp = new bool[Size, Size];
-        for (int r = 0; r < Size; r++)
-            for (int c = 0; c < Size; c++)
-                _matchedAtPickUp[r, c] = State.IsCellMatched(r, c);
-        _linesAtPickUp = CompleteLineCount();
-    }
-
-    private int CompleteLineCount()
-    {
-        int lines = 0;
-        for (int i = 0; i < Size; i++)
-        {
-            if (State.IsRowComplete(i)) lines++;
-            if (State.IsColumnComplete(i)) lines++;
-        }
-        return lines;
-    }
-
     // One layered cue per settled move: the slide sound, then the best thing it achieved, and a
-    // single haptic pulse for the best thing (Heavy = solved, Medium = line, Light = anything else).
-    // TileMatch variants climb with the number of cells newly matched (01 = one, 04 = four or more).
+    // single haptic pulse (Heavy = solved, Medium = a step confirmed, Light = anything else).
+    // Nothing plays for a single tile reaching its cell: that would give the answer away.
     private void PlaySettleFeedback()
     {
         var audio = Manager_Audio.Instance;
@@ -236,27 +224,18 @@ public class Manager_Board : Singleton<Manager_Board>
         {
             Haptics.Play(HapticType.Heavy);
             audio?.PlaySound(SoundType.LevelComplete);
-            return;
         }
-
-        if (CompleteLineCount() > _linesAtPickUp)
+        else if (State.ConfirmedSteps > _stepsAtPickUp)
         {
             Haptics.Play(HapticType.Medium);
             audio?.PlaySound(SoundType.LineComplete);
-            return;
         }
-
-        Haptics.Play(HapticType.Light);
-        int newMatches = 0;
-        for (int r = 0; r < Size; r++)
-            for (int c = 0; c < Size; c++)
-                if (State.IsCellMatched(r, c) && !_matchedAtPickUp[r, c]) newMatches++;
-        if (newMatches > 0) audio?.PlaySound(SoundType.TileMatch, Mathf.Min(newMatches, 4) - 1);
+        else Haptics.Play(HapticType.Light);
     }
 
     private void RenderHeldLine()
     {
-        Tile crossing = null;
+        ItemTile crossing = null;
         float ghostPosition = 0f;
 
         for (int i = 0; i < Size; i++)
@@ -274,6 +253,7 @@ public class Manager_Board : Singleton<Manager_Board>
         if (crossing == null) return;
 
         if (!_ghost.Data.Equals(crossing.Data)) SetupTile(_ghost, crossing.Data);
+        _ghost.SetSurface(crossing.Surface);     // it stands in for that tile, so it wears its surface
         _ghost.transform.localPosition = LinePosition(ghostPosition);
     }
 
@@ -299,9 +279,9 @@ public class Manager_Board : Singleton<Manager_Board>
         row = col = -1;
         if (State == null || !TryScreenToLocal(screenPosition, out var local)) return false;
 
-        float half = Size * CellSize * 0.5f;
-        col = Mathf.FloorToInt((local.x + half) / CellSize);
-        row = Mathf.FloorToInt((half - local.y) / CellSize);
+        Vector2 half = GridSize * 0.5f;
+        col = Mathf.FloorToInt((local.x + half.x) / CellSize.x);
+        row = Mathf.FloorToInt((half.y - local.y) / CellSize.y);
         return row >= 0 && row < Size && col >= 0 && col < Size;
     }
 
@@ -309,7 +289,8 @@ public class Manager_Board : Singleton<Manager_Board>
     public Vector2 ScreenDeltaToCells(Vector2 screenFrom, Vector2 screenTo)
     {
         if (!TryScreenToLocal(screenFrom, out var from) || !TryScreenToLocal(screenTo, out var to)) return Vector2.zero;
-        return (to - from) / CellSize;
+        Vector2 delta = to - from;
+        return new Vector2(delta.x / CellSize.x, delta.y / CellSize.y);
     }
 
     private bool TryScreenToLocal(Vector2 screenPosition, out Vector2 local)
@@ -321,68 +302,53 @@ public class Manager_Board : Singleton<Manager_Board>
         return true;
     }
 
-    // Overlays that sit on the board (tutorial cues) parent here, so they follow its layout and intro.
+    // Overlays that sit on the board parent here, so they follow its layout and intro.
     public Transform BoardRoot => _boardRoot;
 
-    public Transform GetRowMarker(int row) => _rowMarkers[row].transform;
-    public Transform GetColumnMarker(int col) => _columnMarkers[col].transform;
-
     // Accepts fractional and out-of-board indices (used while lines move). Board-local.
+    // Inverse: TryGetCell.
     public Vector3 CellPosition(float row, float col)
     {
         float offset = (Size - 1) * 0.5f;
-        return new Vector3((col - offset) * CellSize, (offset - row) * CellSize, 0f);
+        return new Vector3((col - offset) * CellSize.x, (offset - row) * CellSize.y, 0f);
     }
 
     // ---------- Views ----------
 
-    private Tile SpawnTile(TileData data, Vector3 localPosition)
+    private ItemTile SpawnTile(TileData data, Vector3 localPosition)
     {
-        var tile = Instantiate(FileRef.Instance.TilePrefab, _tilesRoot);
+        var tile = Instantiate(FileRef.Instance.ItemTilePrefab, _tilesRoot);
         tile.transform.localPosition = localPosition;
-        tile.transform.localScale = Vector3.one * (CellSize * Tuning.TileScale);
         SetupTile(tile, data);
         return tile;
     }
 
-    private static void SetupTile(Tile tile, TileData data)
+    private void SetupTile(ItemTile tile, TileData data)
     {
-        tile.Setup(data, FileRef.Instance.GetTileSprite(data));
+        var item = FileRef.Instance.GetItem(Level.ItemFor(data));
+        tile.Setup(data, item.Sprite, item.Name);
     }
 
-    private TargetMarker SpawnMarker(string markerName, Vector3 localPosition, Sprite icon)
-    {
-        var marker = Instantiate(FileRef.Instance.TargetMarkerPrefab, _markersRoot);
-        marker.name = markerName;
-        marker.transform.localPosition = localPosition;
-        marker.transform.localScale = Vector3.one * CellSize;
-        marker.Setup(icon);
-        return marker;
-    }
+    private Sprite SurfaceFor(int row) =>
+        row == State.ActiveRow ? FileRef.Instance.TileSurfaceActive : FileRef.Instance.TileSurface;
 
-    // Checks that appear pop in (Tuning.CheckPopDuration), after checkDelay(row, col) if given,
-    // otherwise right away; checks already up stay as they are.
+    // Checks on confirmed rows (popping in when they appear: after checkDelay(row, col) if given,
+    // otherwise right away), the honey surface and outline on the active step's row.
     private void RefreshIndicators(Func<int, int, float> checkDelay = null)
     {
+        int activeRow = State.ActiveRow;
         for (int r = 0; r < Size; r++)
-            for (int c = 0; c < Size; c++)
-                _cells[r, c].SetMatched(State.IsCellMatched(r, c), Tuning.CheckPopDuration, checkDelay?.Invoke(r, c) ?? 0f);
-
-        for (int r = 0; r < Size; r++) _rowMarkers[r].SetComplete(State.IsRowComplete(r));
-        for (int c = 0; c < Size; c++) _columnMarkers[c].SetComplete(State.IsColumnComplete(c));
-    }
-
-    // A hint: every target icon gives a short scale punch (Manager_Tutorial's idle hint).
-    public void PulseTargets()
-    {
-        foreach (var marker in _rowMarkers) Punch(marker.transform);
-        foreach (var marker in _columnMarkers) Punch(marker.transform);
-
-        void Punch(Transform t)
         {
-            t.DOComplete();
-            t.DOPunchScale(Vector3.one * 0.18f * CellSize, 0.5f, 6, 0.6f).SetLink(t.gameObject);
+            bool confirmed = State.IsRowConfirmed(r);
+            for (int c = 0; c < Size; c++)
+            {
+                _cells[r, c].SetMatched(confirmed, Tuning.CheckPopDuration, checkDelay?.Invoke(r, c) ?? 0f);
+                _tiles[r, c].SetSurface(SurfaceFor(r));
+            }
         }
+
+        _activeRow.gameObject.SetActive(activeRow >= 0);
+        if (activeRow >= 0) _activeRow.transform.localPosition = CellPosition(activeRow, (Size - 1) * 0.5f);
     }
 
     // ---------- Intro ----------
@@ -429,12 +395,11 @@ public class Manager_Board : Singleton<Manager_Board>
 
     public bool HasBoard => State != null;
 
-    // World-space area of the board. withTargets false: the frame only (grid + FramePadding).
-    // withTargets true: the frame plus the row targets on the left and column targets on top,
-    // which is the area the camera fits. Board rotation is not supported (axis-aligned bounds).
-    public Bounds GetWorldBounds(bool withTargets)
+    // World-space area of the board. withTags false: the frame only (grid + FramePadding).
+    // withTags true: also the category tags on the left. Board rotation is not supported.
+    public Bounds GetWorldBounds(bool withTags)
     {
-        GetLocalBounds(withTargets, out var min, out var max);
+        GetLocalBounds(withTags, out var min, out var max);
         var a = _boardRoot.TransformPoint(min);
         var b = _boardRoot.TransformPoint(max);
         var bounds = new Bounds((a + b) * 0.5f, Vector3.zero);
@@ -444,56 +409,46 @@ public class Manager_Board : Singleton<Manager_Board>
     }
 
     // The same area in screen pixels (origin bottom-left), through Camera.main.
-    public Rect GetScreenRect(bool withTargets)
+    public Rect GetScreenRect(bool withTags)
     {
         var cam = Camera.main;
         if (cam == null || !HasBoard) return default;
 
-        var bounds = GetWorldBounds(withTargets);
+        var bounds = GetWorldBounds(withTags);
         Vector2 a = cam.WorldToScreenPoint(bounds.min);
         Vector2 b = cam.WorldToScreenPoint(bounds.max);
         return Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
     }
 
-    private void GetLocalBounds(bool withTargets, out Vector2 min, out Vector2 max)
+    private void GetLocalBounds(bool withTags, out Vector2 min, out Vector2 max)
     {
-        float half = (HasBoard ? Size : 0) * CellSize * 0.5f;
-        float frame = half + Tuning.FramePadding * CellSize;
-        min = new Vector2(-frame, -frame);
-        max = new Vector2(frame, frame);
-        if (!withTargets) return;
-
-        // Targets: rows on the left, columns on top.
-        float markers = half + (Tuning.MarkerOffset + 0.5f) * CellSize;
-        min.x = Mathf.Min(min.x, -markers);
-        max.y = Mathf.Max(max.y, markers);
+        Vector2 half = (HasBoard ? GridSize : Vector2.zero) * 0.5f + Vector2.one * ReferenceLayout.FramePadding;
+        min = -half;
+        max = half;
+        if (withTags && HasBoard)
+            min.x = Mathf.Min(min.x, -GridSize.x * 0.5f - ReferenceLayout.TagOffset - ReferenceLayout.TagSize.x * 0.5f);
     }
 
+    // Shows the 10.8 x 19.2 reference screen, centred on the world origin, as large as it fits in
+    // the safe area (uniform scale), with the board at its reference place inside it.
     private void FitCamera()
     {
         var cam = Camera.main;
         if (cam == null) return;
 
-        GetLocalBounds(withTargets: true, out var min, out var max);
-
-        // Fit the board (with targets) into the safe area minus the HUD bands above and below it.
         Rect safe = Screen.safeArea;
-        var region = Rect.MinMaxRect(safe.xMin, safe.yMin + safe.height * Tuning.HudBottomReserve,
-                                     safe.xMax, safe.yMax - safe.height * Tuning.HudTopReserve);
-        if (region.width <= 0f || region.height <= 0f) region = safe;
+        if (safe.width <= 0f || safe.height <= 0f) safe = new Rect(0f, 0f, Screen.width, Screen.height);
 
-        Vector2 extent = (max - min) * Tuning.CameraMargin;
-        float unitsPerPixel = Mathf.Max(extent.x / region.width, extent.y / region.height);
+        float unitsPerPixel = Mathf.Max(ReferenceLayout.Width / safe.width, ReferenceLayout.Height / safe.height);
         cam.orthographicSize = unitsPerPixel * Screen.height * 0.5f;
 
-        // Shift the camera so the board's center lands on the region's center.
-        Vector3 center = _boardRoot.TransformPoint((min + max) * 0.5f);
-        Vector2 offset = (region.center - new Vector2(Screen.width, Screen.height) * 0.5f) * unitsPerPixel;
-        cam.transform.position = new Vector3(center.x - offset.x, center.y - offset.y, cam.transform.position.z);
+        // Put the world origin (the reference screen's centre) at the safe area's centre.
+        Vector2 offset = (safe.center - new Vector2(Screen.width, Screen.height) * 0.5f) * unitsPerPixel;
+        cam.transform.position = new Vector3(-offset.x, -offset.y, cam.transform.position.z);
     }
 
 #if UNITY_EDITOR
-    // Scene view: green = frame, yellow = frame + targets (the camera-fit area).
+    // Scene view: green = frame, yellow = frame + category tags.
     private void OnDrawGizmos()
     {
         if (!HasBoard || _boardRoot == null) return;
@@ -513,7 +468,7 @@ public class Manager_Board : Singleton<Manager_Board>
         ReleaseHeldLine();
         DestroyChildren(_cellsRoot);
         DestroyChildren(_tilesRoot);
-        DestroyChildren(_markersRoot);
+        DestroyChildren(_tagsRoot);
     }
 
     private static void DestroyChildren(Transform parent)

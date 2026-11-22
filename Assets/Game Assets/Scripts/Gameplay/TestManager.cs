@@ -122,7 +122,6 @@ public class TestManager : MonoBehaviour
     /// <remarks>
     /// Each move waits for <see cref="Manager_Board.OnBoardSettled"/> from the one before, since
     /// <see cref="Manager_Game.ApplyMove"/> refuses a move while a line is still sliding.
-    /// Generated levels have no solution.
     /// </remarks>
     [Button("Play Solution (real win)")]
     private void PlaySolution()
@@ -134,7 +133,7 @@ public class TestManager : MonoBehaviour
         var solution = game.Level.Solution;
         if (solution.Length == 0)
         {
-            Debug.LogWarning($"[TestManager] level {game.CurrentLevel} has no solution (generated level).");
+            Debug.LogWarning($"[TestManager] level {game.CurrentLevel} has no solution in its file.");
             return;
         }
 
@@ -173,20 +172,21 @@ public class TestManager : MonoBehaviour
         var level = game.Level;
         var board = Manager_Board.Instance.State;
         string moves = level.HasMoveLimit ? $"{game.MovesUsed}/{level.MoveLimit} moves" : $"{game.MovesUsed} moves (unlimited)";
-        string source = level.Solution.Length > 0 ? $"\"{level.Name}\", {level.Solution.Length}-move solution" : "generated";
 
+        // One line per row: [ok] = the tile is home, * = confirmed row, > = the active step's row.
         var rows = new System.Text.StringBuilder();
         for (int r = 0; r < board.Size; r++)
         {
-            rows.Append("\n  ");
+            string mark = board.IsRowConfirmed(r) ? "*" : r == board.ActiveRow ? ">" : " ";
+            rows.Append($"\n {mark} {level.Categories[r],-8}");
             for (int c = 0; c < board.Size; c++)
-                rows.Append(board.IsCellMatched(r, c) ? "[ok] " : "[  ] ").Append(board[r, c]).Append("   ");
+                rows.Append(board.IsHome(r, c) ? "[ok] " : "[  ] ").Append(level.ItemFor(board[r, c])).Append("   ");
         }
 
         var save = OfflineData.Instance;
         Debug.Log($"[TestManager] save: current {save.CurrentLevel}, passed {save.PassedLevels}, sound {(save.IsSoundOn ? "on" : "off")}");
-        Debug.Log($"[TestManager] level {game.CurrentLevel} ({source}) | {level.Size}x{level.Size} | {game.State} | " +
-                  $"{board.MatchedCount}/{board.Size * board.Size} matched | {moves}{rows}");
+        Debug.Log($"[TestManager] level {game.CurrentLevel} (file {level.Number}, \"{level.Name}\") | {game.State} | " +
+                  $"step {Mathf.Min(board.ActiveStep + 1, board.StepCount)}/{board.StepCount} | {moves}{rows}");
     }
 
     #endregion
