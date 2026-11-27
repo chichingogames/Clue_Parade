@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "id": 3,
+  "title": "Backstage mix-up",
+  "goalText": "Match all 9 items using the clues.",
+  "moveLimit": 0,
+  "startingCells": [
+    "red_cap",
+    "blue_shirt",
+    "purple_cap",
+    "red_shirt",
+    "blue_bag",
+    "purple_shirt",
+    "red_bag",
+    "blue_cap",
+    "purple_bag"
+  ],
+  "clueRowOrder": [
+    "hats",
+    "shirts",
+    "bags"
+  ],
+  "coachText": "Swipe the middle column down. Hats belong on top.",
+  "completionText": "Everything is in the right place.",
+  "minimumMoves": 1,
+  "solution": [
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": 1
+    }
+  ],
+  "tutorial": {
+    "id": "column-wrap",
+    "title": "Columns slide, too.",
+    "paragraphs": [
+      "Leo has the right color, but his things are in the wrong rows.",
+      "Top: hats. Middle: shirts. Bottom: bags.",
+      "Swipe his column down. The bottom hat wraps around to the top."
+    ],
+    "illustration": "categoryOrder",
+    "buttonText": "Try a column"
+  },
+  "requiredFirstSwipe": {
+    "axis": "column",
+    "line": 1,
+    "direction": 1
+  },
+  "clueOverrides": [
+    {
+      "categoryId": "hats",
+      "recipientOrder": [
+        "leo",
+        "mia"
+      ]
+    }
+  ]
+}

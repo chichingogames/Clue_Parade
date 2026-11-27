@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "id": 5,
+  "title": "Parade time!",
+  "goalText": "Match all 9 items using the clues.",
+  "moveLimit": 14,
+  "startingCells": [
+    "purple_bag",
+    "red_shirt",
+    "blue_cap",
+    "blue_shirt",
+    "purple_shirt",
+    "purple_cap",
+    "blue_bag",
+    "red_bag",
+    "red_cap"
+  ],
+  "clueRowOrder": [
+    "hats",
+    "shirts",
+    "bags"
+  ],
+  "coachText": "Read the clue cards. Notebook has all 9 clues.",
+  "completionText": "You did it. Let the parade begin!",
+  "minimumMoves": 5,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": 1
+    }
+  ]
+}

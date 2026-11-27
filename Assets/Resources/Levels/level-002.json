@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 2,
+  "id": 2,
+  "name": "Pack their bags",
+  "characters": [
+    "mia",
+    "leo",
+    "zoe"
+  ],
+  "categories": [
+    "Hats",
+    "Shirts",
+    "Bags"
+  ],
+  "items": [
+    "red_cap",
+    "blue_cap",
+    "purple_cap",
+    "red_shirt",
+    "blue_shirt",
+    "purple_shirt",
+    "red_bag",
+    "blue_bag",
+    "purple_bag"
+  ],
+  "board": [
+    2,
+    0,
+    1,
+    3,
+    4,
+    5,
+    7,
+    8,
+    6
+  ],
+  "steps": [
+    {
+      "row": 2,
+      "goal": "Match the bags",
+      "clues": [
+        {
+          "item": "red_bag",
+          "text": "Mia carries the <color=#f36555>red</color> bag."
+        },
+        {
+          "item": "purple_bag",
+          "text": "Zoe carries the <color=#a45de2>purple</color> bag."
+        },
+        {
+          "item": "blue_bag",
+          "text": "Leo carries the <color=#358ee9>blue</color> bag."
+        }
+      ]
+    },
+    {
+      "row": 0,
+      "goal": "Match the hats",
+      "clues": [
+        {
+          "item": "red_cap",
+          "text": "Mia wears the <color=#f36555>red</color> cap."
+        },
+        {
+          "item": "purple_cap",
+          "text": "Zoe wears the <color=#a45de2>purple</color> cap."
+        },
+        {
+          "item": "blue_cap",
+          "text": "Leo wears the <color=#358ee9>blue</color> cap."
+        }
+      ]
+    },
+    {
+      "row": 1,
+      "goal": "Match the shirts",
+      "clues": [
+        {
+          "item": "red_shirt",
+          "text": "Mia wears the <color=#f36555>red</color> shirt."
+        },
+        {
+          "item": "purple_shirt",
+          "text": "Zoe wears the <color=#a45de2>purple</color> shirt."
+        },
+        {
+          "item": "blue_shirt",
+          "text": "Leo wears the <color=#358ee9>blue</color> shirt."
+        }
+      ]
+    }
+  ],
+  "moveBudget": 0,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    }
+  ],
+  "subtitle": "Match all 9 items using the clues.",
+  "coach": "Sort the bags, then check the hats.",
+  "completion": "Packed and ready for the day."
+}

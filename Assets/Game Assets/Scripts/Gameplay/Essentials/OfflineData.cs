@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 // The save: public fields, stored as JSON in one PlayerPrefs key.
@@ -16,6 +17,13 @@ public class OfflineData
     public int CurrentLevel = 1;        // 1-based; the level to open on launch. Writer: Manager_Game (on win)
     public int PassedLevels = 0;        // highest level number ever won. Writer: Manager_Game (on win)
     public bool IsSoundOn = true;       // music + effects. Writer: Manager_Audio.SetSoundOn
+    // Onboarding playtest (writer: Manager_Flow).
+    public List<int> CompletedLevels = new List<int>();   // first clears, ascending
+    public int Coins = 0;                                  // first-clear rewards
+    public List<string> Lessons = new List<string>();     // acknowledged lesson ids
+    public string FeedbackGoal = "";                       // feedback answers ("" = not answered)
+    public string FeedbackWrap = "";
+    public string FeedbackDifficulty = "";
 
     private static OfflineData _instance;
 
@@ -47,6 +55,8 @@ public class OfflineData
         // Migrations / repairs.
         _instance.CurrentLevel = Mathf.Max(1, _instance.CurrentLevel);
         _instance.PassedLevels = Mathf.Max(0, _instance.PassedLevels);
+        _instance.CompletedLevels ??= new List<int>();
+        _instance.Lessons ??= new List<string>();
     }
 
     // Deletes the save; the next Load() starts fresh. Used by the tester.

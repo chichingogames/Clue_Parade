@@ -1,49 +1,120 @@
 {
   "schemaVersion": 2,
   "id": 1,
-  "name": "Ready for the fair",
-  "characters": ["mia", "leo", "zoe"],
-  "categories": ["Hats", "Gear", "Bags"],
+  "name": "Hats on!",
+  "characters": [
+    "mia",
+    "leo",
+    "zoe"
+  ],
+  "categories": [
+    "Hats",
+    "Shirts",
+    "Bags"
+  ],
   "items": [
-    "hat_cap_red", "hat_beanie_teal", "hat_sunhat_purple",
-    "gear_skateboard_yellow", "gear_basketball_blue", "gear_guitar_brown",
-    "bag_red", "bag_blue", "bag_purple"
+    "red_cap",
+    "blue_cap",
+    "purple_cap",
+    "red_shirt",
+    "blue_shirt",
+    "purple_shirt",
+    "red_bag",
+    "blue_bag",
+    "purple_bag"
   ],
   "board": [
-    2, 0, 1,
-    4, 5, 3,
-    7, 8, 6
+    1,
+    2,
+    0,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
   ],
   "steps": [
     {
-      "row": 1,
-      "goal": "Hand out the gear",
+      "row": 0,
+      "goal": "Match the hats",
       "clues": [
-        { "item": "gear_skateboard_yellow", "text": "Mia rides the <color=#E0A800>skateboard</color>." },
-        { "item": "gear_guitar_brown", "text": "Zoe plays the <color=#B8692E>guitar</color>." }
+        {
+          "item": "red_cap",
+          "text": "Mia wears the <color=#f36555>red</color> cap."
+        },
+        {
+          "item": "purple_cap",
+          "text": "Zoe wears the <color=#a45de2>purple</color> cap."
+        },
+        {
+          "item": "blue_cap",
+          "text": "Leo wears the <color=#358ee9>blue</color> cap."
+        }
+      ]
+    },
+    {
+      "row": 1,
+      "goal": "Match the shirts",
+      "clues": [
+        {
+          "item": "red_shirt",
+          "text": "Mia wears the <color=#f36555>red</color> shirt."
+        },
+        {
+          "item": "purple_shirt",
+          "text": "Zoe wears the <color=#a45de2>purple</color> shirt."
+        },
+        {
+          "item": "blue_shirt",
+          "text": "Leo wears the <color=#358ee9>blue</color> shirt."
+        }
       ]
     },
     {
       "row": 2,
-      "goal": "Pack their bags",
+      "goal": "Match the bags",
       "clues": [
-        { "item": "bag_red", "text": "Mia carries the <color=#ED3937>red</color> bag." },
-        { "item": "bag_purple", "text": "Zoe carries the <color=#9E3FD1>purple</color> bag." }
-      ]
-    },
-    {
-      "row": 0,
-      "goal": "Hats on!",
-      "clues": [
-        { "item": "hat_beanie_teal", "text": "Leo wears the <color=#1FA99D>teal</color> beanie." },
-        { "item": "hat_sunhat_purple", "text": "Zoe keeps the sun off with a <color=#9E3FD1>sunhat</color>." }
+        {
+          "item": "red_bag",
+          "text": "Mia carries the <color=#f36555>red</color> bag."
+        },
+        {
+          "item": "purple_bag",
+          "text": "Zoe carries the <color=#a45de2>purple</color> bag."
+        },
+        {
+          "item": "blue_bag",
+          "text": "Leo carries the <color=#358ee9>blue</color> bag."
+        }
       ]
     }
   ],
-  "moveBudget": 8,
+  "moveBudget": 0,
   "solution": [
-    { "axis": "row", "line": 1, "direction": 1 },
-    { "axis": "row", "line": 2, "direction": 1 },
-    { "axis": "row", "line": 0, "direction": -1 }
-  ]
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    }
+  ],
+  "subtitle": "Match all 9 items using the clues.",
+  "coach": "Swipe the hats right. Red wraps back to Mia.",
+  "completion": "Hats on. Looking good!",
+  "requiredFirstSwipe": {
+    "axis": "row",
+    "line": 0,
+    "direction": 1
+  },
+  "lesson": {
+    "id": "colors-and-wrap",
+    "title": "Read a clue. Make a match.",
+    "paragraphs": [
+      "The clue cards tell you who gets each item. Slide the items under the right person.",
+      "Match all 9 items to finish.",
+      "Read the Hat clues above the board. Then try one swipe with me."
+    ],
+    "illustration": "neutralCrew",
+    "button": "Show me"
+  }
 }

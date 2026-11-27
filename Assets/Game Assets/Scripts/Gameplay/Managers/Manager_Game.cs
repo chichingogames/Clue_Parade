@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Central state machine. Decides whether a swipe is legal, counts moves, keeps the undo history,
-// and ends the level. Moving on after a win or fail is the player's call (UI_InGame buttons).
+// and ends the level. Moving on after a win or fail is the player's call (Manager_Flow's popups).
+// Input is gated, never paused by a flag: it is accepted while Playing and no popup is up
+// (ApplyInputGate re-runs on state changes and popup open / close).
 public class Manager_Game : Singleton<Manager_Game>
 {
     public event Action<GameState> OnStateChanged = delegate { };
     public event Action<int> OnLevelStarted = delegate { };
     public event Action OnMoveMade = delegate { };      // also raised by Undo: the board and MovesUsed changed
+    public event Action<LevelMove> OnMoveCommitted = delegate { };   // a counted move (swipe or ApplyMove)
+    public event Action<LevelMove> OnMoveRejected = delegate { };    // a swipe refused for the required first move (its argument)
+    public event Action OnUndone = delegate { };
 
     public GameState State { get; private set; } = GameState.Loading;
     public int CurrentLevel { get; private set; } = 1;
@@ -18,6 +23,12 @@ public class Manager_Game : Singleton<Manager_Game>
 
     // Undo works while playing and also after a win or fail ("Undo for one more move").
     public bool CanUndo => _history.Count > 0 && State != GameState.Loading;
+
+    // The level's guided first swipe while it still applies: no move made and the board is the
+    // start board (so Undo back to the start brings it back). Null otherwise.
+    public LevelMove RequiredMove =>
+        State == GameState.Playing && Level?.RequiredFirstMove != null && MovesUsed == 0
+        && Manager_Board.Instance.State.SameCells(Level.StartCells) ? Level.RequiredFirstMove : null;
 
     // Current press: the cell it started on, and whether a line has been picked up.
     private bool _pressOnBoard;
@@ -45,7 +56,19 @@ public class Manager_Game : Singleton<Manager_Game>
         input.OnDrag += HandleDrag;
         input.OnRelease += HandleRelease;
         input.OnCancel += HandleCancel;
+
+        var popUps = Manager_PopUp.Instance;
+        if (popUps != null)
+        {
+            popUps.OnPopupShown += _ => ApplyInputGate();
+            popUps.OnPopupCloseFinished += ApplyInputGate;
+        }
     }
+
+    // Paused = a popup is open or still closing. Derived, so it cannot get stuck.
+    public bool IsPaused => Manager_PopUp.Instance != null && Manager_PopUp.Instance.IsPopUpActive;
+
+    private void ApplyInputGate() => Manager_Input.Instance.AcceptInput = State == GameState.Playing && !IsPaused;
 
     protected override void OnDestroy()
     {
@@ -71,7 +94,8 @@ public class Manager_Game : Singleton<Manager_Game>
     {
         if (HasLaunched) return;
         HasLaunched = true;
-        if (Level == null) StartLevel(OfflineData.Instance.CurrentLevel);   // the Tester may have loaded one already
+        // The Tester may have loaded one already. Saves from looping builds can be past the last level.
+        if (Level == null) StartLevel(Mathf.Clamp(OfflineData.Instance.CurrentLevel, 1, Mathf.Max(1, Manager_Level.Instance.LevelCount)));
     }
 
     private void Start()
@@ -161,6 +185,15 @@ public class Manager_Game : Singleton<Manager_Game>
             return;
         }
 
+        // A guided first swipe: anything else snaps back and costs nothing.
+        var required = RequiredMove;
+        if (required != null && !required.Is(_lineIsRow, index, steps))
+        {
+            board.CancelDrag();
+            OnMoveRejected(required);
+            return;
+        }
+
         board.CommitDrag(steps);
         CountMove(_lineIsRow, index, steps);
     }
@@ -188,12 +221,13 @@ public class Manager_Game : Singleton<Manager_Game>
         if (!CanUndo || board.IsAnimating || board.IsDragging || _lineHeld) return false;
 
         var move = _history.Pop();
-        if (move.IsRow) board.ShiftRow(move.Index, -move.Steps);
-        else board.ShiftColumn(move.Index, -move.Steps);
+        if (move.IsRow) board.ShiftRow(move.Index, -move.Steps, celebrate: false);
+        else board.ShiftColumn(move.Index, -move.Steps, celebrate: false);
         MovesUsed -= Mathf.Abs(move.Steps);
         Manager_Audio.Instance?.PlaySound(SoundType.Undo);     // haptic comes from the slide's settle
 
         SetState(GameState.Playing);
+        OnUndone();
         OnMoveMade();
         return true;
     }
@@ -202,6 +236,7 @@ public class Manager_Game : Singleton<Manager_Game>
     {
         _history.Push(new Move { IsRow = isRow, Index = index, Steps = steps });
         MovesUsed += Mathf.Abs(steps);
+        OnMoveCommitted(new LevelMove { axis = isRow ? "row" : "column", line = index, direction = Math.Sign(steps) });
         OnMoveMade();
         EvaluateEndConditions();
     }
@@ -255,7 +290,7 @@ public class Manager_Game : Singleton<Manager_Game>
     {
         var data = OfflineData.Instance;
         data.PassedLevels = Mathf.Max(data.PassedLevels, CurrentLevel);
-        data.CurrentLevel = Mathf.Max(data.CurrentLevel, CurrentLevel + 1);
+        data.CurrentLevel = Mathf.Min(Mathf.Max(data.CurrentLevel, CurrentLevel + 1), Mathf.Max(1, Manager_Level.Instance.LevelCount));
         data.Save();
     }
 
@@ -263,7 +298,7 @@ public class Manager_Game : Singleton<Manager_Game>
     {
         if (State == state) return;
         State = state;
-        Manager_Input.Instance.AcceptInput = State == GameState.Playing;
+        ApplyInputGate();
         OnStateChanged(state);
 
         if (state == GameState.Won)

@@ -1,0 +1,1229 @@
+{
+  "schemaVersion": 1,
+  "project": "Tilewrap",
+  "contentVersion": "clues-v2-unity-1",
+  "board": {
+    "rows": 3,
+    "columns": 3,
+    "goalCells": [
+      "red_cap",
+      "blue_cap",
+      "purple_cap",
+      "red_shirt",
+      "blue_shirt",
+      "purple_shirt",
+      "red_bag",
+      "blue_bag",
+      "purple_bag"
+    ],
+    "slotOrder": "row-major",
+    "movesPerSwipe": 1
+  },
+  "recipients": [
+    {
+      "id": "mia",
+      "name": "Mia",
+      "column": 0,
+      "color": "red",
+      "colorHex": "#f36555",
+      "symbol": "heart",
+      "symbolSprite": "symbol_mia",
+      "baseSprite": "mia_base",
+      "hatSprite": "mia_hat",
+      "shirtSprite": "mia_shirt",
+      "bagRearSprite": "mia_bag_rear",
+      "bagStrapsSprite": "mia_bag_straps"
+    },
+    {
+      "id": "leo",
+      "name": "Leo",
+      "column": 1,
+      "color": "blue",
+      "colorHex": "#358ee9",
+      "symbol": "circle",
+      "symbolSprite": "symbol_leo",
+      "baseSprite": "leo_base",
+      "hatSprite": "leo_hat",
+      "shirtSprite": "leo_shirt",
+      "bagRearSprite": "leo_bag_rear",
+      "bagStrapsSprite": "leo_bag_straps"
+    },
+    {
+      "id": "zoe",
+      "name": "Zoe",
+      "column": 2,
+      "color": "purple",
+      "colorHex": "#a45de2",
+      "symbol": "diamond",
+      "symbolSprite": "symbol_zoe",
+      "baseSprite": "zoe_base",
+      "hatSprite": "zoe_hat",
+      "shirtSprite": "zoe_shirt",
+      "bagRearSprite": "zoe_bag_rear",
+      "bagStrapsSprite": "zoe_bag_straps"
+    }
+  ],
+  "categories": [
+    {
+      "id": "hats",
+      "label": "Hats",
+      "row": 0,
+      "sprite": "category_hats"
+    },
+    {
+      "id": "shirts",
+      "label": "Shirts",
+      "row": 1,
+      "sprite": "category_shirts"
+    },
+    {
+      "id": "bags",
+      "label": "Bags",
+      "row": 2,
+      "sprite": "category_bags"
+    }
+  ],
+  "items": [
+    {
+      "id": "red_cap",
+      "label": "Red cap",
+      "recipientId": "mia",
+      "categoryId": "hats",
+      "sprite": "red_cap",
+      "clue": "Mia wears the red cap."
+    },
+    {
+      "id": "blue_cap",
+      "label": "Blue cap",
+      "recipientId": "leo",
+      "categoryId": "hats",
+      "sprite": "blue_cap",
+      "clue": "Leo wears the blue cap."
+    },
+    {
+      "id": "purple_cap",
+      "label": "Purple cap",
+      "recipientId": "zoe",
+      "categoryId": "hats",
+      "sprite": "purple_cap",
+      "clue": "Zoe wears the purple cap."
+    },
+    {
+      "id": "red_shirt",
+      "label": "Red shirt",
+      "recipientId": "mia",
+      "categoryId": "shirts",
+      "sprite": "red_shirt",
+      "clue": "Mia wears the red shirt."
+    },
+    {
+      "id": "blue_shirt",
+      "label": "Blue shirt",
+      "recipientId": "leo",
+      "categoryId": "shirts",
+      "sprite": "blue_shirt",
+      "clue": "Leo wears the blue shirt."
+    },
+    {
+      "id": "purple_shirt",
+      "label": "Purple shirt",
+      "recipientId": "zoe",
+      "categoryId": "shirts",
+      "sprite": "purple_shirt",
+      "clue": "Zoe wears the purple shirt."
+    },
+    {
+      "id": "red_bag",
+      "label": "Red bag",
+      "recipientId": "mia",
+      "categoryId": "bags",
+      "sprite": "red_bag",
+      "clue": "Mia carries the red bag."
+    },
+    {
+      "id": "blue_bag",
+      "label": "Blue bag",
+      "recipientId": "leo",
+      "categoryId": "bags",
+      "sprite": "blue_bag",
+      "clue": "Leo carries the blue bag."
+    },
+    {
+      "id": "purple_bag",
+      "label": "Purple bag",
+      "recipientId": "zoe",
+      "categoryId": "bags",
+      "sprite": "purple_bag",
+      "clue": "Zoe carries the purple bag."
+    }
+  ],
+  "clues": {
+    "defaultRecipientOrder": [
+      "mia",
+      "zoe"
+    ],
+    "visibleCards": 2,
+    "fallbackToUnmatchedRecipient": true,
+    "notebookBadge": 9
+  },
+  "rewards": {
+    "firstClearCoins": 30,
+    "replayCoins": 0,
+    "hintsFree": true
+  },
+  "input": {
+    "thresholdMinUnits": 45,
+    "thresholdMaxUnits": 75,
+    "thresholdBoardDivisor": 12,
+    "diagonalRejectRatio": 0.85
+  },
+  "timings": {
+    "slideSeconds": 0.23,
+    "equipmentPopSeconds": 0.4,
+    "newMatchSeconds": 0.4,
+    "matchParticleSeconds": 0.65,
+    "winDelaySeconds": 0.38,
+    "confettiSeconds": 2.2,
+    "guideLoopSeconds": 1.7,
+    "hintAttentionDelaySeconds": 16,
+    "hintPulseSeconds": 1.3,
+    "hintPulseRepeats": 2
+  },
+  "characterRegistration": {
+    "width": 600,
+    "height": 900,
+    "pivot": [
+      0.5,
+      0.5
+    ],
+    "layerOrder": [
+      "bagRear",
+      "base",
+      "shirt",
+      "bagStraps",
+      "hat"
+    ]
+  },
+  "ui": {
+    "referenceWidth": 1080,
+    "referenceHeight": 1920,
+    "canvasMatchWidthOrHeight": 0,
+    "pixelsPerUnit": 100,
+    "safeAreaRequired": true,
+    "colors": {
+      "ink": "#40281f",
+      "cream": "#fff1d8",
+      "gold": "#ffc82e",
+      "boardDivider": "#c5a581",
+      "success": "#4a9a24"
+    },
+    "layoutTopLeft": [
+      {
+        "key": "hud",
+        "x": 42,
+        "y": 28,
+        "width": 996,
+        "height": 112
+      },
+      {
+        "key": "title",
+        "x": 42,
+        "y": 153,
+        "width": 996,
+        "height": 84
+      },
+      {
+        "key": "subtitle",
+        "x": 42,
+        "y": 240,
+        "width": 996,
+        "height": 42
+      },
+      {
+        "key": "clueHeading",
+        "x": 42,
+        "y": 306,
+        "width": 996,
+        "height": 38
+      },
+      {
+        "key": "clueCards",
+        "x": 42,
+        "y": 354,
+        "width": 996,
+        "height": 168
+      },
+      {
+        "key": "crew",
+        "x": 230,
+        "y": 528,
+        "width": 680,
+        "height": 216
+      },
+      {
+        "key": "nameTabs",
+        "x": 230,
+        "y": 744,
+        "width": 680,
+        "height": 72
+      },
+      {
+        "key": "board",
+        "x": 210,
+        "y": 816,
+        "width": 720,
+        "height": 720
+      },
+      {
+        "key": "coach",
+        "x": 42,
+        "y": 1548,
+        "width": 996,
+        "height": 66
+      },
+      {
+        "key": "progress",
+        "x": 210,
+        "y": 1622,
+        "width": 720,
+        "height": 48
+      },
+      {
+        "key": "controlNote",
+        "x": 42,
+        "y": 1678,
+        "width": 996,
+        "height": 32
+      },
+      {
+        "key": "actions",
+        "x": 42,
+        "y": 1732,
+        "width": 996,
+        "height": 144
+      },
+      {
+        "key": "brand",
+        "x": 42,
+        "y": 1888,
+        "width": 996,
+        "height": 24
+      }
+    ],
+    "textSizes": {
+      "title": 80,
+      "body": 42,
+      "clue": 42,
+      "clueHeading": 34,
+      "name": 46,
+      "button": 44,
+      "coach": 36,
+      "moveNumber": 84,
+      "small": 32
+    },
+    "strings": {
+      "practice": "Practice",
+      "unlimited": "no move limit",
+      "movesLeft": "moves left",
+      "goal": "Match all 9 items using the clues.",
+      "clues": "CLUES",
+      "allClues": "All 9",
+      "undo": "Undo",
+      "notebook": "Notebook",
+      "hint": "Hint",
+      "controlNote": "Swipe rows or columns. Tiles wrap.",
+      "winTitle": "Everyone’s ready!",
+      "failTitle": "Out of moves",
+      "brand": "CHICHINGO"
+    }
+  },
+  "sprites": [
+    {
+      "key": "mia_base",
+      "path": "Assets/Tilewrap/Sprites/Characters/mia/mia_base.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "mia_hat",
+      "path": "Assets/Tilewrap/Sprites/Characters/mia/mia_hat.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "mia_bag_rear",
+      "path": "Assets/Tilewrap/Sprites/Characters/mia/mia_bag_rear.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "mia_bag_straps",
+      "path": "Assets/Tilewrap/Sprites/Characters/mia/mia_bag_straps.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "mia_shirt",
+      "path": "Assets/Tilewrap/Sprites/Characters/mia/mia_shirt.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "leo_base",
+      "path": "Assets/Tilewrap/Sprites/Characters/leo/leo_base.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "leo_hat",
+      "path": "Assets/Tilewrap/Sprites/Characters/leo/leo_hat.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "leo_bag_rear",
+      "path": "Assets/Tilewrap/Sprites/Characters/leo/leo_bag_rear.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "leo_bag_straps",
+      "path": "Assets/Tilewrap/Sprites/Characters/leo/leo_bag_straps.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "leo_shirt",
+      "path": "Assets/Tilewrap/Sprites/Characters/leo/leo_shirt.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "zoe_base",
+      "path": "Assets/Tilewrap/Sprites/Characters/zoe/zoe_base.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "zoe_hat",
+      "path": "Assets/Tilewrap/Sprites/Characters/zoe/zoe_hat.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "zoe_bag_rear",
+      "path": "Assets/Tilewrap/Sprites/Characters/zoe/zoe_bag_rear.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "zoe_bag_straps",
+      "path": "Assets/Tilewrap/Sprites/Characters/zoe/zoe_bag_straps.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "zoe_shirt",
+      "path": "Assets/Tilewrap/Sprites/Characters/zoe/zoe_shirt.png",
+      "width": 600,
+      "height": 900,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "red_cap",
+      "path": "Assets/Tilewrap/Sprites/Items/red_cap.png",
+      "width": 512,
+      "height": 512,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "blue_cap",
+      "path": "Assets/Tilewrap/Sprites/Items/blue_cap.png",
+      "width": 512,
+      "height": 512,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "purple_cap",
+      "path": "Assets/Tilewrap/Sprites/Items/purple_cap.png",
+      "width": 512,
+      "height": 512,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "red_shirt",
+      "path": "Assets/Tilewrap/Sprites/Items/red_shirt.png",
+      "width": 512,
+      "height": 512,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "blue_shirt",
+      "path": "Assets/Tilewrap/Sprites/Items/blue_shirt.png",
+      "width": 512,
+      "height": 512,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "purple_shirt",
+      "path": "Assets/Tilewrap/Sprites/Items/purple_shirt.png",
+      "width": 512,
+      "height": 512,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "red_bag",
+      "path": "Assets/Tilewrap/Sprites/Items/red_bag.png",
+      "width": 512,
+      "height": 512,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "blue_bag",
+      "path": "Assets/Tilewrap/Sprites/Items/blue_bag.png",
+      "width": 512,
+      "height": 512,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "purple_bag",
+      "path": "Assets/Tilewrap/Sprites/Items/purple_bag.png",
+      "width": 512,
+      "height": 512,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "category_hats",
+      "path": "Assets/Tilewrap/Sprites/UI/category_hats.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "symbol_mia",
+      "path": "Assets/Tilewrap/Sprites/UI/symbol_mia.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "category_shirts",
+      "path": "Assets/Tilewrap/Sprites/UI/category_shirts.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "symbol_leo",
+      "path": "Assets/Tilewrap/Sprites/UI/symbol_leo.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "category_bags",
+      "path": "Assets/Tilewrap/Sprites/UI/category_bags.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "symbol_zoe",
+      "path": "Assets/Tilewrap/Sprites/UI/symbol_zoe.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "button_cream",
+      "path": "Assets/Tilewrap/Sprites/UI/button_cream.png",
+      "width": 256,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "key": "button_gold",
+      "path": "Assets/Tilewrap/Sprites/UI/button_gold.png",
+      "width": 256,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "key": "panel_clue",
+      "path": "Assets/Tilewrap/Sprites/UI/panel_clue.png",
+      "width": 256,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "key": "panel_clue_matched",
+      "path": "Assets/Tilewrap/Sprites/UI/panel_clue_matched.png",
+      "width": 256,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "key": "panel_modal",
+      "path": "Assets/Tilewrap/Sprites/UI/panel_modal.png",
+      "width": 256,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        36,
+        36,
+        36,
+        36
+      ]
+    },
+    {
+      "key": "panel_moves",
+      "path": "Assets/Tilewrap/Sprites/UI/panel_moves.png",
+      "width": 256,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "key": "panel_practice",
+      "path": "Assets/Tilewrap/Sprites/UI/panel_practice.png",
+      "width": 256,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "key": "tab_name",
+      "path": "Assets/Tilewrap/Sprites/UI/tab_name.png",
+      "width": 256,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "key": "tab_category",
+      "path": "Assets/Tilewrap/Sprites/UI/tab_category.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        30,
+        30,
+        8,
+        30
+      ]
+    },
+    {
+      "key": "tab_category_active",
+      "path": "Assets/Tilewrap/Sprites/UI/tab_category_active.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        30,
+        30,
+        8,
+        30
+      ]
+    },
+    {
+      "key": "board_frame",
+      "path": "Assets/Tilewrap/Sprites/UI/board_frame.png",
+      "width": 256,
+      "height": 256,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        40,
+        40,
+        40,
+        40
+      ]
+    },
+    {
+      "key": "row_highlight",
+      "path": "Assets/Tilewrap/Sprites/UI/row_highlight.png",
+      "width": 256,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    {
+      "key": "capsule_white",
+      "path": "Assets/Tilewrap/Sprites/UI/capsule_white.png",
+      "width": 128,
+      "height": 64,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        32,
+        30,
+        32,
+        30
+      ]
+    },
+    {
+      "key": "check_badge",
+      "path": "Assets/Tilewrap/Sprites/UI/check_badge.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "clue_pin",
+      "path": "Assets/Tilewrap/Sprites/UI/clue_pin.png",
+      "width": 32,
+      "height": 64,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "icon_undo",
+      "path": "Assets/Tilewrap/Sprites/UI/icon_undo.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "icon_notebook",
+      "path": "Assets/Tilewrap/Sprites/UI/icon_notebook.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "icon_hint",
+      "path": "Assets/Tilewrap/Sprites/UI/icon_hint.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "icon_menu",
+      "path": "Assets/Tilewrap/Sprites/UI/icon_menu.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "icon_coin",
+      "path": "Assets/Tilewrap/Sprites/UI/icon_coin.png",
+      "width": 128,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "tutorial_arrow",
+      "path": "Assets/Tilewrap/Sprites/Tutorial/tutorial_arrow.png",
+      "width": 256,
+      "height": 128,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "tutorial_hand",
+      "path": "Assets/Tilewrap/Sprites/Tutorial/tutorial_hand.png",
+      "width": 512,
+      "height": 512,
+      "pivot": [
+        0.46,
+        0.9
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "key": "background_teal",
+      "path": "Assets/Tilewrap/Sprites/UI/background_teal.png",
+      "width": 1080,
+      "height": 1920,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "border": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "fonts": [
+    {
+      "key": "regular",
+      "path": "Assets/Tilewrap/Fonts/TilewrapUI-Regular.ttf"
+    },
+    {
+      "key": "extrabold",
+      "path": "Assets/Tilewrap/Fonts/TilewrapUI-ExtraBold.ttf"
+    }
+  ],
+  "audio": [
+    {
+      "key": "match_1",
+      "path": "Assets/Tilewrap/Audio/match_1.wav",
+      "volume": 0.083651
+    },
+    {
+      "key": "match_2",
+      "path": "Assets/Tilewrap/Audio/match_2.wav",
+      "volume": 0.10004
+    },
+    {
+      "key": "match_3",
+      "path": "Assets/Tilewrap/Audio/match_3.wav",
+      "volume": 0.10004
+    },
+    {
+      "key": "level_win",
+      "path": "Assets/Tilewrap/Audio/level_win.wav",
+      "volume": 0.10004
+    }
+  ],
+  "levels": [
+    "Assets/Tilewrap/Data/Levels/level_001.json",
+    "Assets/Tilewrap/Data/Levels/level_002.json",
+    "Assets/Tilewrap/Data/Levels/level_003.json",
+    "Assets/Tilewrap/Data/Levels/level_004.json",
+    "Assets/Tilewrap/Data/Levels/level_005.json"
+  ]
+}

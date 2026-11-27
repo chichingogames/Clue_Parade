@@ -3,6 +3,9 @@ using System;
 // Append-only: these enums are saved / serialized by ordinal. Never renumber or reuse a value.
 public enum GameState { Loading = 0, Playing = 1, Won = 2, Failed = 3 }
 
+// One per popup (Manager_PopUp registry). Serialized on each popup by ordinal: append only.
+public enum PopupName { Lesson = 0, Win = 1, Failed = 2, Hint = 3, Notebook = 4, LevelSelect = 5, Menu = 6, Confirm = 7, Feedback = 8 }
+
 // Strength of a vibration pulse (Haptics.Play). Not serialized.
 public enum HapticType { Light = 0, Medium = 1, Heavy = 2 }
 
@@ -29,18 +32,21 @@ public struct TileData : IEquatable<TileData>
     public override string ToString() => $"#{Id}";
 }
 
-// Sorting orders on the Default layer: tiles, then the row outline and frame over them, then checks
-// and the category tags (which overlap the frame's left edge).
+// Sorting orders on the Default layer (the handoff board: a cream panel the tiles sit on).
 public static class SortOrder
 {
-    public const int Background = -10;  // booth art behind the board
-    public const int Board = 0;
-    public const int TileBody = 4;      // ItemTile surface
+    public const int Background = -10;  // teal backdrop
+    public const int Board = 0;         // board panel (board_frame)
+    public const int Divider = 1;       // grid lines between cells
+    public const int ActiveRow = 2;     // highlight behind the active step's row
+    public const int TileFlash = 3;     // a newly matched tile's pale green flash
     public const int TileItem = 5;      // ItemTile item art
-    public const int TileLabel = 6;     // ItemTile name
-    public const int ActiveRow = 7;     // outline around the active step's row
-    public const int Frame = 8;         // wooden frame, a foreground layer over the tiles
-    public const int TileCheck = 9;     // check on a confirmed row's cells
-    public const int Tag = 10;          // category tag (Hats / Gear / Bags)
-    public const int TagLabel = 11;
+    public const int TileCheck = 9;     // check badge on a matched cell
+    public const int Tag = 10;          // category tab beside a row
+    public const int TagIcon = 11;
+    public const int Character = 12;    // Customer (SortingGroup)
+    public const int NamePlate = 14;    // name tab under each customer
+    public const int NameLabel = 15;
+    public const int Guide = 20;        // first-swipe / hint guide band, arrow, hand
+    public const int Particles = 25;    // match sparks
 }

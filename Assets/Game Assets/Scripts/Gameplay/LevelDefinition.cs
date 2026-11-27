@@ -21,6 +21,13 @@ public class LevelDefinition
     public LevelStep[] Steps { get; }
     public LevelMove[] Solution { get; }   // a known solve from the start board
 
+    // Onboarding flow (optional in the file; empty / null when absent).
+    public string Subtitle { get; set; } = "";
+    public string Coach { get; set; } = "";
+    public string Completion { get; set; } = "";
+    public LevelMove RequiredFirstMove { get; set; }
+    public LevelLesson Lesson { get; set; }
+
     public bool HasMoveLimit => MoveLimit > 0;
 
     public int[] StepRows
@@ -34,6 +41,9 @@ public class LevelDefinition
     }
 
     public string ItemFor(TileData tile) => Items[tile.Id];
+
+    // The tile id (= home cell) of an item, or -1 if it is not on this board.
+    public int TileOf(string itemId) => System.Array.IndexOf(Items, itemId);
 
     public LevelDefinition(int number, int size, TileData[,] startCells, int moveLimit, string name,
                            string[] characters, string[] categories, string[] items, LevelStep[] steps,

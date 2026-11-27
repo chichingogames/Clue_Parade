@@ -1,23 +1,22 @@
-using TMPro;
+using DG.Tweening;
 using UnityEngine;
 
-// A Clue Parade board piece: a tile surface, the item's art and its name ("Sunhat").
-// Pure view: Manager_Board hands it the sprite and the name. Laid out in board units, where
-// 1 unit = 100 px of the 1080x1920 reference (a 296x256 px tile is 2.96 x 2.56).
+// A board piece: the item's icon on the board panel (no surface of its own, as in the handoff),
+// and a pale green flash when it becomes matched. Pure view: Manager_Board hands it the sprite.
+// 1 unit = 100 px of the 1080x1920 reference.
 public class ItemTile : MonoBehaviour
 {
-    [SerializeField] private SpriteRenderer _surface;
     [SerializeField] private SpriteRenderer _item;
-    [SerializeField] private TextMeshPro _label;
-    [Tooltip("Tile size in board units. Manager_Board uses it as the cell size; the surface is drawn sliced at this size.")]
-    [SerializeField] private Vector2 _size = new Vector2(2.96f, 2.56f);
+    [Tooltip("Rounded highlight behind the item, transparent until Flash.")]
+    [SerializeField] private SpriteRenderer _flash;
+    [Tooltip("Tile size in board units. Manager_Board uses it as the cell size.")]
+    [SerializeField] private Vector2 _size = new Vector2(2.2667f, 2.2667f);
     [Tooltip("The item art is scaled to fit inside this box (keeping its aspect), centered on the Item object.")]
-    [SerializeField] private Vector2 _itemBox = new Vector2(2.52f, 1.84f);
+    [SerializeField] private Vector2 _itemBox = new Vector2(2.0f, 2.0f);
 
     public TileData Data { get; private set; }
     public string ItemName { get; private set; }
     public Vector2 Size => _size;
-    public Sprite Surface => _surface.sprite;
 
     public void Setup(TileData data, Sprite item, string itemName)
     {
@@ -27,15 +26,22 @@ public class ItemTile : MonoBehaviour
 
         _item.sprite = item;
         _item.transform.localScale = Vector3.one * FitScale(item);
-        _label.text = itemName;
+        SetFlashAlpha(0f);
     }
 
-    // Cream for most rows, honey for the active step's row (FileRef surfaces).
-    public void SetSurface(Sprite surface)
+    // Up to color (its alpha is the peak) and back to clear over duration.
+    public void Flash(Color color, float duration)
     {
-        if (surface == null || _surface.sprite == surface) return;
-        _surface.sprite = surface;
-        _surface.size = _size;
+        _flash.DOKill();
+        _flash.color = new Color(color.r, color.g, color.b, 0f);
+        _flash.DOFade(color.a, duration * 0.35f).SetLoops(2, LoopType.Yoyo).SetLink(gameObject);
+    }
+
+    private void SetFlashAlpha(float alpha)
+    {
+        _flash.DOKill();
+        var c = _flash.color;
+        _flash.color = new Color(c.r, c.g, c.b, alpha);
     }
 
     private float FitScale(Sprite sprite)

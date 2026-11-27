@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 2,
+  "id": 3,
+  "name": "Backstage mix-up",
+  "characters": [
+    "mia",
+    "leo",
+    "zoe"
+  ],
+  "categories": [
+    "Hats",
+    "Shirts",
+    "Bags"
+  ],
+  "items": [
+    "red_cap",
+    "blue_cap",
+    "purple_cap",
+    "red_shirt",
+    "blue_shirt",
+    "purple_shirt",
+    "red_bag",
+    "blue_bag",
+    "purple_bag"
+  ],
+  "board": [
+    0,
+    4,
+    2,
+    3,
+    7,
+    5,
+    6,
+    1,
+    8
+  ],
+  "steps": [
+    {
+      "row": 0,
+      "goal": "Match the hats",
+      "clues": [
+        {
+          "item": "blue_cap",
+          "text": "Leo wears the <color=#358ee9>blue</color> cap."
+        },
+        {
+          "item": "red_cap",
+          "text": "Mia wears the <color=#f36555>red</color> cap."
+        },
+        {
+          "item": "purple_cap",
+          "text": "Zoe wears the <color=#a45de2>purple</color> cap."
+        }
+      ]
+    },
+    {
+      "row": 1,
+      "goal": "Match the shirts",
+      "clues": [
+        {
+          "item": "red_shirt",
+          "text": "Mia wears the <color=#f36555>red</color> shirt."
+        },
+        {
+          "item": "purple_shirt",
+          "text": "Zoe wears the <color=#a45de2>purple</color> shirt."
+        },
+        {
+          "item": "blue_shirt",
+          "text": "Leo wears the <color=#358ee9>blue</color> shirt."
+        }
+      ]
+    },
+    {
+      "row": 2,
+      "goal": "Match the bags",
+      "clues": [
+        {
+          "item": "red_bag",
+          "text": "Mia carries the <color=#f36555>red</color> bag."
+        },
+        {
+          "item": "purple_bag",
+          "text": "Zoe carries the <color=#a45de2>purple</color> bag."
+        },
+        {
+          "item": "blue_bag",
+          "text": "Leo carries the <color=#358ee9>blue</color> bag."
+        }
+      ]
+    }
+  ],
+  "moveBudget": 0,
+  "solution": [
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": 1
+    }
+  ],
+  "subtitle": "Match all 9 items using the clues.",
+  "coach": "Swipe the middle column down. Hats belong on top.",
+  "completion": "Everything is in the right place.",
+  "requiredFirstSwipe": {
+    "axis": "column",
+    "line": 1,
+    "direction": 1
+  },
+  "lesson": {
+    "id": "column-wrap",
+    "title": "Columns slide, too.",
+    "paragraphs": [
+      "Leo has the right color, but his things are in the wrong rows.",
+      "Top: hats. Middle: shirts. Bottom: bags.",
+      "Swipe his column down. The bottom hat wraps around to the top."
+    ],
+    "illustration": "categoryOrder",
+    "button": "Try a column"
+  }
+}

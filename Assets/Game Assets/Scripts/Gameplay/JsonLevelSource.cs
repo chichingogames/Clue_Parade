@@ -15,6 +15,13 @@ using UnityEngine;
 //   moveBudget  0 = unlimited
 //   solution    reference moves (axis "row"/"column", line, direction +1 = right/down), checked
 //               by ShiftSort > Validate Levels and replayed by the tester.
+//   Optional (the onboarding flow, Manager_Flow):
+//   subtitle    the goal line under the title ("Match all 9 items using the clues.")
+//   coach       the coach line when the level opens; completion: the win popup's payoff line
+//   requiredFirstSwipe  the only move accepted while no move is made and the board is the start
+//               board (a tutorial's guided first swipe); others snap back without costing a move
+//   lesson      a modal shown once per lesson id when the level opens:
+//               { id, title, paragraphs[], illustration ("neutralCrew" | "categoryOrder" | "moveCounter"), button }
 public class JsonLevelSource : ILevelSource
 {
     public const string ResourcesFolder = "Levels";
@@ -109,8 +116,21 @@ public class JsonLevelSource : ILevelSource
                 { error = $"a clue of step '{step.goal}' shows item '{clue.item}', which is not on the board"; return false; }
         }
 
+        var required = file.requiredFirstSwipe;
+        bool hasRequired = required != null && !string.IsNullOrEmpty(required.axis);
+        if (hasRequired && (required.line < 0 || required.line >= n || Math.Abs(required.direction) != 1
+                            || (required.axis != "row" && required.axis != "column")))
+        { error = "requiredFirstSwipe must be { axis: row|column, line 0..N-1, direction +1|-1 }"; return false; }
+
         level = new LevelDefinition(levelNumber, n, cells, file.moveBudget, file.name,
-                                    file.characters, file.categories, file.items, file.steps, file.solution);
+                                    file.characters, file.categories, file.items, file.steps, file.solution)
+        {
+            Subtitle = file.subtitle ?? "",
+            Coach = file.coach ?? "",
+            Completion = file.completion ?? "",
+            RequiredFirstMove = hasRequired ? required : null,
+            Lesson = file.lesson != null && !string.IsNullOrEmpty(file.lesson.id) ? file.lesson : null,
+        };
         return true;
     }
 }
@@ -129,6 +149,21 @@ public class LevelFile
     public LevelStep[] steps;
     public int moveBudget;
     public LevelMove[] solution;
+    public string subtitle;
+    public string coach;
+    public string completion;
+    public LevelMove requiredFirstSwipe;   // JsonUtility fills a missing one with an empty instance (axis null)
+    public LevelLesson lesson;             // likewise (id null)
+}
+
+[Serializable]
+public class LevelLesson
+{
+    public string id;              // saved once acknowledged, so the modal does not repeat
+    public string title;
+    public string[] paragraphs;
+    public string illustration;    // "neutralCrew", "categoryOrder", "moveCounter"
+    public string button;
 }
 
 [Serializable]
@@ -154,4 +189,16 @@ public class LevelMove
     public int direction;      // +1 = right / down, -1 = left / up
 
     public bool IsRow => axis == "row";
+
+    public bool Is(bool isRow, int index, int dir) => IsRow == isRow && line == index && direction == Math.Sign(dir);
+
+    // "top row right", "middle column down" (3x3 names; other sizes use numbers).
+    public string Describe(int size)
+    {
+        string[] rows = { "top", "middle", "bottom" };
+        string[] cols = { "left", "middle", "right" };
+        string place = size == 3 ? (IsRow ? rows[line] : cols[line]) : $"#{line + 1}";
+        string dir = IsRow ? (direction > 0 ? "right" : "left") : (direction > 0 ? "down" : "up");
+        return $"{place} {(IsRow ? "row" : "column")} {dir}";
+    }
 }

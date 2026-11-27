@@ -7,7 +7,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "FileRef", menuName = "ScriptableObjects/FileRef")]
 public class FileRef : ScriptableSingleton<FileRef>
 {
-    // A board item. Id = its art's file name (Sprites/Tilewrap/Items/{Id}.png), used by level files.
+    // A board item (game_config.json items: id, label, icon Assets/Tilewrap/Sprites/Items/{id}.png), used by level files.
     [Serializable]
     public struct ItemData
     {
@@ -17,14 +17,24 @@ public class FileRef : ScriptableSingleton<FileRef>
         public Sprite Sprite;
     }
 
-    // A character (a board column). Poses[k] is shown after k steps are confirmed
-    // (neutral, gear, bag, complete for the first scene's art).
+    // A character (a board column), shown above the board as its Customer prefab variant
+    // (Prefabs/Gameobjects/Customer_{Name}), which wears the items matched in its column.
     [Serializable]
     public struct CharacterData
     {
         public string Id;
         public string Name;
-        public Sprite[] Poses;
+        public Customer Customer;
+        [Tooltip("The person's symbol (name tab, notebook).")]
+        public Sprite Symbol;
+    }
+
+    // A board category (row label in level files, "Hats") and its icon (category tab, lesson).
+    [Serializable]
+    public struct CategoryData
+    {
+        public string Label;
+        public Sprite Icon;
     }
 
     [Serializable]
@@ -42,14 +52,13 @@ public class FileRef : ScriptableSingleton<FileRef>
     [SerializeField] private CategoryTag _categoryTagPrefab;
 
     [Header("Board")]
-    [Tooltip("Tile surface of rows that are not the active step's.")]
-    [SerializeField] private Sprite _tileSurface;
-    [Tooltip("Tile surface of the active step's row.")]
-    [SerializeField] private Sprite _tileSurfaceActive;
+    [Tooltip("A plain white square: the match sparks.")]
+    [SerializeField] private Sprite _spark;
 
     [Header("Catalog")]
     [SerializeField] private ItemData[] _items = new ItemData[0];
     [SerializeField] private CharacterData[] _characters = new CharacterData[0];
+    [SerializeField] private CategoryData[] _categories = new CategoryData[0];
 
     [Header("Audio")]
     [SerializeField] private AudioClip _music;
@@ -58,8 +67,7 @@ public class FileRef : ScriptableSingleton<FileRef>
     public Cell CellPrefab => _cellPrefab;
     public ItemTile ItemTilePrefab => _itemTilePrefab;
     public CategoryTag CategoryTagPrefab => _categoryTagPrefab;
-    public Sprite TileSurface => _tileSurface;
-    public Sprite TileSurfaceActive => _tileSurfaceActive;
+    public Sprite Spark => _spark;
     public AudioClip Music => _music;
 
     public bool TryGetItem(string id, out ItemData item)
@@ -86,12 +94,19 @@ public class FileRef : ScriptableSingleton<FileRef>
     {
         foreach (var entry in _characters)
         {
-            if (entry.Id != id || entry.Poses == null || entry.Poses.Length == 0) continue;
+            if (entry.Id != id || entry.Customer == null) continue;
             character = entry;
             return true;
         }
         character = default;
         return false;
+    }
+
+    public Sprite CategoryIcon(string label)
+    {
+        foreach (var entry in _categories)
+            if (string.Equals(entry.Label, label, StringComparison.OrdinalIgnoreCase)) return entry.Icon;
+        return null;
     }
 
     // False (and no error) when the sound has no clips: a missing sound is silence, not a crash.
@@ -114,7 +129,7 @@ public class FileRef : ScriptableSingleton<FileRef>
         if (_cellPrefab == null) { Debug.LogError("[FileRef] Cell prefab missing.", this); problems++; }
         if (_itemTilePrefab == null) { Debug.LogError("[FileRef] ItemTile prefab missing.", this); problems++; }
         if (_categoryTagPrefab == null) { Debug.LogError("[FileRef] CategoryTag prefab missing.", this); problems++; }
-        if (_tileSurface == null || _tileSurfaceActive == null) { Debug.LogError("[FileRef] Tile surfaces missing.", this); problems++; }
+        if (_spark == null) { Debug.LogError("[FileRef] Spark sprite missing.", this); problems++; }
         if (_music == null) Debug.LogWarning("[FileRef] No music clip.", this);
         foreach (SoundType type in Enum.GetValues(typeof(SoundType)))
             if (type != SoundType.TileMatch && !TryGetSound(type, out _)) Debug.LogWarning($"[FileRef] No clip for sound {type}.", this);

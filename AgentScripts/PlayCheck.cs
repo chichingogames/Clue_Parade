@@ -21,9 +21,20 @@ public static class PlayCheck
                     $"activeRow {state.ActiveRow} moves {game.MovesUsed}/{level.MoveLimit} animating {board.IsAnimating}");
         for (int r = 0; r < state.Size; r++)
         {
-            text.Append($" | {(state.IsRowConfirmed(r) ? "*" : r == state.ActiveRow ? ">" : " ")}{level.Categories[r]}:");
+            text.Append($" | {(state.IsRowComplete(r) ? "*" : r == state.ActiveRow ? ">" : " ")}{level.Categories[r]}:");
             for (int c = 0; c < state.Size; c++)
                 text.Append(state.IsHome(r, c) ? " [ok]" : " [  ]").Append(FileRef.Instance.GetItem(level.ItemFor(state[r, c])).Name);
+        }
+        // Each customer's accessories that are switched on.
+        text.Append($" | matched {state.MatchedCount}/{state.CellCount} | wearing:");
+        for (int c = 0; c < state.Size; c++)
+        {
+            var customer = board.CustomerOf(c);
+            if (customer == null) continue;
+            text.Append($" {customer.Id}[");
+            foreach (string category in level.Categories)
+                if (customer.IsEquipped(category)) text.Append(category[0]);
+            text.Append("]");
         }
         return text.ToString();
     }

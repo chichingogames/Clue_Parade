@@ -173,11 +173,11 @@ public class TestManager : MonoBehaviour
         var board = Manager_Board.Instance.State;
         string moves = level.HasMoveLimit ? $"{game.MovesUsed}/{level.MoveLimit} moves" : $"{game.MovesUsed} moves (unlimited)";
 
-        // One line per row: [ok] = the tile is home, * = confirmed row, > = the active step's row.
+        // One line per row: [ok] = the tile is home, * = complete row, > = the active step's row.
         var rows = new System.Text.StringBuilder();
         for (int r = 0; r < board.Size; r++)
         {
-            string mark = board.IsRowConfirmed(r) ? "*" : r == board.ActiveRow ? ">" : " ";
+            string mark = board.IsRowComplete(r) ? "*" : r == board.ActiveRow ? ">" : " ";
             rows.Append($"\n {mark} {level.Categories[r],-8}");
             for (int c = 0; c < board.Size; c++)
                 rows.Append(board.IsHome(r, c) ? "[ok] " : "[  ] ").Append(level.ItemFor(board[r, c])).Append("   ");
@@ -186,7 +186,7 @@ public class TestManager : MonoBehaviour
         var save = OfflineData.Instance;
         Debug.Log($"[TestManager] save: current {save.CurrentLevel}, passed {save.PassedLevels}, sound {(save.IsSoundOn ? "on" : "off")}");
         Debug.Log($"[TestManager] level {game.CurrentLevel} (file {level.Number}, \"{level.Name}\") | {game.State} | " +
-                  $"step {Mathf.Min(board.ActiveStep + 1, board.StepCount)}/{board.StepCount} | {moves}{rows}");
+                  $"step {Mathf.Min(board.ActiveStep + 1, board.StepCount)}/{board.StepCount} | {board.MatchedCount}/{board.CellCount} matched | {moves}{rows}");
     }
 
     #endregion

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": 1,
+  "title": "Hats on!",
+  "goalText": "Match all 9 items using the clues.",
+  "moveLimit": 0,
+  "startingCells": [
+    "blue_cap",
+    "purple_cap",
+    "red_cap",
+    "red_shirt",
+    "blue_shirt",
+    "purple_shirt",
+    "red_bag",
+    "blue_bag",
+    "purple_bag"
+  ],
+  "clueRowOrder": [
+    "hats",
+    "shirts",
+    "bags"
+  ],
+  "coachText": "Swipe the hats right. Red wraps back to Mia.",
+  "completionText": "Hats on. Looking good!",
+  "minimumMoves": 1,
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    }
+  ],
+  "tutorial": {
+    "id": "colors-and-wrap",
+    "title": "Read a clue. Make a match.",
+    "paragraphs": [
+      "The clue cards tell you who gets each item. Slide the items under the right person.",
+      "Match all 9 items to finish.",
+      "Read the Hat clues above the board. Then try one swipe with me."
+    ],
+    "illustration": "neutralCrew",
+    "buttonText": "Show me"
+  },
+  "requiredFirstSwipe": {
+    "axis": "row",
+    "line": 0,
+    "direction": 1
+  }
+}

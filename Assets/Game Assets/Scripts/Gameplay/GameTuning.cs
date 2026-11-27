@@ -43,6 +43,20 @@ public class GameTuning : MonoBehaviour
     [Tooltip("Scale-up time of a matched check. On level load each check pops once its tile has spawned; in play, when a move matches it.")]
     [SerializeField, Min(0.01f)] private float _checkPopDuration = Tuning.CheckPopDurationDefault;
 
+    [Header("Customers")]
+    [Tooltip("A customer's pop (up and back) when a move puts an item on them.")]
+    [SerializeField, Min(0.01f)] private float _equipPopDuration = Tuning.EquipPopDurationDefault;
+    [Tooltip("Peak scale of that pop.")]
+    [SerializeField, Range(1f, 1.3f)] private float _equipPopScale = Tuning.EquipPopScaleDefault;
+
+    [Header("Onboarding flow")]
+    [Tooltip("Seconds from the winning move to the win popup.")]
+    [SerializeField, Min(0f)] private float _winPopupDelay = Tuning.WinPopupDelayDefault;
+    [Tooltip("Idle seconds after a level opens (no move made) before the Hint button pulses twice.")]
+    [SerializeField, Min(1f)] private float _hintAttentionDelay = Tuning.HintAttentionDelayDefault;
+    [Tooltip("Coins for a level's first clear; replays give none.")]
+    [SerializeField, Min(0)] private int _firstClearCoins = Tuning.FirstClearCoinsDefault;
+
     public float ShiftDuration => _shiftDuration;
     public float DragStartThreshold => _dragStartThreshold;
     public float DragCommitThreshold => _dragCommitThreshold;
@@ -55,6 +69,11 @@ public class GameTuning : MonoBehaviour
     public float TileSpawnDuration => _tileSpawnDuration;
     public float TileSpawnStagger => _tileSpawnStagger;
     public float CheckPopDuration => _checkPopDuration;
+    public float EquipPopDuration => _equipPopDuration;
+    public float EquipPopScale => _equipPopScale;
+    public float WinPopupDelay => _winPopupDelay;
+    public float HintAttentionDelay => _hintAttentionDelay;
+    public int FirstClearCoins => _firstClearCoins;
     public float LoadingDuration => _loadingDuration;
     public float LoadingFadeDuration => _loadingFadeDuration;
 

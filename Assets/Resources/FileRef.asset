@@ -12,61 +12,58 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc7246d20b704104c83ba8911a7d3484, type: 3}
   m_Name: FileRef
   m_EditorClassIdentifier: Assembly-CSharp::FileRef
-  _cellPrefab: {fileID: 6197378983108523049, guid: 41738945ffb35d645a18727c82e67f9a, type: 3}
-  _itemTilePrefab: {fileID: 279195418471529925, guid: b494cab78972f0d4baa1031fdba98741, type: 3}
-  _categoryTagPrefab: {fileID: 4768428737706648718, guid: c5aa0cb4ee209b64ca3bb706b61873f7, type: 3}
-  _tileSurface: {fileID: 21300000, guid: 8a7e0a4ab4e0fe34f913358db37dab97, type: 3}
-  _tileSurfaceActive: {fileID: 21300000, guid: d8ece12c2f55c924099d30473db3f1f3, type: 3}
+  _cellPrefab: {fileID: 7728750083767760182, guid: 41738945ffb35d645a18727c82e67f9a, type: 3}
+  _itemTilePrefab: {fileID: 6243482197076847193, guid: b494cab78972f0d4baa1031fdba98741, type: 3}
+  _categoryTagPrefab: {fileID: 7186678811569727167, guid: c5aa0cb4ee209b64ca3bb706b61873f7, type: 3}
+  _spark: {fileID: 21300000, guid: dbd71f63602775941929a1b5fbb45a67, type: 3}
   _items:
-  - Id: bag_blue
-    Name: Blue bag
-    Sprite: {fileID: 21300000, guid: b6fd4d8485362fa459b8c21896a56153, type: 3}
-  - Id: bag_purple
-    Name: Purple bag
-    Sprite: {fileID: 21300000, guid: 72841c5619e015a46b39e953f5c0fae8, type: 3}
-  - Id: bag_red
-    Name: Red bag
-    Sprite: {fileID: 21300000, guid: 735fea9fc7da75a458c25dffa3cc586d, type: 3}
-  - Id: gear_basketball_blue
-    Name: Basketball
-    Sprite: {fileID: 21300000, guid: e080cb4b94e4b0949a79953b67b06fec, type: 3}
-  - Id: gear_guitar_brown
-    Name: Guitar
-    Sprite: {fileID: 21300000, guid: 4ee6cd9ab06a09647987bd7089a4976c, type: 3}
-  - Id: gear_skateboard_yellow
-    Name: Skateboard
-    Sprite: {fileID: 21300000, guid: 9a8cae9b2bdda864d9e26336ea714edc, type: 3}
-  - Id: hat_beanie_teal
-    Name: Teal beanie
-    Sprite: {fileID: 21300000, guid: 69adc406c5d203740b84b13c69ed276f, type: 3}
-  - Id: hat_cap_red
+  - Id: red_cap
     Name: Red cap
-    Sprite: {fileID: 21300000, guid: f84db6ff7b53faf4fad355429ab01c84, type: 3}
-  - Id: hat_sunhat_purple
-    Name: Sunhat
-    Sprite: {fileID: 21300000, guid: e0f4da28df279444996b2386696c51c1, type: 3}
+    Sprite: {fileID: 21300000, guid: 70fbdde9b28daa34fba738fb68156d78, type: 3}
+  - Id: blue_cap
+    Name: Blue cap
+    Sprite: {fileID: 21300000, guid: 147a3e418b620a64d9caad0fc57be4ed, type: 3}
+  - Id: purple_cap
+    Name: Purple cap
+    Sprite: {fileID: 21300000, guid: 16f438f6e43d8684e934151f77d48091, type: 3}
+  - Id: red_shirt
+    Name: Red shirt
+    Sprite: {fileID: 21300000, guid: 998648ebbd401cb4f860c171520ef34b, type: 3}
+  - Id: blue_shirt
+    Name: Blue shirt
+    Sprite: {fileID: 21300000, guid: d28cc5e8adbfb144b8c6181ec967a246, type: 3}
+  - Id: purple_shirt
+    Name: Purple shirt
+    Sprite: {fileID: 21300000, guid: 5257ca597dfc5dc4b95801035b1b2983, type: 3}
+  - Id: red_bag
+    Name: Red bag
+    Sprite: {fileID: 21300000, guid: a68515377e364e0459a8c35438c62f66, type: 3}
+  - Id: blue_bag
+    Name: Blue bag
+    Sprite: {fileID: 21300000, guid: d419ab317a74770429b06588805e3d2e, type: 3}
+  - Id: purple_bag
+    Name: Purple bag
+    Sprite: {fileID: 21300000, guid: 9f75d7a7ce4961041b20f2a7eb3d4513, type: 3}
   _characters:
-  - Id: leo
-    Name: Leo
-    Poses:
-    - {fileID: 21300000, guid: a0b875e41451195449ba47a8ffc30137, type: 3}
-    - {fileID: 21300000, guid: 0dc9ce556af1d394ebad2a6833eab9b2, type: 3}
-    - {fileID: 21300000, guid: be10895865a6e1a4eb9cbfd9f83d91e9, type: 3}
-    - {fileID: 21300000, guid: 2dd5910069b14344098aa41435ecdd79, type: 3}
   - Id: mia
     Name: Mia
-    Poses:
-    - {fileID: 21300000, guid: 1cd7fa0128859e0449cfd35368d5d1de, type: 3}
-    - {fileID: 21300000, guid: 45ed89bf32d82594eb34b44923a9fdc4, type: 3}
-    - {fileID: 21300000, guid: c471a5cb6f0aa83498bd4398eae645b1, type: 3}
-    - {fileID: 21300000, guid: 0054cc151b27cf749b93b9bf8d4465a1, type: 3}
+    Customer: {fileID: 2616263202110746318, guid: 66f1b379710bd4843ab8a187e80b0e93, type: 3}
+    Symbol: {fileID: 21300000, guid: 70ed2f98c30891a4ebf1b52d2c25da47, type: 3}
+  - Id: leo
+    Name: Leo
+    Customer: {fileID: 2582089934723497654, guid: 6ec6e18ac97805942bb10d0b2dc7ccce, type: 3}
+    Symbol: {fileID: 21300000, guid: eec6e6f03c884eb45b6e3462585e4cb8, type: 3}
   - Id: zoe
     Name: Zoe
-    Poses:
-    - {fileID: 21300000, guid: b91ab0d717faacb4ca650a434fee4539, type: 3}
-    - {fileID: 21300000, guid: 4f160890ae6ccd04585369b05672ea3d, type: 3}
-    - {fileID: 21300000, guid: 2f71c952ac570fb4cab5e221feeb8b8d, type: 3}
-    - {fileID: 21300000, guid: 7b72c811f2a848f4e9ad2cc62b969555, type: 3}
+    Customer: {fileID: 8073152316255800146, guid: 4678bbfa2c4fdeb4d8ef97f9063f30da, type: 3}
+    Symbol: {fileID: 21300000, guid: 9cf96c62855e8e94394064453078388e, type: 3}
+  _categories:
+  - Label: Hats
+    Icon: {fileID: 21300000, guid: e89541c13fbd13a45a2f285201818390, type: 3}
+  - Label: Shirts
+    Icon: {fileID: 21300000, guid: 2d94866de23f1484db5a1733fde57558, type: 3}
+  - Label: Bags
+    Icon: {fileID: 21300000, guid: 36251aaba10772745a90cfbd9ca046de, type: 3}
   _music: {fileID: 8300000, guid: d9b939ba5a2f03e49841571aa0847a79, type: 3}
   _sounds:
   - Type: 0

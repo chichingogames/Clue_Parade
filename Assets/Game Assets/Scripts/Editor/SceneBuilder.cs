@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -32,6 +33,7 @@ public static class SceneBuilder
         BuildTester();
         UIBuilder.Build();
         UIBuilder.BuildLoading();
+        PopUpBuilder.Build();
 
         EditorSceneManager.MarkSceneDirty(scene);
         Debug.Log("[SceneBuilder] Scene structure is up to date.");
@@ -50,7 +52,9 @@ public static class SceneBuilder
             GetOrAdd<Manager_Level>(go),
             GetOrAdd<Manager_Board>(go),
             GetOrAdd<Manager_Input>(go),
+            GetOrAdd<Manager_PopUp>(go),
             GetOrAdd<Manager_Game>(go),
+            GetOrAdd<Manager_Flow>(go),
         };
 
         var list = new SerializedObject(singletonManager).FindProperty("_singletonsToInitialize");
@@ -81,32 +85,41 @@ public static class SceneBuilder
     {
         var gamePlay = GetOrCreateRoot("GamePlay");
 
-        // Booth art behind everything (Manager_Board.FitCamera scales it to cover the view).
+        // Teal backdrop behind everything (Manager_Board.FitCamera scales it to cover the view).
         var backgroundGo = GetOrCreateChild(gamePlay.transform, "Background", out bool backgroundCreated);
         var background = GetOrAdd<SpriteRenderer>(backgroundGo.gameObject);
         if (backgroundCreated)
         {
-            background.sprite = AssetBuilder.LoadTilewrap("Backgrounds/booth_background");
+            background.sprite = HandoffBuilder.LoadSprite("UI/background_teal");
             background.sortingOrder = SortOrder.Background;
         }
         var board = GetOrCreateChild(gamePlay.transform, "Board");
 
-        // The pack's wooden frame, drawn over the tiles (Manager_Board.Build sets its size).
+        // The board panel the tiles sit on (Manager_Board.Build sizes it: grid + 2 x FramePadding).
         var frameGo = GetOrCreateChild(board, "Frame", out bool frameCreated);
         var frame = GetOrAdd<SpriteRenderer>(frameGo.gameObject);
         if (frameCreated)
         {
-            frame.sprite = AssetBuilder.LoadTilewrap("UI/board_frame");
+            frame.sprite = HandoffBuilder.LoadSprite("UI/board_frame");
             frame.drawMode = SpriteDrawMode.Sliced;
-            frame.sortingOrder = SortOrder.Frame;
+            frame.sortingOrder = SortOrder.Board;
         }
 
-        // Outline around the active step's row (Manager_Board positions and sizes it).
+        // Grid lines between cells: N - 1 vertical, then N - 1 horizontal (Manager_Board places them).
+        var dividersRoot = GetOrCreateChild(board, "Dividers", out bool dividersCreated);
+        if (dividersCreated)
+        {
+            for (int i = 0; i < 4; i++)
+                AddSprite(dividersRoot, $"{(i < 2 ? "Vertical" : "Horizontal")} {i % 2 + 1}", AssetBuilder.LoadSprite(AssetBuilder.SolidSprite),
+                          Vector2.zero, SortOrder.Divider).color = new Color32(0xC5, 0xA5, 0x81, 0xFF);
+        }
+
+        // Highlight behind the active step's row (Manager_Board positions and sizes it).
         var activeRowGo = GetOrCreateChild(board, "Active Row", out bool activeRowCreated);
         var activeRow = GetOrAdd<SpriteRenderer>(activeRowGo.gameObject);
         if (activeRowCreated)
         {
-            activeRow.sprite = AssetBuilder.LoadTilewrap("UI/active_row_outline");
+            activeRow.sprite = HandoffBuilder.LoadSprite("UI/row_highlight");
             activeRow.drawMode = SpriteDrawMode.Sliced;
             activeRow.sortingOrder = SortOrder.ActiveRow;
         }
@@ -119,6 +132,12 @@ public static class SceneBuilder
         var tiles = GetOrCreateChild(board, "Tiles");
         var tags = GetOrCreateChild(board, "Tags");
 
+        var guideGo = GetOrCreateChild(board, "Guide", out bool guideCreated);
+        var guide = guideCreated ? BuildGuide(guideGo) : guideGo.GetComponent<BoardGuide>();
+
+        var charactersGo = GetOrCreateChild(board, "Characters", out bool charactersCreated);
+        var characters = charactersCreated ? BuildCharacterRow(charactersGo) : charactersGo.GetComponent<CharacterRow>();
+
         var so = new SerializedObject(managers.GetComponent<Manager_Board>());
         SetIfEmpty(so, "_boardRoot", board);
         SetIfEmpty(so, "_frame", frame);
@@ -128,7 +147,108 @@ public static class SceneBuilder
         SetIfEmpty(so, "_cellsRoot", cells);
         SetIfEmpty(so, "_tilesRoot", tiles);
         SetIfEmpty(so, "_tagsRoot", tags);
+        SetIfEmpty(so, "_characters", characters);
+        SetIfEmpty(so, "_guide", guide);
+        var dividers = so.FindProperty("_dividers");
+        if (dividers.arraySize == 0)
+        {
+            dividers.arraySize = dividersRoot.childCount;
+            for (int i = 0; i < dividersRoot.childCount; i++)
+                dividers.GetArrayElementAtIndex(i).objectReferenceValue = dividersRoot.GetChild(i).GetComponent<SpriteRenderer>();
+        }
         so.ApplyModifiedProperties();
+    }
+
+    // Board/Guide: a gold band (row_highlight tinted, over the tiles), the tutorial arrow and the
+    // tutorial hand (pivot at the fingertip). Hidden until Manager_Board.ShowGuide.
+    private static BoardGuide BuildGuide(Transform root)
+    {
+        var band = AddSprite(root, "Band", HandoffBuilder.LoadSprite("UI/row_highlight"), Vector2.zero, SortOrder.Guide);
+        band.drawMode = SpriteDrawMode.Sliced;
+        band.color = new Color(1f, 0.78f, 0.18f, 0.42f);
+        var arrow = AddSprite(root, "Arrow", HandoffBuilder.LoadSprite("Tutorial/tutorial_arrow"), Vector2.zero, SortOrder.Guide + 1);
+        arrow.transform.localScale = Vector3.one * 0.75f;
+        var hand = AddSprite(root, "Hand", HandoffBuilder.LoadSprite("Tutorial/tutorial_hand"), Vector2.zero, SortOrder.Guide + 2);
+        hand.transform.localScale = Vector3.one * 0.32f;
+
+        var guide = root.gameObject.AddComponent<BoardGuide>();
+        var so = new SerializedObject(guide);
+        so.FindProperty("_band").objectReferenceValue = band;
+        so.FindProperty("_arrow").objectReferenceValue = arrow;
+        so.FindProperty("_hand").objectReferenceValue = hand;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        root.gameObject.SetActive(false);
+        return guide;
+    }
+
+    // Board/Characters: the customers and their name tabs, in world space. Its local space is the
+    // reference screen (Manager_Board keeps it at the world origin), so it uses ReferenceLayout's
+    // positions. Three slots over the 3x3 board; Manager_Board.Build places them and instantiates
+    // each column's Customer variant on its stand. To rebuild it, delete Board/Characters and run Build Scene.
+    private static readonly Color NameColor = new Color32(0x40, 0x28, 0x1F, 0xFF);
+
+    private static CharacterRow BuildCharacterRow(Transform root)
+    {
+        var row = root.gameObject.AddComponent<CharacterRow>();
+        var font = HandoffBuilder.BoldFont();
+        string[] names = { "Mia", "Leo", "Zoe" };
+        var slots = new SerializedObject(row).FindProperty("_slots");
+        slots.arraySize = names.Length;
+        for (int i = 0; i < names.Length; i++)
+        {
+            float x = ReferenceLayout.BoardCenter.x + (i - 1) * AssetBuilder.CellSize.x;
+
+            // The customer's feet; scaled so its 9-unit-tall layers are CustomerHeight tall.
+            var stand = new GameObject($"Customer Stand {i + 1}").transform;
+            stand.SetParent(root, false);
+            stand.localPosition = new Vector2(x, ReferenceLayout.PortraitBottom);
+            stand.localScale = Vector3.one * (ReferenceLayout.CustomerHeight / ReferenceLayout.CustomerArtHeight);
+
+            var plate = AddSprite(root, $"Name Tab {i + 1}", HandoffBuilder.LoadSprite("UI/tab_name"),
+                                  new Vector2(x, ReferenceLayout.PlateY), SortOrder.NamePlate);
+            plate.drawMode = SpriteDrawMode.Sliced;
+            plate.size = ReferenceLayout.PlateSize;
+
+            var symbolSprite = HandoffBuilder.LoadSprite($"UI/symbol_{names[i].ToLowerInvariant()}");
+            var symbol = AddSprite(plate.transform, "Symbol", symbolSprite, new Vector2(-0.66f, 0f), SortOrder.NameLabel);
+            symbol.transform.localScale = Vector3.one * (ReferenceLayout.PlateSymbolSize / symbolSprite.bounds.size.x);
+
+            var nameGo = new GameObject("Name", typeof(RectTransform));
+            var rect = (RectTransform)nameGo.transform;
+            rect.SetParent(plate.transform, false);
+            rect.anchoredPosition = new Vector2(0.30f, 0f);   // left edge 0.30 - 0.60 = -0.30, clear of the symbol
+            rect.sizeDelta = ReferenceLayout.PlateNameSize;
+            var name = nameGo.AddComponent<TextMeshPro>();
+            name.font = font;
+            name.text = names[i];
+            name.fontSize = 4.2f;                     // ~42 px; world TMP font size 10 ~ 1 unit
+            name.color = NameColor;
+            name.alignment = TextAlignmentOptions.MidlineLeft;
+            name.textWrappingMode = TextWrappingModes.NoWrap;
+            name.enableAutoSizing = true;             // long names shrink to stay on the tab
+            name.fontSizeMin = 2.8f;
+            name.fontSizeMax = 4.2f;
+            name.sortingOrder = SortOrder.NameLabel;
+
+            var slot = slots.GetArrayElementAtIndex(i);
+            slot.FindPropertyRelative("Stand").objectReferenceValue = stand;
+            slot.FindPropertyRelative("Plate").objectReferenceValue = plate.transform;
+            slot.FindPropertyRelative("Symbol").objectReferenceValue = symbol;
+            slot.FindPropertyRelative("Name").objectReferenceValue = name;
+        }
+        slots.serializedObject.ApplyModifiedPropertiesWithoutUndo();
+        return row;
+    }
+
+    private static SpriteRenderer AddSprite(Transform parent, string name, Sprite sprite, Vector2 position, int order)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(parent, false);
+        go.transform.localPosition = position;
+        var renderer = go.AddComponent<SpriteRenderer>();
+        renderer.sprite = sprite;
+        renderer.sortingOrder = order;
+        return renderer;
     }
 
     // Sound/Music and Sound/SFX: one AudioSource each, wired into Manager_Audio. Their Volume is the
@@ -162,7 +282,7 @@ public static class SceneBuilder
         if (cam == null) return;
         cam.orthographic = true;
         cam.clearFlags = CameraClearFlags.SolidColor;
-        cam.backgroundColor = new Color32(0x6E, 0x41, 0x55, 0xFF);   // the booth wall, until the background art is in
+        cam.backgroundColor = new Color32(0x20, 0x8D, 0x89, 0xFF);   // the handoff's teal, behind the background art
     }
 
     private static Transform GetOrCreateChild(Transform parent, string name) =>
@@ -206,7 +326,10 @@ public static class SceneBuilder
         var container = GetOrCreateUI(canvasGo.transform, "Container");
         GetOrAdd<SafeArea>(container.gameObject);
         GetOrCreateUI(container, "InGame");                               // UI_InGame (UIBuilder builds its Reference HUD)
-        GetOrCreateUI(container, "PopUps");                               // Manager_PopUp._popUpParent
+        var popUps = GetOrCreateUI(container, "PopUps");                  // Manager_PopUp._popUpParent (PopUpBuilder fills it)
+        var popUpManager = new SerializedObject(Object.FindFirstObjectByType<Manager_PopUp>());
+        SetIfEmpty(popUpManager, "_popUpParent", popUps);
+        popUpManager.ApplyModifiedPropertiesWithoutUndo();
 
         var darkArea = GetOrCreateUI(canvasGo.transform, "Dark Area", out bool createdDarkArea);
         if (createdDarkArea)
@@ -214,6 +337,14 @@ public static class SceneBuilder
             var image = darkArea.gameObject.AddComponent<Image>();
             image.color = new Color(0f, 0f, 0f, 0.7f);
             darkArea.gameObject.SetActive(false);
+        }
+
+        // Win confetti, over the popups and under the loading screen; never blocks taps.
+        var confetti = GetOrCreateUI(canvasGo.transform, "Confetti", out bool confettiCreated);
+        if (confettiCreated)
+        {
+            confetti.gameObject.AddComponent<UI_Confetti>();
+            confetti.gameObject.AddComponent<UI_ConfettiListener>();
         }
 
         GetOrCreateUI(canvasGo.transform, "Loading Screen");             // UI_Loading (UIBuilder.BuildLoading)
