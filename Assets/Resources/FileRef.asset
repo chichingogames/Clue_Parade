@@ -12,92 +12,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc7246d20b704104c83ba8911a7d3484, type: 3}
   m_Name: FileRef
   m_EditorClassIdentifier: Assembly-CSharp::FileRef
-  _cellPrefab: {fileID: 7728750083767760182, guid: 41738945ffb35d645a18727c82e67f9a, type: 3}
-  _itemTilePrefab: {fileID: 6243482197076847193, guid: b494cab78972f0d4baa1031fdba98741, type: 3}
-  _categoryTagPrefab: {fileID: 7186678811569727167, guid: c5aa0cb4ee209b64ca3bb706b61873f7, type: 3}
-  _spark: {fileID: 21300000, guid: dbd71f63602775941929a1b5fbb45a67, type: 3}
-  _items:
-  - Id: red_cap
-    Name: Red cap
-    Sprite: {fileID: 21300000, guid: 70fbdde9b28daa34fba738fb68156d78, type: 3}
-  - Id: blue_cap
-    Name: Blue cap
-    Sprite: {fileID: 21300000, guid: 147a3e418b620a64d9caad0fc57be4ed, type: 3}
-  - Id: purple_cap
-    Name: Purple cap
-    Sprite: {fileID: 21300000, guid: 16f438f6e43d8684e934151f77d48091, type: 3}
-  - Id: red_shirt
-    Name: Red shirt
-    Sprite: {fileID: 21300000, guid: 998648ebbd401cb4f860c171520ef34b, type: 3}
-  - Id: blue_shirt
-    Name: Blue shirt
-    Sprite: {fileID: 21300000, guid: d28cc5e8adbfb144b8c6181ec967a246, type: 3}
-  - Id: purple_shirt
-    Name: Purple shirt
-    Sprite: {fileID: 21300000, guid: 5257ca597dfc5dc4b95801035b1b2983, type: 3}
-  - Id: red_bag
-    Name: Red bag
-    Sprite: {fileID: 21300000, guid: a68515377e364e0459a8c35438c62f66, type: 3}
-  - Id: blue_bag
-    Name: Blue bag
-    Sprite: {fileID: 21300000, guid: d419ab317a74770429b06588805e3d2e, type: 3}
-  - Id: purple_bag
-    Name: Purple bag
-    Sprite: {fileID: 21300000, guid: 9f75d7a7ce4961041b20f2a7eb3d4513, type: 3}
-  _characters:
-  - Id: mia
-    Name: Mia
-    Customer: {fileID: 2616263202110746318, guid: 66f1b379710bd4843ab8a187e80b0e93, type: 3}
-    Symbol: {fileID: 21300000, guid: 70ed2f98c30891a4ebf1b52d2c25da47, type: 3}
-  - Id: leo
-    Name: Leo
-    Customer: {fileID: 2582089934723497654, guid: 6ec6e18ac97805942bb10d0b2dc7ccce, type: 3}
-    Symbol: {fileID: 21300000, guid: eec6e6f03c884eb45b6e3462585e4cb8, type: 3}
-  - Id: zoe
-    Name: Zoe
-    Customer: {fileID: 8073152316255800146, guid: 4678bbfa2c4fdeb4d8ef97f9063f30da, type: 3}
-    Symbol: {fileID: 21300000, guid: 9cf96c62855e8e94394064453078388e, type: 3}
-  _categories:
-  - Label: Hats
-    Icon: {fileID: 21300000, guid: e89541c13fbd13a45a2f285201818390, type: 3}
-  - Label: Shirts
-    Icon: {fileID: 21300000, guid: 2d94866de23f1484db5a1733fde57558, type: 3}
-  - Label: Bags
-    Icon: {fileID: 21300000, guid: 36251aaba10772745a90cfbd9ca046de, type: 3}
+  _cellPrefab: {fileID: 5812898266030012145, guid: 41738945ffb35d645a18727c82e67f9a, type: 3}
+  _itemTilePrefab: {fileID: 8973855979378694257, guid: b494cab78972f0d4baa1031fdba98741, type: 3}
+  _content: {fileID: 11400000, guid: 5ff56c179794caa4da818823c856961f, type: 2}
   _music: {fileID: 8300000, guid: d9b939ba5a2f03e49841571aa0847a79, type: 3}
   _sounds:
   - Type: 0
     Clips:
     - {fileID: 8300000, guid: 61c6607b7b57dcf4b9d606a95e173bc9, type: 3}
     Volume: 1
+    ClipVolumes: []
   - Type: 1
     Clips:
     - {fileID: 8300000, guid: 00b639e1cd31e7147ae0703c74de79cf, type: 3}
     Volume: 1
+    ClipVolumes: []
   - Type: 2
     Clips:
-    - {fileID: 8300000, guid: 3d15c8afcd0c2384f88a5ca25d361209, type: 3}
-    - {fileID: 8300000, guid: f174fd0d7fb7eff469c071c239077018, type: 3}
-    - {fileID: 8300000, guid: 4c9cf536018e59f4ab448b959a0d9d8e, type: 3}
-    - {fileID: 8300000, guid: de08fb76caf013c43b09d5e2796ff05b, type: 3}
+    - {fileID: 8300000, guid: 03a856c0b4d7951418b1db3cbbfb5600, type: 3}
+    - {fileID: 8300000, guid: 1224cc689d677544fbe23da70badeb9a, type: 3}
+    - {fileID: 8300000, guid: 22e649274b5ba8b4db94195710f07776, type: 3}
     Volume: 1
-  - Type: 3
-    Clips:
-    - {fileID: 8300000, guid: 76ec5a3b6ca6fb04bb98691bb82dab7b, type: 3}
-    Volume: 1
+    ClipVolumes:
+    - 0.083651
+    - 0.10004
+    - 0.10004
   - Type: 4
     Clips:
-    - {fileID: 8300000, guid: afa16d1de3a04cb47aed149511220c9c, type: 3}
+    - {fileID: 8300000, guid: b4daf6ec06e4cf34dbec6ee64931f69b, type: 3}
     Volume: 1
+    ClipVolumes:
+    - 0.10004
   - Type: 5
     Clips:
     - {fileID: 8300000, guid: a530cdb88243e7d4487cac92583baf96, type: 3}
     Volume: 1
+    ClipVolumes: []
   - Type: 6
     Clips:
     - {fileID: 8300000, guid: ea329cd147d570e42a189b326d30f19d, type: 3}
     Volume: 1
+    ClipVolumes: []
   - Type: 7
     Clips:
     - {fileID: 8300000, guid: 089196f1e93bd524b886d203cfd1be63, type: 3}
     Volume: 1
+    ClipVolumes: []

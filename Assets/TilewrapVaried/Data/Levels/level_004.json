@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 2,
+  "id": 4,
+  "title": "Birthday bakery",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "The birthday cakes are almost ready. Finish the orders.",
+  "completionText": "Three birthday cakes are ready for the party.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 12,
+  "minimumMoves": 3,
+  "startingCells": [
+    "cakes_01",
+    "cakes_02",
+    "cakes_08",
+    "cakes_03",
+    "cakes_04",
+    "cakes_00",
+    "cakes_05",
+    "cakes_06",
+    "cakes_07"
+  ],
+  "goalCells": [
+    "cakes_00",
+    "cakes_01",
+    "cakes_02",
+    "cakes_03",
+    "cakes_04",
+    "cakes_05",
+    "cakes_06",
+    "cakes_07",
+    "cakes_08"
+  ],
+  "subjects": [
+    {
+      "id": "cakes_cocoa",
+      "name": "Cocoa",
+      "column": 0,
+      "rigId": "cakes_cocoa"
+    },
+    {
+      "id": "cakes_confetti",
+      "name": "Confetti",
+      "column": 1,
+      "rigId": "cakes_confetti"
+    },
+    {
+      "id": "cakes_sunny",
+      "name": "Sunny",
+      "column": 2,
+      "rigId": "cakes_sunny"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cakes_row_0",
+      "label": "Sponge",
+      "row": 0
+    },
+    {
+      "id": "cakes_row_1",
+      "label": "Frosting",
+      "row": 1
+    },
+    {
+      "id": "cakes_row_2",
+      "label": "Toppings",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "cakes_00",
+      "label": "Chocolate sponge",
+      "sprite": "cakes_00",
+      "targetCell": 0,
+      "categoryId": "cakes_row_0",
+      "clue": "Cocoa uses chocolate sponge."
+    },
+    {
+      "id": "cakes_01",
+      "label": "Vanilla sponge",
+      "sprite": "cakes_01",
+      "targetCell": 1,
+      "categoryId": "cakes_row_0",
+      "clue": "Confetti uses vanilla sponge."
+    },
+    {
+      "id": "cakes_02",
+      "label": "Lemon sponge",
+      "sprite": "cakes_02",
+      "targetCell": 2,
+      "categoryId": "cakes_row_0",
+      "clue": "Sunny uses lemon sponge."
+    },
+    {
+      "id": "cakes_03",
+      "label": "Pink frosting",
+      "sprite": "cakes_03",
+      "targetCell": 3,
+      "categoryId": "cakes_row_1",
+      "clue": "Cocoa gets pink frosting."
+    },
+    {
+      "id": "cakes_04",
+      "label": "Blue frosting",
+      "sprite": "cakes_04",
+      "targetCell": 4,
+      "categoryId": "cakes_row_1",
+      "clue": "Confetti gets blue frosting."
+    },
+    {
+      "id": "cakes_05",
+      "label": "Cream frosting",
+      "sprite": "cakes_05",
+      "targetCell": 5,
+      "categoryId": "cakes_row_1",
+      "clue": "Sunny gets cream frosting."
+    },
+    {
+      "id": "cakes_06",
+      "label": "Strawberries",
+      "sprite": "cakes_06",
+      "targetCell": 6,
+      "categoryId": "cakes_row_2",
+      "clue": "Cocoa gets strawberries."
+    },
+    {
+      "id": "cakes_07",
+      "label": "Rainbow sprinkles",
+      "sprite": "cakes_07",
+      "targetCell": 7,
+      "categoryId": "cakes_row_2",
+      "clue": "Confetti gets rainbow sprinkles."
+    },
+    {
+      "id": "cakes_08",
+      "label": "Sugar star",
+      "sprite": "cakes_08",
+      "targetCell": 8,
+      "categoryId": "cakes_row_2",
+      "clue": "Sunny gets sugar star."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 5,
+  "tutorial": {
+    "entryText": "You have 12 moves. Each swipe uses one move. Match all 9 before moves run out.",
+    "supportText": "Undo restores your previous board and move count.",
+    "focus": "moves",
+    "guideLoopSeconds": 0
+  },
+  "difficulty": "tutorial",
+  "chapterId": 1
+}

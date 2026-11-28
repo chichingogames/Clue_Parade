@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 2,
+  "id": 27,
+  "title": "Animal post",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "Sort the special deliveries for three little visitors.",
+  "completionText": "Every visitor has the right delivery.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 14,
+  "minimumMoves": 6,
+  "startingCells": [
+    "post_03",
+    "post_05",
+    "post_08",
+    "post_01",
+    "post_02",
+    "post_04",
+    "post_00",
+    "post_06",
+    "post_07"
+  ],
+  "goalCells": [
+    "post_00",
+    "post_01",
+    "post_02",
+    "post_03",
+    "post_04",
+    "post_05",
+    "post_06",
+    "post_07",
+    "post_08"
+  ],
+  "subjects": [
+    {
+      "id": "post_0",
+      "name": "Meadow post",
+      "column": 0,
+      "rigId": "post_0"
+    },
+    {
+      "id": "post_1",
+      "name": "River post",
+      "column": 1,
+      "rigId": "post_1"
+    },
+    {
+      "id": "post_2",
+      "name": "Forest post",
+      "column": 2,
+      "rigId": "post_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "post_row_0",
+      "label": "Mail",
+      "row": 0
+    },
+    {
+      "id": "post_row_1",
+      "label": "Flags",
+      "row": 1
+    },
+    {
+      "id": "post_row_2",
+      "label": "Visitors",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "post_00",
+      "label": "Red letter",
+      "sprite": "post_00",
+      "targetCell": 0,
+      "categoryId": "post_row_0",
+      "clue": "Meadow post gets the red letter."
+    },
+    {
+      "id": "post_01",
+      "label": "Blue parcel",
+      "sprite": "post_01",
+      "targetCell": 1,
+      "categoryId": "post_row_0",
+      "clue": "River post gets the blue parcel."
+    },
+    {
+      "id": "post_02",
+      "label": "Purple scroll",
+      "sprite": "post_02",
+      "targetCell": 2,
+      "categoryId": "post_row_0",
+      "clue": "Forest post gets the purple scroll."
+    },
+    {
+      "id": "post_03",
+      "label": "Sun flag",
+      "sprite": "post_03",
+      "targetCell": 3,
+      "categoryId": "post_row_1",
+      "clue": "Meadow post gets the sun flag."
+    },
+    {
+      "id": "post_04",
+      "label": "Paw flag",
+      "sprite": "post_04",
+      "targetCell": 4,
+      "categoryId": "post_row_1",
+      "clue": "River post gets the paw flag."
+    },
+    {
+      "id": "post_05",
+      "label": "Leaf flag",
+      "sprite": "post_05",
+      "targetCell": 5,
+      "categoryId": "post_row_1",
+      "clue": "Forest post gets the leaf flag."
+    },
+    {
+      "id": "post_06",
+      "label": "Penguin",
+      "sprite": "post_06",
+      "targetCell": 6,
+      "categoryId": "post_row_2",
+      "clue": "Meadow post gets the penguin."
+    },
+    {
+      "id": "post_07",
+      "label": "Mouse",
+      "sprite": "post_07",
+      "targetCell": 7,
+      "categoryId": "post_row_2",
+      "clue": "River post gets the mouse."
+    },
+    {
+      "id": "post_08",
+      "label": "Little fox",
+      "sprite": "post_08",
+      "targetCell": 8,
+      "categoryId": "post_row_2",
+      "clue": "Forest post gets the little fox."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": -1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 28,
+  "difficulty": "practice",
+  "chapterId": 5,
+  "designSeed": 30327
+}

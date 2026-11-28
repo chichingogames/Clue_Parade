@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 2,
+  "id": 30,
+  "title": "Grand finale",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "One last mix-up before the celebration lights the sky.",
+  "completionText": "The festival lights up the sky. You completed all thirty cases!",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 10,
+  "minimumMoves": 8,
+  "startingCells": [
+    "fireworks_03",
+    "fireworks_08",
+    "fireworks_07",
+    "fireworks_06",
+    "fireworks_05",
+    "fireworks_01",
+    "fireworks_00",
+    "fireworks_02",
+    "fireworks_04"
+  ],
+  "goalCells": [
+    "fireworks_00",
+    "fireworks_01",
+    "fireworks_02",
+    "fireworks_03",
+    "fireworks_04",
+    "fireworks_05",
+    "fireworks_06",
+    "fireworks_07",
+    "fireworks_08"
+  ],
+  "subjects": [
+    {
+      "id": "fireworks_0",
+      "name": "Star launch",
+      "column": 0,
+      "rigId": "fireworks_0"
+    },
+    {
+      "id": "fireworks_1",
+      "name": "Moon launch",
+      "column": 1,
+      "rigId": "fireworks_1"
+    },
+    {
+      "id": "fireworks_2",
+      "name": "Bloom launch",
+      "column": 2,
+      "rigId": "fireworks_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "fireworks_row_0",
+      "label": "Rockets",
+      "row": 0
+    },
+    {
+      "id": "fireworks_row_1",
+      "label": "Sparks",
+      "row": 1
+    },
+    {
+      "id": "fireworks_row_2",
+      "label": "Garlands",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "fireworks_00",
+      "label": "Star rocket",
+      "sprite": "fireworks_00",
+      "targetCell": 0,
+      "categoryId": "fireworks_row_0",
+      "clue": "Star launch gets the star rocket."
+    },
+    {
+      "id": "fireworks_01",
+      "label": "Moon rocket",
+      "sprite": "fireworks_01",
+      "targetCell": 1,
+      "categoryId": "fireworks_row_0",
+      "clue": "Moon launch gets the moon rocket."
+    },
+    {
+      "id": "fireworks_02",
+      "label": "Flower rocket",
+      "sprite": "fireworks_02",
+      "targetCell": 2,
+      "categoryId": "fireworks_row_0",
+      "clue": "Bloom launch gets the flower rocket."
+    },
+    {
+      "id": "fireworks_03",
+      "label": "Spark fountain",
+      "sprite": "fireworks_03",
+      "targetCell": 3,
+      "categoryId": "fireworks_row_1",
+      "clue": "Star launch gets the spark fountain."
+    },
+    {
+      "id": "fireworks_04",
+      "label": "Rainbow wheel",
+      "sprite": "fireworks_04",
+      "targetCell": 4,
+      "categoryId": "fireworks_row_1",
+      "clue": "Moon launch gets the rainbow wheel."
+    },
+    {
+      "id": "fireworks_05",
+      "label": "Gold sparkler",
+      "sprite": "fireworks_05",
+      "targetCell": 5,
+      "categoryId": "fireworks_row_1",
+      "clue": "Bloom launch gets the gold sparkler."
+    },
+    {
+      "id": "fireworks_06",
+      "label": "Lantern string",
+      "sprite": "fireworks_06",
+      "targetCell": 6,
+      "categoryId": "fireworks_row_2",
+      "clue": "Star launch gets the lantern string."
+    },
+    {
+      "id": "fireworks_07",
+      "label": "Flag garland",
+      "sprite": "fireworks_07",
+      "targetCell": 7,
+      "categoryId": "fireworks_row_2",
+      "clue": "Moon launch gets the flag garland."
+    },
+    {
+      "id": "fireworks_08",
+      "label": "Star garland",
+      "sprite": "fireworks_08",
+      "targetCell": 8,
+      "categoryId": "fireworks_row_2",
+      "clue": "Bloom launch gets the star garland."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": -1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 0,
+  "difficulty": "hard",
+  "chapterId": 5,
+  "designSeed": 30330
+}

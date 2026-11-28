@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 2,
+  "id": 12,
+  "title": "Music stage",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "The musicians are waiting. Set their stages for the show.",
+  "completionText": "The stages are ready and the music begins.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 8,
+  "minimumMoves": 6,
+  "startingCells": [
+    "music_04",
+    "music_00",
+    "music_07",
+    "music_06",
+    "music_05",
+    "music_02",
+    "music_01",
+    "music_08",
+    "music_03"
+  ],
+  "goalCells": [
+    "music_00",
+    "music_01",
+    "music_02",
+    "music_03",
+    "music_04",
+    "music_05",
+    "music_06",
+    "music_07",
+    "music_08"
+  ],
+  "subjects": [
+    {
+      "id": "music_0",
+      "name": "Folk stage",
+      "column": 0,
+      "rigId": "music_0"
+    },
+    {
+      "id": "music_1",
+      "name": "Beat stage",
+      "column": 1,
+      "rigId": "music_1"
+    },
+    {
+      "id": "music_2",
+      "name": "Pop stage",
+      "column": 2,
+      "rigId": "music_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "music_row_0",
+      "label": "Backdrops",
+      "row": 0
+    },
+    {
+      "id": "music_row_1",
+      "label": "Music",
+      "row": 1
+    },
+    {
+      "id": "music_row_2",
+      "label": "Lights",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "music_00",
+      "label": "Red curtains",
+      "sprite": "music_00",
+      "targetCell": 0,
+      "categoryId": "music_row_0",
+      "clue": "Folk stage gets the red curtains."
+    },
+    {
+      "id": "music_01",
+      "label": "Star backdrop",
+      "sprite": "music_01",
+      "targetCell": 1,
+      "categoryId": "music_row_0",
+      "clue": "Beat stage gets the star backdrop."
+    },
+    {
+      "id": "music_02",
+      "label": "Bolt backdrop",
+      "sprite": "music_02",
+      "targetCell": 2,
+      "categoryId": "music_row_0",
+      "clue": "Pop stage gets the bolt backdrop."
+    },
+    {
+      "id": "music_03",
+      "label": "Guitar",
+      "sprite": "music_03",
+      "targetCell": 3,
+      "categoryId": "music_row_1",
+      "clue": "Folk stage gets the guitar."
+    },
+    {
+      "id": "music_04",
+      "label": "Drum kit",
+      "sprite": "music_04",
+      "targetCell": 4,
+      "categoryId": "music_row_1",
+      "clue": "Beat stage gets the drum kit."
+    },
+    {
+      "id": "music_05",
+      "label": "Keyboard",
+      "sprite": "music_05",
+      "targetCell": 5,
+      "categoryId": "music_row_1",
+      "clue": "Pop stage gets the keyboard."
+    },
+    {
+      "id": "music_06",
+      "label": "Floor spotlight",
+      "sprite": "music_06",
+      "targetCell": 6,
+      "categoryId": "music_row_2",
+      "clue": "Folk stage gets the floor spotlight."
+    },
+    {
+      "id": "music_07",
+      "label": "Disco ball",
+      "sprite": "music_07",
+      "targetCell": 7,
+      "categoryId": "music_row_2",
+      "clue": "Beat stage gets the disco ball."
+    },
+    {
+      "id": "music_08",
+      "label": "Hanging lantern",
+      "sprite": "music_08",
+      "targetCell": 8,
+      "categoryId": "music_row_2",
+      "clue": "Pop stage gets the hanging lantern."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": 1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 13,
+  "difficulty": "hard",
+  "chapterId": 2,
+  "designSeed": 30312
+}

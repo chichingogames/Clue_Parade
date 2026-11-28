@@ -11,6 +11,7 @@ using Object = UnityEngine.Object;
 // same 1080x1920 reference pixels as the HUD. Each popup: a full-screen Dim (blocks taps, fades) and a
 // Holder (the panel, scales) whose VerticalLayoutGroup + ContentSizeFitter stack kicker, title, body,
 // the popup's own widgets and its buttons; long content scrolls inside a fixed-height ScrollRect.
+// The case map (PopupName.LevelSelect) is full screen instead. PopupName.Lesson and Confirm are retired (no popup).
 // Re-runnable: a popup whose object (PopUp_{Name}) exists is left as is; delete it to rebuild.
 public static class PopUpBuilder
 {
@@ -38,14 +39,12 @@ public static class PopUpBuilder
         _regular = HandoffBuilder.RegularFont();
         var parent = parentGo.transform;
 
-        BuildIfMissing(parent, PopupName.Lesson, BuildLesson);
         BuildIfMissing(parent, PopupName.Win, BuildWin);
         BuildIfMissing(parent, PopupName.Failed, BuildFailed);
         BuildIfMissing(parent, PopupName.Hint, BuildHint);
         BuildIfMissing(parent, PopupName.Notebook, BuildNotebook);
-        BuildIfMissing(parent, PopupName.LevelSelect, BuildLevelSelect);
+        BuildIfMissing(parent, PopupName.LevelSelect, BuildMap);
         BuildIfMissing(parent, PopupName.Menu, BuildMenu);
-        BuildIfMissing(parent, PopupName.Confirm, BuildConfirm);
         BuildIfMissing(parent, PopupName.Feedback, BuildFeedback);
 
         var manager = Object.FindFirstObjectByType<Manager_PopUp>();
@@ -70,110 +69,218 @@ public static class PopUpBuilder
 
     // ---------- Popups ----------
 
-    private static void BuildLesson(Transform parent)
-    {
-        var (popup, holder, so) = Shell<PopUp_Lesson>(parent, PopupName.Lesson);
-        var crewRow = CrewRow(holder, out var crew);
-        var moves = Fixed(holder, "Moves Example", 150);
-        var panel = UIBuilder.Rect(moves, "Panel", UIBuilder.Center, UIBuilder.Center, UIBuilder.Center, Vector2.zero, new Vector2(360f, 140f));
-        UIBuilder.AddImage(panel, UIBuilder.Sprite("UI/panel_moves"), sliced: true);
-        var value = UIBuilder.Label(panel, "Value", 0, 4, 360, 84, _bold, "12", 84, UIBuilder.Ink, TextAlignmentOptions.Center);
-        UIBuilder.Label(panel, "Label", 0, 92, 360, 38, _regular, "moves left", 30, UIBuilder.Ink, TextAlignmentOptions.Center);
-        var button = ActionButton(holder, "Button", ButtonStyle.Primary, "Show me", out var label);
-
-        SetArray(so, "_crew", crew);
-        Set(so, "_crewRow", crewRow.gameObject);
-        Set(so, "_movesExample", moves.gameObject);
-        Set(so, "_movesValue", value.GetComponent<TMP_Text>());
-        Set(so, "_button", button);
-        Set(so, "_buttonLabel", label);
-        Finish(popup, so);
-    }
-
+    // "Case complete!": completion line, the subjects finished on a white panel, the reward pill and
+    // its note, the "UP NEXT" card, Next case and Choose a case.
     private static void BuildWin(Transform parent)
     {
-        var (popup, holder, so) = Shell<PopUp_Win>(parent, PopupName.Win, checkOnTop: true);
-        holder.Find("Body").GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Top;   // the payoff line, centred
-        var crewRow = CrewRow(holder, out var crew);
-        var matched = Text(holder, "Matched", _bold, 38, UIBuilder.Ink, "9/9 items matched");
-        var reward = Fixed(holder, "Reward", 76);
-        var pill = UIBuilder.Rect(reward, "Pill", UIBuilder.Center, UIBuilder.Center, UIBuilder.Center, Vector2.zero, new Vector2(560f, 72f));
-        UIBuilder.AddImage(pill, UIBuilder.Sprite("UI/capsule_white"), sliced: true).color = new Color32(0xFF, 0xF0, 0xBC, 0xFF);
-        UIBuilder.AddImage(UIBuilder.Place(pill, "Coin", 22, 12, 48, 48), UIBuilder.Sprite("UI/icon_coin")).preserveAspect = true;
-        var rewardText = UIBuilder.Label(pill, "Text", 80, 0, 460, 72, _bold, "+30 coins", 32, UIBuilder.Ink, TextAlignmentOptions.Center);
-        var stats = Text(holder, "Stats", _regular, 30, MutedText, "1 swipe · relaxed practice");
-        var next = ActionButton(holder, "Next Button", ButtonStyle.Primary, "Next", out var nextLabel);
-        var levels = ActionButton(holder, "Levels Button", ButtonStyle.Secondary, "Choose a level", out _);
+        var (popup, holder, so) = Shell<PopUp_Win>(parent, PopupName.Win);
+        holder.Find("Body").GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Top;   // the completion line, centred
+        var scene = Fixed(holder, "Scene", 330);
+        UIBuilder.AddImage(scene, UIBuilder.Sprite("UI/capsule_white"), sliced: true).pixelsPerUnitMultiplier = 1.2f;
+        var subjects = SubjectRow(scene, out var cards);
 
-        SetArray(so, "_crew", crew);
-        Set(so, "_matched", matched);
+        var reward = Fixed(holder, "Reward", 92);
+        var pill = UIBuilder.Rect(reward, "Pill", UIBuilder.Center, UIBuilder.Center, UIBuilder.Center, Vector2.zero, new Vector2(400f, 92f));
+        UIBuilder.AddImage(pill, UIBuilder.Sprite("UI/button_gold"), sliced: true);
+        UIBuilder.AddImage(UIBuilder.Place(pill, "Coin", 34, 20, 52, 52), UIBuilder.Sprite("UI/icon_coin")).preserveAspect = true;
+        var rewardText = UIBuilder.Label(pill, "Text", 96, 0, 280, 92, _bold, "+30 coins", 42, UIBuilder.Ink, TextAlignmentOptions.Center);
+        var note = Text(holder, "Reward Note", _regular, 28, MutedText, "First completion reward");
+
+        var upNext = Fixed(holder, "Up Next", 172);
+        UIBuilder.AddImage(upNext, UIBuilder.Sprite("UI/panel_clue"), sliced: true);
+        var kicker = UIBuilder.Label(upNext, "Kicker", 36, 24, 700, 36, _bold, "UP NEXT", 26, UIBuilder.Teal, TextAlignmentOptions.MidlineLeft);
+        kicker.GetComponent<TMP_Text>().characterSpacing = 6f;
+        var nextTitle = UIBuilder.Label(upNext, "Title", 36, 62, 760, 50, _bold, "Cosy pet corner", 40, UIBuilder.Ink, TextAlignmentOptions.MidlineLeft);
+        UIBuilder.Label(upNext, "Line", 36, 114, 760, 34, _regular, "A new scene. The same swipe rules.", 26, MutedText, TextAlignmentOptions.MidlineLeft);
+
+        var next = ActionButton(holder, "Next Button", ButtonStyle.Primary, "Next case", out var nextLabel);
+        var map = ActionButton(holder, "Map Button", ButtonStyle.Text, "Choose a case", out _);
+
+        SetArray(so, "_subjects", cards);
         Set(so, "_reward", rewardText.GetComponent<TMP_Text>());
-        Set(so, "_stats", stats);
+        Set(so, "_rewardNote", note);
+        Set(so, "_upNext", upNext.gameObject);
+        Set(so, "_upNextTitle", nextTitle.GetComponent<TMP_Text>());
         Set(so, "_nextButton", next);
         Set(so, "_nextLabel", nextLabel);
-        Set(so, "_levelsButton", levels);
+        Set(so, "_mapButton", map);
         Finish(popup, so);
-        _ = crewRow;
+        _ = subjects;
     }
 
     private static void BuildFailed(Transform parent)
     {
         var (popup, holder, so) = Shell<PopUp_Failed>(parent, PopupName.Failed);
-        Set(so, "_undoButton", ActionButton(holder, "Undo Button", ButtonStyle.Primary, "Undo last move", out _));
-        Set(so, "_retryButton", ActionButton(holder, "Retry Button", ButtonStyle.Secondary, "Try again", out _));
-        Set(so, "_levelsButton", ActionButton(holder, "Levels Button", ButtonStyle.Text, "Choose a level", out _));
+        Set(so, "_retryButton", ActionButton(holder, "Retry Button", ButtonStyle.Primary, "Retry", out _));
+        Set(so, "_undoButton", ActionButton(holder, "Undo Button", ButtonStyle.Secondary, "Undo", out _));
+        Set(so, "_levelsButton", ActionButton(holder, "Levels Button", ButtonStyle.Text, "Choose a case", out _));
         Finish(popup, so);
     }
 
+    // "Hint": a clue card (bulb, the item's picture, the fact), then the next swipe in words.
     private static void BuildHint(Transform parent)
     {
-        var (popup, holder, so) = Shell<PopUp_Hint>(parent, PopupName.Hint, bodyAfterCustom: true);
-        var card = Fixed(holder, "Clue Card", 200);
+        var (popup, holder, so) = Shell<PopUp_Hint>(parent, PopupName.Hint, withBody: false);
+        var card = Fixed(holder, "Clue Card", 180);
         UIBuilder.AddImage(card, UIBuilder.Sprite("UI/panel_clue"), sliced: true);
-        var icon = UIBuilder.AddImage(Anchored(card, "Icon", new Vector2(0f, 0.5f), new Vector2(110f, 0f), new Vector2(150f, 150f)),
-                                      UIBuilder.Sprite("Items/red_bag"));
+        UIBuilder.AddImage(Anchored(card, "Bulb", new Vector2(0f, 0.5f), new Vector2(62f, 0f), new Vector2(72f, 72f)),
+                           UIBuilder.Sprite("UI/icon_hint")).preserveAspect = true;
+        var icon = UIBuilder.AddImage(Anchored(card, "Icon", new Vector2(0f, 0.5f), new Vector2(178f, 0f), new Vector2(120f, 120f)),
+                                      UIBuilder.Sprite("Items/crew_00"));
         icon.preserveAspect = true;
-        var textRect = UIBuilder.Rect(card, "Text", Vector2.zero, Vector2.one, UIBuilder.Center, new Vector2(100f, 0f), new Vector2(-240f, -30f));
-        var text = UIBuilder.AddText(textRect, _bold, "Mia carries the red bag.", 44, UIBuilder.Ink);
+        var textRect = UIBuilder.Rect(card, "Text", Vector2.zero, Vector2.one, UIBuilder.Center, new Vector2(125f, 0f), new Vector2(-290f, -30f));
+        var text = UIBuilder.AddText(textRect, _bold, "Trail bag gets the raincoat.", 40, UIBuilder.Ink);
         text.alignment = TextAlignmentOptions.MidlineLeft;
         text.textWrappingMode = TextWrappingModes.Normal;
         text.enableAutoSizing = true;
-        text.fontSizeMin = 30f;
-        text.fontSizeMax = 46f;
-        MoveBodyToEnd(holder);
+        text.fontSizeMin = 28f;
+        text.fontSizeMax = 40f;
+        var swipe = Text(holder, "Swipe", _bold, 42, UIBuilder.Ink, "Swipe the top row left.");
+        swipe.alignment = TextAlignmentOptions.TopLeft;
+        var wrap = Text(holder, "Wrap", _regular, 34, UIBuilder.Ink, "The first item wraps to the last space.");
+        wrap.alignment = TextAlignmentOptions.TopLeft;
         Set(so, "_clueIcon", icon);
         Set(so, "_clueText", text);
+        Set(so, "_swipeText", swipe);
+        Set(so, "_wrapText", wrap);
         Set(so, "_showButton", ActionButton(holder, "Show Button", ButtonStyle.Primary, "Show the next swipe", out _));
         Set(so, "_tryButton", ActionButton(holder, "Try Button", ButtonStyle.Secondary, "I’ll try it", out _));
         Finish(popup, so);
     }
 
+    // "Notebook": the subject names over three columns, then per category its heading and three
+    // entries (icon, name, a check while in place), then the rules line.
     private static void BuildNotebook(Transform parent)
     {
-        var (popup, holder, so) = Shell<PopUp_Notebook>(parent, PopupName.Notebook, withBody: false);
-        CrewRow(holder, out var crew);
-        var scroll = ScrollArea(holder, "Clues", 600, out var content);
-        var body = Text(content, "Body", _regular, 34, UIBuilder.Ink, "");
-        body.alignment = TextAlignmentOptions.TopLeft;
-        Set(so, "_body", body);
-        SetArray(so, "_crew", crew);
-        Set(so, "_scroll", scroll);
+        var (popup, holder, so) = Shell<PopUp_Notebook>(parent, PopupName.Notebook);
+        var namesRow = Fixed(holder, "Names", 50);
+        var names = new TMP_Text[3];
+        for (int c = 0; c < 3; c++)
+        {
+            names[c] = UIBuilder.AddText(Column(namesRow, $"Name {c + 1}", c), _bold, "Trail", 32, UIBuilder.Teal);
+            names[c].enableAutoSizing = true;
+            names[c].fontSizeMin = 22f;
+            names[c].fontSizeMax = 32f;
+        }
+
+        var headings = new TMP_Text[3];
+        var icons = new Image[9];
+        var labels = new TMP_Text[9];
+        var checks = new GameObject[9];
+        for (int r = 0; r < 3; r++)
+        {
+            headings[r] = Text(holder, $"Heading {r + 1}", _bold, 30, UIBuilder.Teal, "CLOTHES");
+            headings[r].alignment = TextAlignmentOptions.BottomLeft;
+            headings[r].characterSpacing = 4f;
+            var row = Fixed(holder, $"Row {r + 1}", 104);
+            for (int c = 0; c < 3; c++)
+            {
+                int i = r * 3 + c;
+                var column = Column(row, $"Entry {c + 1}", c);
+                icons[i] = UIBuilder.AddImage(Anchored(column, "Icon", new Vector2(0f, 0.5f), new Vector2(50f, 0f), new Vector2(92f, 92f)),
+                                              UIBuilder.Sprite("Items/crew_00"));
+                icons[i].preserveAspect = true;
+                var labelRect = UIBuilder.Rect(column, "Label", Vector2.zero, Vector2.one, UIBuilder.Center, new Vector2(52f, 0f), new Vector2(-108f, 0f));
+                labels[i] = UIBuilder.AddText(labelRect, _bold, "Raincoat", 28, UIBuilder.Ink);
+                labels[i].alignment = TextAlignmentOptions.MidlineLeft;
+                labels[i].textWrappingMode = TextWrappingModes.Normal;
+                labels[i].enableAutoSizing = true;
+                labels[i].fontSizeMin = 20f;
+                labels[i].fontSizeMax = 28f;
+                var check = UIBuilder.AddImage(Anchored(column, "Check", new Vector2(0f, 0.5f), new Vector2(86f, 30f), new Vector2(34f, 34f)),
+                                               UIBuilder.Sprite("UI/check_badge"));
+                checks[i] = check.gameObject;
+            }
+        }
+        MoveBodyToEnd(holder);
+        var body = holder.Find("Body").GetComponent<TMP_Text>();
+        body.fontSize = 30;
+        body.alignment = TextAlignmentOptions.Top;
+
+        SetArray(so, "_names", names);
+        SetArray(so, "_headings", headings);
+        SetArray(so, "_icons", icons);
+        SetArray(so, "_labels", labels);
+        SetArray(so, "_checks", checks);
         Set(so, "_backButton", ActionButton(holder, "Back Button", ButtonStyle.Primary, "Back to the board", out _));
         Finish(popup, so);
     }
 
-    private static void BuildLevelSelect(Transform parent)
+    // The case map, full screen on the teal backdrop: title and progress line, a vertical ScrollRect
+    // over a 1080-wide content rect (PopUp_Map sizes it and clones the templates from the campaign),
+    // and Back. Templates: the chapter path (map_path, 1080 x 1200), a chapter heading, and a
+    // 170-unit node (sprite, number, check badge).
+    private static void BuildMap(Transform parent)
     {
-        var (popup, holder, so) = Shell<PopUp_LevelSelect>(parent, PopupName.LevelSelect);
-        var list = UIBuilder.Rect(holder, "Rows", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero);
-        var layout = Undo.AddComponent<VerticalLayoutGroup>(list.gameObject);
-        layout.spacing = 12f;
-        layout.childControlWidth = layout.childControlHeight = true;
-        layout.childForceExpandWidth = true;
-        layout.childForceExpandHeight = false;
-        var row = ChoiceRow(list, "Row Template", 108f, withSubtitle: true);
-        Set(so, "_rowTemplate", row);
-        Set(so, "_backButton", ActionButton(holder, "Back Button", ButtonStyle.Secondary, "Back to this level", out _));
+        var root = UIBuilder.Rect(parent, $"PopUp_{PopupName.LevelSelect}", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero);
+        var dim = UIBuilder.Rect(root, "Dim", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, new Vector2(3000f, 3000f));
+        var dimImage = UIBuilder.AddImage(dim, null);
+        dimImage.color = DimColor;
+        dimImage.raycastTarget = true;
+        var dimGroup = Undo.AddComponent<CanvasGroup>(dim.gameObject);
+
+        var holder = UIBuilder.Rect(root, "Holder", UIBuilder.Center, UIBuilder.Center, UIBuilder.Center, Vector2.zero, UI_ReferenceFit.ReferenceSize);
+        var backdrop = UIBuilder.AddImage(holder, UIBuilder.Sprite("UI/background_teal"));
+        backdrop.raycastTarget = true;
+        var title = UIBuilder.Label(holder, "Title", 40, 40, 1000, 80, _bold, "Choose a case", 60, UIBuilder.Cream, TextAlignmentOptions.Center);
+        var body = UIBuilder.Label(holder, "Body", 40, 124, 1000, 44, _regular, "0/30 cases complete", 32, UIBuilder.Cream, TextAlignmentOptions.Center);
+
+        var area = UIBuilder.Place(holder, "Map", 0, 180, 1080, 1560);
+        var viewport = UIBuilder.Rect(area, "Viewport", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero);
+        var hit = UIBuilder.AddImage(viewport, null);
+        hit.color = new Color(1f, 1f, 1f, 0f);
+        hit.raycastTarget = true;
+        Undo.AddComponent<RectMask2D>(viewport.gameObject);
+        var content = UIBuilder.Rect(viewport, "Content", new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 1f), Vector2.zero, new Vector2(1080f, 6000f));
+        var scroll = Undo.AddComponent<ScrollRect>(area.gameObject);
+        scroll.viewport = viewport;
+        scroll.content = content;
+        scroll.horizontal = false;
+        scroll.movementType = ScrollRect.MovementType.Clamped;
+        scroll.scrollSensitivity = 40f;
+
+        var path = UIBuilder.AddImage(UIBuilder.Rect(content, "Path Template", new Vector2(0f, 1f), new Vector2(0f, 1f), UIBuilder.Center,
+                                                     Vector2.zero, new Vector2(1080f, 1200f)), UIBuilder.Sprite("UI/map_path"));
+        var heading = UIBuilder.Rect(content, "Heading Template", new Vector2(0f, 1f), new Vector2(0f, 1f), UIBuilder.Center,
+                                     Vector2.zero, new Vector2(900f, 66f));
+        UIBuilder.AddImage(heading, UIBuilder.Sprite("UI/capsule_white"), sliced: true).color = UIBuilder.Cream;
+        UIBuilder.AddText(UIBuilder.Rect(heading, "Label", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero),
+                          _bold, "A busy morning", 36, UIBuilder.Ink);
+        var nodeRect = UIBuilder.Rect(content, "Node Template", new Vector2(0f, 1f), new Vector2(0f, 1f), UIBuilder.Center, Vector2.zero, new Vector2(170f, 170f));
+        var nodeImage = UIBuilder.AddImage(nodeRect, UIBuilder.Sprite("UI/map_node_open"));
+        nodeImage.preserveAspect = true;
+        var node = UIBuilder.MakeButton(nodeRect, nodeImage);
+        var colors = node.colors;
+        colors.disabledColor = Color.white;          // locked nodes keep their own sprite's look
+        node.colors = colors;
+        UIBuilder.AddText(UIBuilder.Rect(nodeRect, "Number", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero),
+                          _bold, "1", 58, UIBuilder.Ink);
+        UIBuilder.AddImage(UIBuilder.Rect(nodeRect, "Check", Vector2.one, Vector2.one, UIBuilder.Center, new Vector2(-24f, -24f), new Vector2(60f, 60f)),
+                           UIBuilder.Sprite("UI/check_badge"));
+
+        var back = UIBuilder.Place(holder, "Back Button", 290, 1770, 500, 110);
+        var backSurface = UIBuilder.AddImage(back, UIBuilder.Sprite("UI/button_cream"), sliced: true);
+        UIBuilder.Label(back, "Label", 0, 0, 500, 110, _bold, "Back", 42, UIBuilder.Ink, TextAlignmentOptions.Center);
+
+        var popup = Undo.AddComponent<PopUp_Map>(root.gameObject);
+        var so = new SerializedObject(popup);
+        so.FindProperty("_popupName").enumValueIndex = (int)PopupName.LevelSelect;
+        Set(so, "_holder", holder);
+        Set(so, "_dim", dimGroup);
+        Set(so, "_title", title.GetComponent<TMP_Text>());
+        Set(so, "_body", body.GetComponent<TMP_Text>());
+        Set(so, "_scroll", scroll);
+        Set(so, "_content", content);
+        Set(so, "_pathTemplate", path);
+        Set(so, "_headingTemplate", heading);
+        Set(so, "_nodeTemplate", node);
+        Set(so, "_currentSprite", UIBuilder.Sprite("UI/map_node_current"));
+        Set(so, "_openSprite", UIBuilder.Sprite("UI/map_node_open"));
+        Set(so, "_lockedSprite", UIBuilder.Sprite("UI/map_node_locked"));
+        Set(so, "_backButton", UIBuilder.MakeButton(back, backSurface));
+        path.gameObject.SetActive(false);
+        heading.gameObject.SetActive(false);
+        nodeRect.gameObject.SetActive(false);
         Finish(popup, so);
     }
 
@@ -183,21 +290,9 @@ public static class PopUpBuilder
         var sound = ActionButton(holder, "Sound Button", ButtonStyle.Secondary, "Sound effects: On", out var soundLabel);
         Set(so, "_soundButton", sound);
         Set(so, "_soundLabel", soundLabel);
-        Set(so, "_restartButton", ActionButton(holder, "Restart Button", ButtonStyle.Secondary, "Restart this level", out _));
-        Set(so, "_levelsButton", ActionButton(holder, "Levels Button", ButtonStyle.Secondary, "Choose a level", out _));
-        Set(so, "_exportButton", ActionButton(holder, "Export Button", ButtonStyle.Secondary, "Save results (JSON)", out _));
-        Set(so, "_freshButton", ActionButton(holder, "Fresh Button", ButtonStyle.Text, "Start a fresh test", out _));
+        Set(so, "_restartButton", ActionButton(holder, "Restart Button", ButtonStyle.Secondary, "Restart this case", out _));
+        Set(so, "_levelsButton", ActionButton(holder, "Levels Button", ButtonStyle.Secondary, "Choose a case", out _));
         Set(so, "_backButton", ActionButton(holder, "Back Button", ButtonStyle.Primary, "Back to the game", out _));
-        Finish(popup, so);
-    }
-
-    private static void BuildConfirm(Transform parent)
-    {
-        var (popup, holder, so) = Shell<PopUp_Confirm>(parent, PopupName.Confirm);
-        Set(so, "_yesButton", ActionButton(holder, "Yes Button", ButtonStyle.Primary, "Yes", out var yes));
-        Set(so, "_yesLabel", yes);
-        Set(so, "_noButton", ActionButton(holder, "No Button", ButtonStyle.Secondary, "No", out var no));
-        Set(so, "_noLabel", no);
         Finish(popup, so);
     }
 
@@ -210,7 +305,7 @@ public static class PopUpBuilder
         Set(so, "_questionTemplate", question);
         Set(so, "_optionTemplate", option);
         Set(so, "_saveButton", ActionButton(holder, "Save Button", ButtonStyle.Primary, "Save feedback and results", out _));
-        Set(so, "_backButton", ActionButton(holder, "Back Button", ButtonStyle.Secondary, "Back to the levels", out _));
+        Set(so, "_backButton", ActionButton(holder, "Back Button", ButtonStyle.Secondary, "Back to the map", out _));
         Finish(popup, so);
     }
 
@@ -317,50 +412,30 @@ public static class PopUpBuilder
         return UIBuilder.MakeButton(rect, surface);
     }
 
-    // Three UI_CrewPortraits side by side (360 high): the art (5 stacked layer Images in a 600:900 box)
-    // and a name tab (symbol + caption) under it.
-    private static RectTransform CrewRow(RectTransform parent, out UI_CrewPortrait[] crew)
+    // Three UI_SubjectCards side by side (the win popup's finished scene): each a white card with
+    // the subject's rig and a name tab under it.
+    private static RectTransform SubjectRow(RectTransform parent, out UI_SubjectCard[] cards)
     {
-        var row = Fixed(parent, "Crew", 360);
+        var row = UIBuilder.Rect(parent, "Subjects", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, new Vector2(-30f, -30f));
         var layout = Undo.AddComponent<HorizontalLayoutGroup>(row.gameObject);
-        layout.spacing = 24f;
+        layout.spacing = 16f;
         layout.childAlignment = TextAnchor.MiddleCenter;
         layout.childControlWidth = layout.childControlHeight = false;
         layout.childForceExpandWidth = layout.childForceExpandHeight = false;
 
-        crew = new UI_CrewPortrait[3];
-        for (int i = 0; i < crew.Length; i++)
+        cards = new UI_SubjectCard[3];
+        for (int i = 0; i < cards.Length; i++)
         {
-            var portrait = UIBuilder.Rect(row, $"Portrait {i + 1}", UIBuilder.Center, UIBuilder.Center, UIBuilder.Center,
-                                          Vector2.zero, new Vector2(250f, 360f));
-            var art = UIBuilder.Place(portrait, "Art", 25, 0, 200, 300);
-            var layers = new Image[5];
-            for (int l = 0; l < layers.Length; l++)
-            {
-                var layer = UIBuilder.Rect(art, $"Layer {l + 1}", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero);
-                layers[l] = UIBuilder.AddImage(layer, null);
-                layers[l].preserveAspect = true;
-            }
-            var tab = UIBuilder.Place(portrait, "Name Tab", 10, 296, 230, 60);
-            UIBuilder.AddImage(tab, UIBuilder.Sprite("UI/tab_name"), sliced: true);
-            var symbol = UIBuilder.AddImage(UIBuilder.Place(tab, "Symbol", 16, 13, 34, 34), UIBuilder.Sprite("UI/symbol_mia"));
-            symbol.preserveAspect = true;
-            var caption = UIBuilder.Label(tab, "Caption", 56, 0, 166, 60, _bold, "Mia", 32, UIBuilder.Ink, TextAlignmentOptions.MidlineLeft)
-                                   .GetComponent<TMP_Text>();
-            caption.enableAutoSizing = true;
-            caption.fontSizeMin = 20f;
-            caption.fontSizeMax = 32f;
-
-            var component = Undo.AddComponent<UI_CrewPortrait>(portrait.gameObject);
-            var so = new SerializedObject(component);
-            SetArray(so, "_layers", layers);
-            Set(so, "_symbol", symbol);
-            Set(so, "_caption", caption);
-            so.ApplyModifiedPropertiesWithoutUndo();
-            crew[i] = component;
+            var subject = UIBuilder.Rect(row, $"Subject {i + 1}", UIBuilder.Center, UIBuilder.Center, UIBuilder.Center,
+                                         Vector2.zero, new Vector2(250f, 290f));
+            cards[i] = UIBuilder.SubjectCard(subject, _bold, 250, 240, 50, new[] { 8f, 6f, 234f, 228f }, Color.white, 30);
         }
         return row;
     }
+
+    // A third of `parent`'s width (column c of 3), full height.
+    private static RectTransform Column(RectTransform parent, string name, int c) =>
+        UIBuilder.Rect(parent, name, new Vector2(c / 3f, 0f), new Vector2((c + 1) / 3f, 1f), UIBuilder.Center, Vector2.zero, Vector2.zero);
 
     // A fixed-height vertical ScrollRect; content stacks its children (vertical layout, preferred height).
     private static ScrollRect ScrollArea(RectTransform parent, string name, float height, out RectTransform content)

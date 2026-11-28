@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -130,13 +129,9 @@ public static class SceneBuilder
 
         var cells = GetOrCreateChild(board, "Cells");
         var tiles = GetOrCreateChild(board, "Tiles");
-        var tags = GetOrCreateChild(board, "Tags");
 
         var guideGo = GetOrCreateChild(board, "Guide", out bool guideCreated);
         var guide = guideCreated ? BuildGuide(guideGo) : guideGo.GetComponent<BoardGuide>();
-
-        var charactersGo = GetOrCreateChild(board, "Characters", out bool charactersCreated);
-        var characters = charactersCreated ? BuildCharacterRow(charactersGo) : charactersGo.GetComponent<CharacterRow>();
 
         var so = new SerializedObject(managers.GetComponent<Manager_Board>());
         SetIfEmpty(so, "_boardRoot", board);
@@ -146,8 +141,6 @@ public static class SceneBuilder
         SetIfEmpty(so, "_background", background);
         SetIfEmpty(so, "_cellsRoot", cells);
         SetIfEmpty(so, "_tilesRoot", tiles);
-        SetIfEmpty(so, "_tagsRoot", tags);
-        SetIfEmpty(so, "_characters", characters);
         SetIfEmpty(so, "_guide", guide);
         var dividers = so.FindProperty("_dividers");
         if (dividers.arraySize == 0)
@@ -167,9 +160,9 @@ public static class SceneBuilder
         band.drawMode = SpriteDrawMode.Sliced;
         band.color = new Color(1f, 0.78f, 0.18f, 0.42f);
         var arrow = AddSprite(root, "Arrow", HandoffBuilder.LoadSprite("Tutorial/tutorial_arrow"), Vector2.zero, SortOrder.Guide + 1);
-        arrow.transform.localScale = Vector3.one * 0.75f;
+        arrow.transform.localScale = Vector3.one * 0.96f;
         var hand = AddSprite(root, "Hand", HandoffBuilder.LoadSprite("Tutorial/tutorial_hand"), Vector2.zero, SortOrder.Guide + 2);
-        hand.transform.localScale = Vector3.one * 0.32f;
+        hand.transform.localScale = Vector3.one * 0.41f;
 
         var guide = root.gameObject.AddComponent<BoardGuide>();
         var so = new SerializedObject(guide);
@@ -179,65 +172,6 @@ public static class SceneBuilder
         so.ApplyModifiedPropertiesWithoutUndo();
         root.gameObject.SetActive(false);
         return guide;
-    }
-
-    // Board/Characters: the customers and their name tabs, in world space. Its local space is the
-    // reference screen (Manager_Board keeps it at the world origin), so it uses ReferenceLayout's
-    // positions. Three slots over the 3x3 board; Manager_Board.Build places them and instantiates
-    // each column's Customer variant on its stand. To rebuild it, delete Board/Characters and run Build Scene.
-    private static readonly Color NameColor = new Color32(0x40, 0x28, 0x1F, 0xFF);
-
-    private static CharacterRow BuildCharacterRow(Transform root)
-    {
-        var row = root.gameObject.AddComponent<CharacterRow>();
-        var font = HandoffBuilder.BoldFont();
-        string[] names = { "Mia", "Leo", "Zoe" };
-        var slots = new SerializedObject(row).FindProperty("_slots");
-        slots.arraySize = names.Length;
-        for (int i = 0; i < names.Length; i++)
-        {
-            float x = ReferenceLayout.BoardCenter.x + (i - 1) * AssetBuilder.CellSize.x;
-
-            // The customer's feet; scaled so its 9-unit-tall layers are CustomerHeight tall.
-            var stand = new GameObject($"Customer Stand {i + 1}").transform;
-            stand.SetParent(root, false);
-            stand.localPosition = new Vector2(x, ReferenceLayout.PortraitBottom);
-            stand.localScale = Vector3.one * (ReferenceLayout.CustomerHeight / ReferenceLayout.CustomerArtHeight);
-
-            var plate = AddSprite(root, $"Name Tab {i + 1}", HandoffBuilder.LoadSprite("UI/tab_name"),
-                                  new Vector2(x, ReferenceLayout.PlateY), SortOrder.NamePlate);
-            plate.drawMode = SpriteDrawMode.Sliced;
-            plate.size = ReferenceLayout.PlateSize;
-
-            var symbolSprite = HandoffBuilder.LoadSprite($"UI/symbol_{names[i].ToLowerInvariant()}");
-            var symbol = AddSprite(plate.transform, "Symbol", symbolSprite, new Vector2(-0.66f, 0f), SortOrder.NameLabel);
-            symbol.transform.localScale = Vector3.one * (ReferenceLayout.PlateSymbolSize / symbolSprite.bounds.size.x);
-
-            var nameGo = new GameObject("Name", typeof(RectTransform));
-            var rect = (RectTransform)nameGo.transform;
-            rect.SetParent(plate.transform, false);
-            rect.anchoredPosition = new Vector2(0.30f, 0f);   // left edge 0.30 - 0.60 = -0.30, clear of the symbol
-            rect.sizeDelta = ReferenceLayout.PlateNameSize;
-            var name = nameGo.AddComponent<TextMeshPro>();
-            name.font = font;
-            name.text = names[i];
-            name.fontSize = 4.2f;                     // ~42 px; world TMP font size 10 ~ 1 unit
-            name.color = NameColor;
-            name.alignment = TextAlignmentOptions.MidlineLeft;
-            name.textWrappingMode = TextWrappingModes.NoWrap;
-            name.enableAutoSizing = true;             // long names shrink to stay on the tab
-            name.fontSizeMin = 2.8f;
-            name.fontSizeMax = 4.2f;
-            name.sortingOrder = SortOrder.NameLabel;
-
-            var slot = slots.GetArrayElementAtIndex(i);
-            slot.FindPropertyRelative("Stand").objectReferenceValue = stand;
-            slot.FindPropertyRelative("Plate").objectReferenceValue = plate.transform;
-            slot.FindPropertyRelative("Symbol").objectReferenceValue = symbol;
-            slot.FindPropertyRelative("Name").objectReferenceValue = name;
-        }
-        slots.serializedObject.ApplyModifiedPropertiesWithoutUndo();
-        return row;
     }
 
     private static SpriteRenderer AddSprite(Transform parent, string name, Sprite sprite, Vector2 position, int order)
@@ -331,14 +265,6 @@ public static class SceneBuilder
         SetIfEmpty(popUpManager, "_popUpParent", popUps);
         popUpManager.ApplyModifiedPropertiesWithoutUndo();
 
-        var darkArea = GetOrCreateUI(canvasGo.transform, "Dark Area", out bool createdDarkArea);
-        if (createdDarkArea)
-        {
-            var image = darkArea.gameObject.AddComponent<Image>();
-            image.color = new Color(0f, 0f, 0f, 0.7f);
-            darkArea.gameObject.SetActive(false);
-        }
-
         // Win confetti, over the popups and under the loading screen; never blocks taps.
         var confetti = GetOrCreateUI(canvasGo.transform, "Confetti", out bool confettiCreated);
         if (confettiCreated)
@@ -348,7 +274,6 @@ public static class SceneBuilder
         }
 
         GetOrCreateUI(canvasGo.transform, "Loading Screen");             // UI_Loading (UIBuilder.BuildLoading)
-        GetOrCreateUI(canvasGo.transform, "Transition Screen");          // UI_TransitionScreen
     }
 
     private static void BuildEventSystem()

@@ -3,23 +3,32 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// "Look at this clue": a large clue card (item icon + sentence) for the first unmatched assignment
-// of the active category, where it goes, then "Show the next swipe" (Manager_Flow solves the
-// current board and draws the guide) or "I'll try it" (closes, nothing changes).
+// "Hint": first the plain clue fact (bulb + the item's picture + the sentence) for the selected
+// category's first unsatisfied item, then the next swipe from the CURRENT board in words ("Swipe the
+// top row left." and which item wraps where). "Show the next swipe" closes it and draws the guide
+// on the board; "I'll try it" just closes. Opening it costs no move.
 public class PopUp_Hint : BasePopUp
 {
     [SerializeField] private Image _clueIcon;
     [SerializeField] private TMP_Text _clueText;
+    [SerializeField] private TMP_Text _swipeText;
+    [SerializeField] private TMP_Text _wrapText;
     [SerializeField] private Button _showButton;
     [SerializeField] private Button _tryButton;
 
-    public void Setup(string kicker, Sprite icon, string clue, string explanation, Action onShowSwipe, Action onTry)
+    // swipe null: nothing to guide (hides the swipe lines and the show button).
+    public void Setup(Sprite icon, string clue, string swipe, string wrap, Action onShowSwipe, Action onTry)
     {
-        SetTexts(kicker, "Look at this clue", explanation);
+        SetTexts("", "Hint", "");
         _clueIcon.sprite = icon;
         _clueIcon.gameObject.SetActive(icon != null);
         _clueText.text = clue;
-        Bind(_showButton, onShowSwipe);
+        bool hasSwipe = !string.IsNullOrEmpty(swipe);
+        _swipeText.gameObject.SetActive(hasSwipe);
+        _wrapText.gameObject.SetActive(hasSwipe && !string.IsNullOrEmpty(wrap));
+        _swipeText.text = swipe ?? "";
+        _wrapText.text = wrap ?? "";
+        Bind(_showButton, null, null, hasSwipe ? onShowSwipe : null);
         Bind(_tryButton, onTry);
     }
 }

@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 2,
+  "id": 6,
+  "title": "Holiday packing",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "Pack three bags for three different trips.",
+  "completionText": "The bags are packed for a new adventure.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 12,
+  "minimumMoves": 3,
+  "startingCells": [
+    "luggage_02",
+    "luggage_00",
+    "luggage_01",
+    "luggage_04",
+    "luggage_05",
+    "luggage_03",
+    "luggage_08",
+    "luggage_06",
+    "luggage_07"
+  ],
+  "goalCells": [
+    "luggage_00",
+    "luggage_01",
+    "luggage_02",
+    "luggage_03",
+    "luggage_04",
+    "luggage_05",
+    "luggage_06",
+    "luggage_07",
+    "luggage_08"
+  ],
+  "subjects": [
+    {
+      "id": "luggage_0",
+      "name": "Trail",
+      "column": 0,
+      "rigId": "luggage_0"
+    },
+    {
+      "id": "luggage_1",
+      "name": "Beach",
+      "column": 1,
+      "rigId": "luggage_1"
+    },
+    {
+      "id": "luggage_2",
+      "name": "City",
+      "column": 2,
+      "rigId": "luggage_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "luggage_row_0",
+      "label": "Clothes",
+      "row": 0
+    },
+    {
+      "id": "luggage_row_1",
+      "label": "Gear",
+      "row": 1
+    },
+    {
+      "id": "luggage_row_2",
+      "label": "Souvenirs",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "luggage_00",
+      "label": "Raincoat",
+      "sprite": "luggage_00",
+      "targetCell": 0,
+      "categoryId": "luggage_row_0",
+      "clue": "Trail bag gets the raincoat."
+    },
+    {
+      "id": "luggage_01",
+      "label": "Swimsuit",
+      "sprite": "luggage_01",
+      "targetCell": 1,
+      "categoryId": "luggage_row_0",
+      "clue": "Beach bag gets the swimsuit."
+    },
+    {
+      "id": "luggage_02",
+      "label": "Shirt",
+      "sprite": "luggage_02",
+      "targetCell": 2,
+      "categoryId": "luggage_row_0",
+      "clue": "City bag gets the shirt."
+    },
+    {
+      "id": "luggage_03",
+      "label": "Compass",
+      "sprite": "luggage_03",
+      "targetCell": 3,
+      "categoryId": "luggage_row_1",
+      "clue": "Trail bag gets the compass."
+    },
+    {
+      "id": "luggage_04",
+      "label": "Sunglasses",
+      "sprite": "luggage_04",
+      "targetCell": 4,
+      "categoryId": "luggage_row_1",
+      "clue": "Beach bag gets the sunglasses."
+    },
+    {
+      "id": "luggage_05",
+      "label": "Camera",
+      "sprite": "luggage_05",
+      "targetCell": 5,
+      "categoryId": "luggage_row_1",
+      "clue": "City bag gets the camera."
+    },
+    {
+      "id": "luggage_06",
+      "label": "Pinecone",
+      "sprite": "luggage_06",
+      "targetCell": 6,
+      "categoryId": "luggage_row_2",
+      "clue": "Trail bag gets the pinecone."
+    },
+    {
+      "id": "luggage_07",
+      "label": "Seashell",
+      "sprite": "luggage_07",
+      "targetCell": 7,
+      "categoryId": "luggage_row_2",
+      "clue": "Beach bag gets the seashell."
+    },
+    {
+      "id": "luggage_08",
+      "label": "Postcard",
+      "sprite": "luggage_08",
+      "targetCell": 8,
+      "categoryId": "luggage_row_2",
+      "clue": "City bag gets the postcard."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": -1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 7,
+  "difficulty": "practice",
+  "chapterId": 1,
+  "designSeed": 30306
+}

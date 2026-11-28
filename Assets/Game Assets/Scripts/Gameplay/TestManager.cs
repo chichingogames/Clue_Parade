@@ -26,7 +26,7 @@ public class TestManager : MonoBehaviour
     #region Inspector
 
     [Header("Level")]
-    [Tooltip("Level that 'Load Level' opens. Counts from 1; level 1 is Resources/Levels/level-001.json.")]
+    [Tooltip("Case that 'Load Level' opens, 1..30 (Assets/TilewrapVaried/Data/Levels/level_NNN.json).")]
     [SerializeField, Min(1)] private int _levelNumber = 1;
 
     [Header("Move")]
@@ -173,20 +173,20 @@ public class TestManager : MonoBehaviour
         var board = Manager_Board.Instance.State;
         string moves = level.HasMoveLimit ? $"{game.MovesUsed}/{level.MoveLimit} moves" : $"{game.MovesUsed} moves (unlimited)";
 
-        // One line per row: [ok] = the tile is home, * = complete row, > = the active step's row.
+        // One line per row: [ok] = the tile is home, * = complete row, > = the selected category's row.
         var rows = new System.Text.StringBuilder();
         for (int r = 0; r < board.Size; r++)
         {
-            string mark = board.IsRowComplete(r) ? "*" : r == board.ActiveRow ? ">" : " ";
-            rows.Append($"\n {mark} {level.Categories[r],-8}");
+            string mark = board.IsRowComplete(r) ? "*" : r == Manager_Board.Instance.SelectedRow ? ">" : " ";
+            rows.Append($"\n {mark} {level.Categories[r],-10}");
             for (int c = 0; c < board.Size; c++)
-                rows.Append(board.IsHome(r, c) ? "[ok] " : "[  ] ").Append(level.ItemFor(board[r, c])).Append("   ");
+                rows.Append(board.IsHome(r, c) ? "[ok] " : "[  ] ").Append(level.ItemFor(board[r, c]).Label).Append("   ");
         }
 
         var save = OfflineData.Instance;
         Debug.Log($"[TestManager] save: current {save.CurrentLevel}, passed {save.PassedLevels}, sound {(save.IsSoundOn ? "on" : "off")}");
-        Debug.Log($"[TestManager] level {game.CurrentLevel} (file {level.Number}, \"{level.Name}\") | {game.State} | " +
-                  $"step {Mathf.Min(board.ActiveStep + 1, board.StepCount)}/{board.StepCount} | {board.MatchedCount}/{board.CellCount} matched | {moves}{rows}");
+        Debug.Log($"[TestManager] case {game.CurrentLevel} \"{level.Title}\" ({level.Difficulty}) | {game.State} | " +
+                  $"{board.MatchedCount}/{board.CellCount} matched | {moves}, minimum {level.MinimumMoves}{rows}");
     }
 
     #endregion

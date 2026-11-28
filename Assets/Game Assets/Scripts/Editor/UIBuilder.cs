@@ -1,13 +1,15 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Builds the HUD under Canvas/Container/InGame/Reference (see UI_InGame) on the Tilewrap handoff's
-// 1080x1920 layout (game_config.json ui.layoutTopLeft: every x, y, w, h below is in its top-left-origin
-// pixels; the groups are hud, title, subtitle, clueHeading, clueCards, coach, progress, controlNote,
-// actions, brand), with the handoff's UI sprites and fonts, and the loading screen.
+// Builds the HUD under Canvas/Container/InGame/Reference (see UI_InGame) on the content pack's
+// 1080x1920 layout (Assets/TilewrapVaried/Data/ui_layout.json regions and geometry: every x, y, w, h
+// below is in its top-left-origin pixels: level, menu, difficulty, moves, title, goal, clueHeading,
+// clues, subjects, subjectNames, categories, controlNote, progress, actions), with the pack's UI
+// sprites and fonts, and the loading screen. The board itself is world space (SceneBuilder).
 // Re-runnable: the HUD is built only when InGame has no UI_InGame yet. To rebuild it, delete
 // InGame/Reference and the UI_InGame component, then run again. The helpers are shared with PopUpBuilder.
 public static class UIBuilder
@@ -15,10 +17,14 @@ public static class UIBuilder
     public static readonly Color Ink = new Color32(0x40, 0x28, 0x1F, 0xFF);
     public static readonly Color Cream = new Color32(0xFF, 0xF1, 0xD8, 0xFF);
     public static readonly Color Teal = new Color32(0x36, 0x87, 0x79, 0xFF);
+    public static readonly Color Gold = new Color32(0xFF, 0xC8, 0x2E, 0xFF);
     private static readonly Color PaleCream = new Color32(0xEC, 0xF7, 0xE9, 0xFF);
     private static readonly Color NoteColor = new Color32(0xE6, 0xF2, 0xE6, 0xFF);
     private static readonly Color BrandColor = new Color32(0xB4, 0xDD, 0xD4, 0xFF);
-    private static readonly Color CoachColor = new Color32(0xFF, 0xF3, 0xD8, 0xFF);
+
+    // geometry: subject cards 280 wide over 290 px columns (board x 170), art inset [17, 5, 246, 200].
+    private const float BoardLeft = 170f;
+    private const float Cell = 290f;
 
     [MenuItem("ShiftSort/Build UI")]
     public static void Build()
@@ -44,12 +50,14 @@ public static class UIBuilder
 
         var ui = Undo.AddComponent<UI_InGame>(inGameGo);
         var so = new SerializedObject(ui);
-        var intro = new System.Collections.Generic.List<RectTransform>();
+        var intro = new List<RectTransform>();
 
         BuildTopBar(root, so, bold, regular, intro);
         BuildTitle(root, so, bold, regular, intro);
         BuildClues(root, so, bold, regular, intro);
-        BuildCoachAndProgress(root, so, bold, regular, intro);
+        BuildSubjects(root, so, bold, intro);
+        BuildCategories(root, so, bold, intro);
+        BuildProgress(root, so, bold, regular, intro);
         BuildButtons(root, so, bold, intro);
         BuildToast(root, so, regular);
 
@@ -64,95 +72,98 @@ public static class UIBuilder
 
     // ---------- HUD sections ----------
 
-    // hud (42, 28, 996, 112): the level pill, the moves panel, the menu button.
+    // level (40, 30, 280, 85), menu (340, 45, 64, 64), difficulty (470, 45, 210, 62), moves (760, 25, 280, 107).
     private static void BuildTopBar(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
-                                    System.Collections.Generic.List<RectTransform> intro)
+                                    List<RectTransform> intro)
     {
-        var level = Place(root, "Level Button", 42, 40, 300, 88);
+        var level = Place(root, "Level Button", 40, 30, 280, 85);
         var levelSurface = AddImage(level, Sprite("UI/capsule_white"), sliced: true);
         levelSurface.color = Cream;
-        var levelText = Label(level, "Label", 0, 0, 300, 88, bold, "LEVEL 1 <size=70%>of 5</size>", 40, Ink, TextAlignmentOptions.Center);
+        var levelText = Label(level, "Label", 0, 0, 280, 85, bold, "Level 1", 40, Ink, TextAlignmentOptions.Center);
         Set(so, "_levelButton", MakeButton(level, levelSurface));
         Set(so, "_levelText", levelText.GetComponent<TMP_Text>());
 
-        var moves = Place(root, "Moves Panel", 700, 28, 220, 112);
+        var menu = Place(root, "Menu Button", 340, 45, 64, 64);
+        var menuSurface = AddImage(menu, Sprite("UI/capsule_white"), sliced: true);
+        menuSurface.color = new Color(1f, 1f, 1f, 0f);       // the icon alone; the rect still catches taps
+        var menuIcon = AddImage(Place(menu, "Icon", 4, 4, 56, 56), Sprite("UI/icon_menu"));
+        menuIcon.preserveAspect = true;
+        Set(so, "_menuButton", MakeButton(menu, menuSurface));
+
+        var hard = Place(root, "Hard Badge", 470, 45, 210, 62);
+        AddImage(hard, Sprite("UI/capsule_white"), sliced: true).color = Gold;
+        Label(hard, "Label", 0, 0, 210, 62, bold, "Hard", 32, Ink, TextAlignmentOptions.Center);
+        Set(so, "_hardBadge", hard.gameObject);
+
+        var moves = Place(root, "Moves Panel", 760, 25, 280, 107);
         var movesImage = AddImage(moves, Sprite("UI/panel_moves"), sliced: true);
-        var value = Label(moves, "Value", 0, 6, 220, 70, bold, "12", 84, Ink, TextAlignmentOptions.Center);
+        var value = Label(moves, "Value", 0, 6, 280, 62, bold, "12", 50, Ink, TextAlignmentOptions.Center);
         var valueText = value.GetComponent<TMP_Text>();
         valueText.enableAutoSizing = true;
-        valueText.fontSizeMin = 36f;
-        valueText.fontSizeMax = 84f;
-        var label = Label(moves, "Label", 0, 74, 220, 32, regular, "moves left", 28, Ink, TextAlignmentOptions.Center);
+        valueText.fontSizeMin = 28f;
+        valueText.fontSizeMax = 50f;
+        var label = Label(moves, "Label", 0, 66, 280, 34, regular, "moves left", 25, Ink, TextAlignmentOptions.Center);
         Set(so, "_movesPanel", movesImage);
         Set(so, "_movesValue", valueText);
         Set(so, "_movesLabel", label.GetComponent<TMP_Text>());
         Set(so, "_movesSprite", Sprite("UI/panel_moves"));
         Set(so, "_practiceSprite", Sprite("UI/panel_practice"));
 
-        var menu = Place(root, "Menu Button", 942, 40, 96, 88);
-        var menuSurface = AddImage(menu, Sprite("UI/button_cream"), sliced: true);
-        var menuIcon = AddImage(Place(menu, "Icon", 22, 18, 52, 52), Sprite("UI/icon_menu"));
-        menuIcon.preserveAspect = true;
-        Set(so, "_menuButton", MakeButton(menu, menuSurface));
-
         intro.Add(level);
-        intro.Add(moves);
         intro.Add(menu);
+        intro.Add(hard);
+        intro.Add(moves);
     }
 
-    // title (42, 153, 996, 84) and subtitle (42, 240, 996, 42).
+    // title (40, 150, 1000, 74) and goal (40, 235, 1000, 44).
     private static void BuildTitle(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
-                                   System.Collections.Generic.List<RectTransform> intro)
+                                   List<RectTransform> intro)
     {
-        var title = Label(root, "Title", 42, 153, 996, 84, bold, "Hats on!", 80, Cream, TextAlignmentOptions.Center);
+        var title = Label(root, "Title", 40, 150, 1000, 74, bold, "Ready for the parade", 60, Cream, TextAlignmentOptions.Center);
         var titleText = title.GetComponent<TMP_Text>();
         titleText.enableAutoSizing = true;
-        titleText.fontSizeMin = 54f;
-        titleText.fontSizeMax = 80f;
-        var subtitle = Label(root, "Subtitle", 42, 240, 996, 42, regular, "Match all 9 items using the clues.", 36, PaleCream, TextAlignmentOptions.Center);
+        titleText.fontSizeMin = 40f;
+        titleText.fontSizeMax = 60f;
+        var goal = Label(root, "Goal", 40, 235, 1000, 44, regular, "Match all 9 items using the clues.", 34, PaleCream, TextAlignmentOptions.Center);
         Set(so, "_title", titleText);
-        Set(so, "_subtitle", subtitle.GetComponent<TMP_Text>());
+        Set(so, "_goal", goal.GetComponent<TMP_Text>());
         intro.Add(title);
-        intro.Add(subtitle);
+        intro.Add(goal);
     }
 
-    // clueHeading (42, 306, 996, 38) and clueCards (42, 354, 996, 168): two cards, 486 wide, 24 apart.
+    // clueHeading (40, 285, 1000, 38): "CLUES" and "All facts in Notebook"; clues (40, 330, 1000, 165):
+    // two cards 490 wide, 20 apart; icon [14, 24, 105, 105] and text [132, 21, 335, 130] inside a card.
     private static void BuildClues(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
-                                   System.Collections.Generic.List<RectTransform> intro)
+                                   List<RectTransform> intro)
     {
-        var heading = Label(root, "Clue Heading", 42, 302, 500, 46, bold, "CLUES · HATS", 34, Cream, TextAlignmentOptions.MidlineLeft);
-        var progress = Label(root, "Clue Progress", 560, 302, 280, 46, regular, "0/3 matched", 30, Cream, TextAlignmentOptions.MidlineRight);
-        var all = Place(root, "All Clues Button", 868, 298, 170, 54);
+        var heading = Label(root, "Clue Heading", 40, 285, 500, 38, bold, "CLUES", 25, Cream, TextAlignmentOptions.MidlineLeft);
+        heading.GetComponent<TMP_Text>().characterSpacing = 6f;
+        var all = Place(root, "All Facts Button", 640, 281, 400, 46);
         var allSurface = AddImage(all, Sprite("UI/capsule_white"), sliced: true);
-        allSurface.color = Cream;
-        Label(all, "Label", 0, 0, 170, 54, bold, "All 9", 30, Ink, TextAlignmentOptions.Center);
-        Set(so, "_clueHeading", heading.GetComponent<TMP_Text>());
-        Set(so, "_clueProgress", progress.GetComponent<TMP_Text>());
-        Set(so, "_allCluesButton", MakeButton(all, allSurface));
+        allSurface.color = new Color(1f, 1f, 1f, 0f);
+        Label(all, "Label", 0, 0, 400, 46, regular, "All facts in Notebook", 25, Cream, TextAlignmentOptions.MidlineRight);
+        Set(so, "_allFactsButton", MakeButton(all, allSurface));
         Set(so, "_cluePanel", Sprite("UI/panel_clue"));
         Set(so, "_cluePanelMatched", Sprite("UI/panel_clue_matched"));
         intro.Add(heading);
-        intro.Add(progress);
         intro.Add(all);
 
-        float[] xs = { 42, 552 };
+        float[] xs = { 40, 550 };
         var clues = so.FindProperty("_clues");
         clues.arraySize = xs.Length;
         for (int i = 0; i < xs.Length; i++)
         {
-            var card = Place(root, $"Clue {i + 1}", xs[i], 362, 486, 160);
+            var card = Place(root, $"Clue {i + 1}", xs[i], 330, 490, 165);
             var panel = AddImage(card, Sprite("UI/panel_clue"), sliced: true);
-            var pin = AddImage(Place(card, "Pin", 231, -18, 24, 48), Sprite("UI/clue_pin"));
-            pin.preserveAspect = true;
-            var icon = AddImage(Place(card, "Icon", 22, 20, 120, 120), Sprite("Items/red_cap"));
+            var icon = AddImage(Place(card, "Icon", 14, 24, 105, 105), Sprite("Items/crew_00"));
             icon.preserveAspect = true;
-            var text = Label(card, "Text", 152, 14, 306, 132, bold, "<b>Mia</b> wears the <color=#f36555>red</color> cap.", 40, Ink,
+            var text = Label(card, "Text", 132, 21, 335, 130, bold, "Mia wears the red cap.", 34, Ink,
                              TextAlignmentOptions.MidlineLeft).GetComponent<TMP_Text>();
             text.textWrappingMode = TextWrappingModes.Normal;
-            text.enableAutoSizing = true;          // longer clues shrink to stay inside the card
-            text.fontSizeMin = 28f;
-            text.fontSizeMax = 42f;
-            var check = AddImage(Place(card, "Check", 440, -12, 56, 56), Sprite("UI/check_badge"));
+            text.enableAutoSizing = true;          // longer facts shrink to stay inside the card
+            text.fontSizeMin = 26f;
+            text.fontSizeMax = 34f;
+            var check = AddImage(Place(card, "Check", 446, -10, 52, 52), Sprite("UI/check_badge"));
 
             var slot = clues.GetArrayElementAtIndex(i);
             slot.FindPropertyRelative("Root").objectReferenceValue = card.gameObject;
@@ -164,57 +175,98 @@ public static class UIBuilder
         }
     }
 
-    // coach (42, 1548, 996, 66), progress (210, 1622, 720, 48), controlNote (42, 1678, 996, 32).
-    private static void BuildCoachAndProgress(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
-                                              System.Collections.Generic.List<RectTransform> intro)
+    // subjects (170, 515, 870, 213) and subjectNames (170, 728, 870, 54): one white card per column
+    // (280 wide, centred on its 290 px column) holding the subject's rig in the art inset, and its
+    // name tab under it.
+    private static void BuildSubjects(RectTransform root, SerializedObject so, TMP_FontAsset bold, List<RectTransform> intro)
     {
-        var coach = Place(root, "Coach", 72, 1548, 936, 66);
-        var coachPanel = AddImage(coach, Sprite("UI/capsule_white"), sliced: true);
-        coachPanel.color = CoachColor;
-        var coachText = Label(coach, "Text", 36, 4, 864, 58, bold, "Swipe the hats right. Red wraps back to Mia.", 32, Ink,
-                              TextAlignmentOptions.Center).GetComponent<TMP_Text>();
-        coachText.enableAutoSizing = true;
-        coachText.fontSizeMin = 22f;
-        coachText.fontSizeMax = 32f;
-        coachText.textWrappingMode = TextWrappingModes.Normal;
-        Set(so, "_coachPanel", coachPanel);
-        Set(so, "_coachText", coachText);
-
-        var progress = Place(root, "Progress", 210, 1622, 720, 48);
-        var progressText = Label(progress, "Text", 0, 0, 340, 48, regular, "<size=130%><b>6</b></size>/9 matched", 30, Cream,
-                                 TextAlignmentOptions.MidlineRight);
-        var track = Place(progress, "Track", 360, 17, 300, 14);
-        var trackImage = AddImage(track, Sprite("UI/capsule_white"), sliced: true);
-        trackImage.color = new Color32(0x12, 0x66, 0x6E, 0x88);
-        trackImage.pixelsPerUnitMultiplier = 4f;    // 30 px corners would not fit a 14 px bar
-        var fill = Rect(track, "Fill", Vector2.zero, new Vector2(0.6f, 1f), new Vector2(0f, 0.5f), Vector2.zero, Vector2.zero);
-        var fillImage = AddImage(fill, Sprite("UI/capsule_white"), sliced: true);
-        fillImage.color = new Color32(0xDD, 0xED, 0xAB, 0xFF);
-        fillImage.pixelsPerUnitMultiplier = 4f;
-        Set(so, "_progressText", progressText.GetComponent<TMP_Text>());
-        Set(so, "_progressFill", fill);
-
-        var note = Label(root, "Control Note", 42, 1678, 996, 32, regular, "Swipe rows or columns. Tiles wrap.", 30, NoteColor,
-                         TextAlignmentOptions.Center);
-
-        intro.Add(coach);
-        intro.Add(progress);
-        intro.Add(note);
+        var subjects = so.FindProperty("_subjects");
+        subjects.arraySize = 3;
+        for (int c = 0; c < 3; c++)
+        {
+            float x = BoardLeft + c * Cell + 5f;
+            var subject = Place(root, $"Subject {c + 1}", x, 515, 280, 267);
+            var card = SubjectCard(subject, bold, 280, 213, 54, new[] { 17f, 5f, 246f, 200f }, Color.white, 32);
+            subjects.GetArrayElementAtIndex(c).objectReferenceValue = card;
+            intro.Add(subject);
+        }
     }
 
-    // actions (42, 1732, 996, 144): Undo (1 fr), Notebook (1.22 fr, with the "9" badge), Hint (1 fr, gold), 20 px apart.
-    private static void BuildButtons(RectTransform root, SerializedObject so, TMP_FontAsset bold,
-                                     System.Collections.Generic.List<RectTransform> intro)
+    // A UI_SubjectCard on `parent`: the card (capsule_white in `surface`, the pop scales it) with the
+    // rig's frame at `inset` (x, y, w, h inside the card), and a name tab of tabHeight under it.
+    public static UI_SubjectCard SubjectCard(RectTransform parent, TMP_FontAsset bold, float width, float cardHeight,
+                                             float tabHeight, float[] inset, Color surface, float nameSize)
     {
-        var undo = ActionButton(root, "Undo Button", 42, 297, "UI/button_cream", "UI/icon_undo", "Undo", bold);
-        var notebook = ActionButton(root, "Notebook Button", 359, 362, "UI/button_cream", "UI/icon_notebook", "Notebook", bold);
-        var hint = ActionButton(root, "Hint Button", 741, 297, "UI/button_gold", "UI/icon_hint", "Hint", bold);
+        var body = Place(parent, "Card", 0, 0, width, cardHeight);
+        var image = AddImage(body, Sprite("UI/capsule_white"), sliced: true);
+        image.color = surface;
+        image.pixelsPerUnitMultiplier = 1.4f;
+        var frame = Place(body, "Frame", inset[0], inset[1], inset[2], inset[3]);
 
-        var badge = Place(notebook.transform, "Badge", 316, -16, 54, 54);
-        var badgeImage = AddImage(badge, Sprite("UI/capsule_white"), sliced: true);
-        badgeImage.color = new Color32(0xA2, 0x63, 0x83, 0xFF);
-        Label(badge, "Count", 0, 0, 54, 54, bold, "9", 30, Color.white, TextAlignmentOptions.Center);
+        var tab = Place(parent, "Name Tab", 0, cardHeight, width, tabHeight);
+        AddImage(tab, Sprite("UI/tab_name"), sliced: true);
+        var name = Label(tab, "Name", 10, 0, width - 20, tabHeight, bold, "Mia", nameSize, Ink, TextAlignmentOptions.Center)
+                       .GetComponent<TMP_Text>();
+        name.enableAutoSizing = true;              // nameMin 22 .. nameMax 32: long names shrink, never clip
+        name.fontSizeMin = 22f;
+        name.fontSizeMax = nameSize;
 
+        var card = Undo.AddComponent<UI_SubjectCard>(parent.gameObject);
+        var cardSo = new SerializedObject(card);
+        cardSo.FindProperty("_frame").objectReferenceValue = frame;
+        cardSo.FindProperty("_name").objectReferenceValue = name;
+        cardSo.FindProperty("_body").objectReferenceValue = body;
+        cardSo.ApplyModifiedPropertiesWithoutUndo();
+        return card;
+    }
+
+    // categories (15, 800, 140, 870): one tab per row, centred on it, flush against the board frame.
+    private static void BuildCategories(RectTransform root, SerializedObject so, TMP_FontAsset bold, List<RectTransform> intro)
+    {
+        var tabs = so.FindProperty("_categories");
+        tabs.arraySize = 3;
+        for (int r = 0; r < 3; r++)
+        {
+            float centre = 800f + Cell * (r + 0.5f);
+            var rect = Place(root, $"Category {r + 1}", 15, centre - 52f, 146, 104);
+            var image = AddImage(rect, Sprite("UI/tab_category"), sliced: true);
+            var label = Label(rect, "Label", 8, 0, 126, 104, bold, "Hats", 29, Ink, TextAlignmentOptions.Center).GetComponent<TMP_Text>();
+            label.enableAutoSizing = true;         // categoryMin 21 .. categoryMax 29
+            label.fontSizeMin = 21f;
+            label.fontSizeMax = 29f;
+            var button = MakeButton(rect, image);
+
+            var tab = Undo.AddComponent<UI_CategoryTab>(rect.gameObject);
+            var tabSo = new SerializedObject(tab);
+            tabSo.FindProperty("_button").objectReferenceValue = button;
+            tabSo.FindProperty("_tab").objectReferenceValue = image;
+            tabSo.FindProperty("_label").objectReferenceValue = label;
+            tabSo.FindProperty("_normal").objectReferenceValue = Sprite("UI/tab_category");
+            tabSo.FindProperty("_active").objectReferenceValue = Sprite("UI/tab_category_active");
+            tabSo.ApplyModifiedPropertiesWithoutUndo();
+            tabs.GetArrayElementAtIndex(r).objectReferenceValue = tab;
+            intro.Add(rect);
+        }
+    }
+
+    // controlNote (40, 1680, 1000, 40) and progress (40, 1725, 1000, 44): "6/9 matched".
+    private static void BuildProgress(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
+                                      List<RectTransform> intro)
+    {
+        var note = Label(root, "Control Note", 40, 1680, 1000, 40, regular, "Swipe rows or columns. Tiles wrap.", 25, NoteColor,
+                         TextAlignmentOptions.Center);
+        var progress = Label(root, "Progress", 40, 1725, 1000, 44, bold, "6/9 matched", 34, Cream, TextAlignmentOptions.Center);
+        Set(so, "_progressText", progress.GetComponent<TMP_Text>());
+        intro.Add(note);
+        intro.Add(progress);
+    }
+
+    // actions (40, 1790, 1000, 110): Undo, Notebook (wider), Hint (gold), 20 px apart.
+    private static void BuildButtons(RectTransform root, SerializedObject so, TMP_FontAsset bold, List<RectTransform> intro)
+    {
+        var undo = ActionButton(root, "Undo Button", 40, 300, "UI/button_cream", "UI/icon_undo", "Undo", bold);
+        var notebook = ActionButton(root, "Notebook Button", 360, 360, "UI/button_cream", "UI/icon_notebook", "Notebook", bold);
+        var hint = ActionButton(root, "Hint Button", 740, 300, "UI/button_gold", "UI/icon_hint", "Hint", bold);
         Set(so, "_undoButton", undo);
         Set(so, "_notebookButton", notebook);
         Set(so, "_hintButton", hint);
@@ -226,19 +278,20 @@ public static class UIBuilder
     private static Button ActionButton(RectTransform root, string name, float x, float width, string surface, string icon,
                                        string text, TMP_FontAsset bold)
     {
-        var rect = Place(root, name, x, 1744, width, 120);
+        var rect = Place(root, name, x, 1790, width, 110);
         var image = AddImage(rect, Sprite(surface), sliced: true);
-        var iconImage = AddImage(Place(rect, "Icon", 26, 28, 64, 64), Sprite(icon));
+        var iconImage = AddImage(Place(rect, "Icon", 28, 27, 56, 56), Sprite(icon));
         iconImage.preserveAspect = true;
-        var label = Label(rect, "Label", 98, 20, width - 112, 80, bold, text, 42, Ink, TextAlignmentOptions.MidlineLeft).GetComponent<TMP_Text>();
+        var label = Label(rect, "Label", 92, 15, width - 106, 80, bold, text, 39, Ink, TextAlignmentOptions.MidlineLeft).GetComponent<TMP_Text>();
         label.enableAutoSizing = true;
-        label.fontSizeMin = 30f;
-        label.fontSizeMax = 42f;
+        label.fontSizeMin = 28f;
+        label.fontSizeMax = 39f;
         return MakeButton(rect, image);
     }
 
-    // A dark capsule above the coach line, hidden until UI_Toast.Show. It lives in Container/Overlay
-    // (a reference-fitted rect after PopUps), so it shows over an open popup too.
+    // A dark capsule over the board's lower half, hidden until UI_Toast.Show. It lives in
+    // Container/Overlay (a reference-fitted rect after PopUps), so it shows over an open popup too.
+    // An existing Overlay/Toast is reused.
     private static void BuildToast(RectTransform root, SerializedObject so, TMP_FontAsset regular)
     {
         var container = root.parent.parent;      // InGame/Reference -> InGame -> Container
@@ -251,13 +304,22 @@ public static class UIBuilder
             Undo.AddComponent<UI_ReferenceFit>(overlay.gameObject);
         }
         overlay.SetAsLastSibling();
-        var toast = Place(overlay, "Toast", 140, 1430, 800, 96);
+        var existing = overlay.Find("Toast");
+        if (existing != null && existing.TryGetComponent<UI_Toast>(out var current))
+        {
+            Set(so, "_toast", current);
+            return;
+        }
+        var toast = Place(overlay, "Toast", 110, 1470, 860, 120);
         var image = AddImage(toast, Sprite("UI/capsule_white"), sliced: true);
         image.color = new Color32(0x20, 0x3C, 0x43, 0xF2);
         Undo.AddComponent<CanvasGroup>(toast.gameObject);
-        var text = Label(toast, "Text", 32, 6, 736, 84, regular, "First, swipe the top row right.", 32, Color.white,
+        var text = Label(toast, "Text", 36, 8, 788, 104, regular, "First, swipe the top row right.", 32, Color.white,
                          TextAlignmentOptions.Center).GetComponent<TMP_Text>();
         text.textWrappingMode = TextWrappingModes.Normal;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = 24f;
+        text.fontSizeMax = 32f;
         var ui = Undo.AddComponent<UI_Toast>(toast.gameObject);
         var toastSo = new SerializedObject(ui);
         toastSo.FindProperty("_text").objectReferenceValue = text;

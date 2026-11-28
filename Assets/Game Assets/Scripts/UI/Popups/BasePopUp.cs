@@ -39,7 +39,11 @@ public abstract class BasePopUp : Popup
 
     protected void SetTexts(string kicker, string title, string body)
     {
-        if (_kicker != null) _kicker.text = kicker;
+        if (_kicker != null)
+        {
+            _kicker.text = kicker ?? "";
+            _kicker.gameObject.SetActive(!string.IsNullOrEmpty(kicker));
+        }
         if (_title != null) _title.text = title;
         if (_body != null)
         {

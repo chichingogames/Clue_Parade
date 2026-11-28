@@ -4,6 +4,32 @@ Append-only. Newest first. One entry per documentation run.
 
 ---
 
+## 2026-11-28 — `1ea9dea` + uncommitted
+
+**The 30-case content pack replaces the five-case Mia/Leo/Zoe build** (source: `Tilewrap_30_Level_Unity_Production`
+and `Tilewrap_Ten_Case_Plan_and_Storyboards.pdf`). `ARCHITECTURE.md` was rewritten to match.
+
+- **Content:** `Assets/Tilewrap` was moved (GUIDs kept) to `Assets/TilewrapVaried` and overwritten by the pack: 30 case
+  files, campaign map, `ui_layout.json`, hint table, ~640 sprites, 4 sounds, the pack's runtime scripts
+  (`Chichingo.TilewrapVaried`) and importer. Its `Generated/` library and 90 rig prefabs are made by the importer.
+- **Model:** `BoardState` lost steps (`StepRows`, `ActiveStep`, `ActiveRow`); gained `FirstIncompleteRow` and a
+  row-based, unsatisfied-first `PickClues`. `LevelDefinition` holds subjects, categories, items (label, sprite, clue),
+  difficulty, next id, coins, tutorial text. `CaseLevelSource` replaces `JsonLevelSource`; `Resources/Levels` is gone.
+- **Board:** cells 290 px with names under the icons (masked TMP material), checks top-right, `SelectedRow` + category
+  tab selection, fx_ring / fx_star match effects, the pack's match_1..3 / level_win. Customers, category tags and
+  `CharacterRow` left the world; subjects (`UI_SubjectCard` over `TilewrapRigView`) and tabs (`UI_CategoryTab`) are HUD.
+- **Flow:** no lessons, no coach line; Hint is synchronous over the hint table (`BoardSolver` removed); Notebook is a
+  grid; win shows the finished rigs, reward and "Up next"; `PopUp_Map` (the 30-node case map) replaces the level list.
+- **Removed as unused:** `Customer*`, `CategoryTag` prefabs and scripts, `UI_CrewPortrait`, `PopUp_Lesson`,
+  `PopUp_LevelSelect`, `BoardSolver`, `JsonLevelSource`, the OpenSans and TilewrapNunito fonts, five replaced / unplayed
+  SFX, `Canvas/Dark Area` and `Canvas/Transition Screen`, ten stale one-off AgentScripts.
+- **Menu** trimmed to sound, restart, choose a case and back: "Save results (JSON)" and "Start a fresh test" (with
+  `PopUp_Confirm`) removed. The report is still exported when the end-of-campaign feedback is saved; the Tester's
+  Clear Saved Progress still wipes the save in the Editor.
+- **Verified** in the Editor: Validate Levels (30 OK, incl. hint-table minimum), cases 1, 2, 9, 12, 30 in Play mode.
+
+---
+
 ## 2026-11-10 17:31 +0600 — `8c8211f`
 
 — initial entry —

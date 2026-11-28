@@ -1,18 +1,21 @@
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 
-// A board piece: the item's icon on the board panel (no surface of its own, as in the handoff),
-// and a pale green flash when it becomes matched. Pure view: Manager_Board hands it the sprite.
-// 1 unit = 100 px of the 1080x1920 reference.
+// A board piece: the item's icon and name on the board panel (no surface of its own, as in the
+// handoff), and a pale green flash when it becomes matched. Pure view: Manager_Board hands it the
+// sprite and name. 1 unit = 100 px of the 1080x1920 reference. Icon and name are both clipped by
+// the board mask (the name through its stencil material), so a wrapping tile is cut at the edge.
 public class ItemTile : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _item;
+    [SerializeField] private TextMeshPro _label;
     [Tooltip("Rounded highlight behind the item, transparent until Flash.")]
     [SerializeField] private SpriteRenderer _flash;
     [Tooltip("Tile size in board units. Manager_Board uses it as the cell size.")]
-    [SerializeField] private Vector2 _size = new Vector2(2.2667f, 2.2667f);
+    [SerializeField] private Vector2 _size = new Vector2(2.9f, 2.9f);
     [Tooltip("The item art is scaled to fit inside this box (keeping its aspect), centered on the Item object.")]
-    [SerializeField] private Vector2 _itemBox = new Vector2(2.0f, 2.0f);
+    [SerializeField] private Vector2 _itemBox = new Vector2(2.4f, 2.05f);
 
     public TileData Data { get; private set; }
     public string ItemName { get; private set; }
@@ -26,6 +29,7 @@ public class ItemTile : MonoBehaviour
 
         _item.sprite = item;
         _item.transform.localScale = Vector3.one * FitScale(item);
+        if (_label != null) _label.text = itemName;
         SetFlashAlpha(0f);
     }
 

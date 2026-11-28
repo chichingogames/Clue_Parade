@@ -2,7 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 
 // One board position. Instantiated N×N by Manager_Board; stays put while tiles slide under it.
-// Shows the check of a confirmed row, which is about the position, not the tile.
+// Shows the check while the cell holds its own item (about the position, not the tile).
 public class Cell : MonoBehaviour
 {
     [SerializeField] private GameObject _check;

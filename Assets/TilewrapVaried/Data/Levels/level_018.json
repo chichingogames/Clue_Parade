@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 2,
+  "id": 18,
+  "title": "Camping night",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "Set up the camps before the stars come out.",
+  "completionText": "The camps are cosy and their little visitors feel welcome.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 12,
+  "minimumMoves": 5,
+  "startingCells": [
+    "camping_03",
+    "camping_00",
+    "camping_05",
+    "camping_02",
+    "camping_04",
+    "camping_08",
+    "camping_01",
+    "camping_07",
+    "camping_06"
+  ],
+  "goalCells": [
+    "camping_00",
+    "camping_01",
+    "camping_02",
+    "camping_03",
+    "camping_04",
+    "camping_05",
+    "camping_06",
+    "camping_07",
+    "camping_08"
+  ],
+  "subjects": [
+    {
+      "id": "camping_0",
+      "name": "Pine camp",
+      "column": 0,
+      "rigId": "camping_0"
+    },
+    {
+      "id": "camping_1",
+      "name": "Lake camp",
+      "column": 1,
+      "rigId": "camping_1"
+    },
+    {
+      "id": "camping_2",
+      "name": "Hill camp",
+      "column": 2,
+      "rigId": "camping_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "camping_row_0",
+      "label": "Tents",
+      "row": 0
+    },
+    {
+      "id": "camping_row_1",
+      "label": "Gear",
+      "row": 1
+    },
+    {
+      "id": "camping_row_2",
+      "label": "Visitors",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "camping_00",
+      "label": "Orange tent",
+      "sprite": "camping_00",
+      "targetCell": 0,
+      "categoryId": "camping_row_0",
+      "clue": "Pine camp gets the orange tent."
+    },
+    {
+      "id": "camping_01",
+      "label": "Blue dome tent",
+      "sprite": "camping_01",
+      "targetCell": 1,
+      "categoryId": "camping_row_0",
+      "clue": "Lake camp gets the blue dome tent."
+    },
+    {
+      "id": "camping_02",
+      "label": "Green teepee",
+      "sprite": "camping_02",
+      "targetCell": 2,
+      "categoryId": "camping_row_0",
+      "clue": "Hill camp gets the green teepee."
+    },
+    {
+      "id": "camping_03",
+      "label": "Camp lantern",
+      "sprite": "camping_03",
+      "targetCell": 3,
+      "categoryId": "camping_row_1",
+      "clue": "Pine camp gets the camp lantern."
+    },
+    {
+      "id": "camping_04",
+      "label": "Kettle",
+      "sprite": "camping_04",
+      "targetCell": 4,
+      "categoryId": "camping_row_1",
+      "clue": "Lake camp gets the kettle."
+    },
+    {
+      "id": "camping_05",
+      "label": "Sleeping bag",
+      "sprite": "camping_05",
+      "targetCell": 5,
+      "categoryId": "camping_row_1",
+      "clue": "Hill camp gets the sleeping bag."
+    },
+    {
+      "id": "camping_06",
+      "label": "Fox",
+      "sprite": "camping_06",
+      "targetCell": 6,
+      "categoryId": "camping_row_2",
+      "clue": "Pine camp gets the fox."
+    },
+    {
+      "id": "camping_07",
+      "label": "Owl",
+      "sprite": "camping_07",
+      "targetCell": 7,
+      "categoryId": "camping_row_2",
+      "clue": "Lake camp gets the owl."
+    },
+    {
+      "id": "camping_08",
+      "label": "Hedgehog",
+      "sprite": "camping_08",
+      "targetCell": 8,
+      "categoryId": "camping_row_2",
+      "clue": "Hill camp gets the hedgehog."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 19,
+  "difficulty": "practice",
+  "chapterId": 3,
+  "designSeed": 30318
+}

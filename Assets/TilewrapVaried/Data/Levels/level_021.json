@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 2,
+  "id": 21,
+  "title": "Winter friends",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "Keep the winter friends warm and ready for the snow.",
+  "completionText": "The winter friends are dressed for their snowy adventure.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 12,
+  "minimumMoves": 4,
+  "startingCells": [
+    "snowmen_02",
+    "snowmen_05",
+    "snowmen_08",
+    "snowmen_03",
+    "snowmen_04",
+    "snowmen_00",
+    "snowmen_06",
+    "snowmen_07",
+    "snowmen_01"
+  ],
+  "goalCells": [
+    "snowmen_00",
+    "snowmen_01",
+    "snowmen_02",
+    "snowmen_03",
+    "snowmen_04",
+    "snowmen_05",
+    "snowmen_06",
+    "snowmen_07",
+    "snowmen_08"
+  ],
+  "subjects": [
+    {
+      "id": "snowmen_0",
+      "name": "Flurry",
+      "column": 0,
+      "rigId": "snowmen_0"
+    },
+    {
+      "id": "snowmen_1",
+      "name": "Chilly",
+      "column": 1,
+      "rigId": "snowmen_1"
+    },
+    {
+      "id": "snowmen_2",
+      "name": "Snowdrop",
+      "column": 2,
+      "rigId": "snowmen_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "snowmen_row_0",
+      "label": "Hats",
+      "row": 0
+    },
+    {
+      "id": "snowmen_row_1",
+      "label": "Scarves",
+      "row": 1
+    },
+    {
+      "id": "snowmen_row_2",
+      "label": "Extras",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "snowmen_00",
+      "label": "Top hat",
+      "sprite": "snowmen_00",
+      "targetCell": 0,
+      "categoryId": "snowmen_row_0",
+      "clue": "Flurry has the top hat."
+    },
+    {
+      "id": "snowmen_01",
+      "label": "Pom hat",
+      "sprite": "snowmen_01",
+      "targetCell": 1,
+      "categoryId": "snowmen_row_0",
+      "clue": "Chilly has the pom hat."
+    },
+    {
+      "id": "snowmen_02",
+      "label": "Antler hat",
+      "sprite": "snowmen_02",
+      "targetCell": 2,
+      "categoryId": "snowmen_row_0",
+      "clue": "Snowdrop has the antler hat."
+    },
+    {
+      "id": "snowmen_03",
+      "label": "Red plaid scarf",
+      "sprite": "snowmen_03",
+      "targetCell": 3,
+      "categoryId": "snowmen_row_1",
+      "clue": "Flurry has the red plaid scarf."
+    },
+    {
+      "id": "snowmen_04",
+      "label": "Blue stripe scarf",
+      "sprite": "snowmen_04",
+      "targetCell": 4,
+      "categoryId": "snowmen_row_1",
+      "clue": "Chilly has the blue stripe scarf."
+    },
+    {
+      "id": "snowmen_05",
+      "label": "Yellow scarf",
+      "sprite": "snowmen_05",
+      "targetCell": 5,
+      "categoryId": "snowmen_row_1",
+      "clue": "Snowdrop has the yellow scarf."
+    },
+    {
+      "id": "snowmen_06",
+      "label": "Broom",
+      "sprite": "snowmen_06",
+      "targetCell": 6,
+      "categoryId": "snowmen_row_2",
+      "clue": "Flurry has the broom."
+    },
+    {
+      "id": "snowmen_07",
+      "label": "Winter lantern",
+      "sprite": "snowmen_07",
+      "targetCell": 7,
+      "categoryId": "snowmen_row_2",
+      "clue": "Chilly has the winter lantern."
+    },
+    {
+      "id": "snowmen_08",
+      "label": "Present",
+      "sprite": "snowmen_08",
+      "targetCell": 8,
+      "categoryId": "snowmen_row_2",
+      "clue": "Snowdrop has the present."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 22,
+  "difficulty": "practice",
+  "chapterId": 4,
+  "designSeed": 30321
+}

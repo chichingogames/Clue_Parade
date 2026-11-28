@@ -4,14 +4,17 @@ using System.IO;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEditor;
+using Chichingo.TilewrapVaried;
 using UnityEngine;
 
-// Builds the board prefabs on the Tilewrap handoff's art (Assets/Tilewrap, see HandoffBuilder) and
+// Builds the board prefabs on the content pack's art (Assets/TilewrapVaried, see HandoffBuilder) and
 // fills Resources/FileRef.asset:
-//   Sprites/Placeholder/Solid.png   generated white square (board mask, match sparks, dividers)
-//   Prefabs/Gameobjects/Cell, ItemTile, CategoryTag, and (HandoffBuilder) Customer + one variant per person
-//   FileRef: prefabs, spark sprite, items / characters / categories (HandoffBuilder, from game_config.json),
-//   music (Audio/Music/*.wav, first one) and sounds (Audio/SFX/{sound_type}.wav or {sound_type}_NN.wav)
+//   Sprites/Placeholder/Solid.png   generated white square (board mask, dividers)
+//   Prefabs/Gameobjects/Cell, ItemTile
+//   FileRef: prefabs, the content library (TilewrapVaried/Generated, made by the pack's importer),
+//   music (Audio/Music/*.wav, first one) and sounds: TileMatch = the pack's match_1..3 and
+//   LevelComplete = level_win at their content.json gains, the rest Audio/SFX/{sound_type}.wav or
+//   {sound_type}_NN.wav
 // Re-runnable: existing prefabs are kept (so prefab edits survive) and FileRef tables are only filled when empty.
 public static class AssetBuilder
 {
@@ -23,8 +26,8 @@ public static class AssetBuilder
 
     public const string SolidSprite = "Solid";
 
-    // One board cell: the handoff's 680 px inner board split in thirds (ReferenceLayout).
-    public static readonly Vector2 CellSize = Vector2.one * 2.2667f;
+    // One board cell: the pack's 290 px cell (ReferenceLayout.CellSize).
+    public static readonly Vector2 CellSize = Vector2.one * ReferenceLayout.CellSize;
     private static readonly Color InkColor = new Color32(0x40, 0x28, 0x1F, 0xFF);
 
     [MenuItem("ShiftSort/Build Assets")]
@@ -34,9 +37,7 @@ public static class AssetBuilder
         ImportAudio();
         var cell = BuildCellPrefab();
         var itemTile = BuildItemTilePrefab();
-        var tag = BuildCategoryTagPrefab();
-        var customers = HandoffBuilder.BuildCustomers();
-        FillFileRef(cell, itemTile, tag, customers);
+        FillFileRef(cell, itemTile);
         AssetDatabase.SaveAssets();
         Debug.Log("[AssetBuilder] Assets are up to date.");
     }
@@ -69,10 +70,11 @@ public static class AssetBuilder
         importer.SaveAndReimport();
     }
 
-    // Music streams (long, compressed); effects decompress on load (short, played often, no latency).
+    // Music streams (long, compressed); effects (ours and the pack's) decompress on load (short,
+    // played often, no latency).
     private static void ImportAudio()
     {
-        foreach (string guid in AssetDatabase.FindAssets("t:AudioClip", new[] { MusicFolder, SfxFolder }))
+        foreach (string guid in AssetDatabase.FindAssets("t:AudioClip", new[] { MusicFolder, SfxFolder, HandoffBuilder.Root + "/Audio" }))
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
             var importer = (AudioImporter)AssetImporter.GetAtPath(path);
@@ -97,7 +99,7 @@ public static class AssetBuilder
 
     // ---------- Prefabs ----------
 
-    // Cell: a board position with the check badge a matched cell shows (bottom-right of the cell).
+    // Cell: a board position with the check badge a matched cell shows (top-right of the cell).
     private static Cell BuildCellPrefab()
     {
         string path = $"{PrefabFolder}/Cell.prefab";
@@ -113,32 +115,6 @@ public static class AssetBuilder
         var cell = root.AddComponent<Cell>();
         SetRefs(cell, ("_check", check.gameObject));
         return SavePrefab<Cell>(root, path);
-    }
-
-    // CategoryTag: tab_category (sliced, rounded on the left, flush against the board) with the
-    // category icon and label; the active step's row swaps in tab_category_active.
-    private static CategoryTag BuildCategoryTagPrefab()
-    {
-        string path = $"{PrefabFolder}/CategoryTag.prefab";
-        var existing = AssetDatabase.LoadAssetAtPath<CategoryTag>(path);
-        if (existing != null) return existing;
-
-        var root = new GameObject("CategoryTag");
-        var normal = HandoffBuilder.LoadSprite("UI/tab_category");
-        var tab = AddRenderer(root.transform, "Tab", normal, Color.white, 1f, Vector3.zero, SortOrder.Tag, masked: false);
-        tab.drawMode = SpriteDrawMode.Sliced;
-        tab.size = ReferenceLayout.TagSize;
-
-        var iconSprite = HandoffBuilder.LoadSprite("UI/category_hats");
-        var icon = AddRenderer(root.transform, "Icon", iconSprite, Color.white, 0.62f / iconSprite.bounds.size.x,
-            new Vector3(0f, 0.16f, 0f), SortOrder.TagIcon, masked: false);
-
-        var label = AddLabel(root.transform, "Hats", new Vector2(0f, -0.38f), new Vector2(1.0f, 0.34f), 2.6f, SortOrder.TagIcon);
-
-        var tag = root.AddComponent<CategoryTag>();
-        SetRefs(tag, ("_tab", tab), ("_icon", icon), ("_label", label), ("_normal", normal),
-                ("_active", HandoffBuilder.LoadSprite("UI/tab_category_active")));
-        return SavePrefab<CategoryTag>(root, path);
     }
 
     // World TextMeshPro in ink, the handoff's ExtraBold, auto-sized down to 65% so long words fit.
@@ -163,8 +139,9 @@ public static class AssetBuilder
         return label;
     }
 
-    // ItemTile: one cell (CellSize), pivot at its centre: the item icon in 88% of the cell (as the
-    // prototype) and a rounded flash behind it. Both masked by the board, so a wrapping tile is clipped.
+    // ItemTile: one cell (CellSize), pivot at its centre: the item icon in the pack's art rect, its
+    // name under it and a rounded flash behind both. All masked by the board, so a wrapping tile is
+    // clipped (the name through the masked font material).
     private static ItemTile BuildItemTilePrefab()
     {
         string path = $"{PrefabFolder}/ItemTile.prefab";
@@ -177,15 +154,21 @@ public static class AssetBuilder
         flash.drawMode = SpriteDrawMode.Sliced;
         flash.size = CellSize - Vector2.one * 0.12f;
 
-        var item = AddRenderer(root.transform, "Item", HandoffBuilder.LoadSprite("Items/red_cap"), Color.white, 1f,
-            Vector3.zero, SortOrder.TileItem, masked: true);
+        var item = AddRenderer(root.transform, "Item", HandoffBuilder.LoadSprite("Items/crew_00"), Color.white, 1f,
+            ReferenceLayout.ItemArtOffset, SortOrder.TileItem, masked: true);
+
+        var label = AddLabel(root.transform, "Red cap", ReferenceLayout.ItemLabelOffset, ReferenceLayout.ItemLabelSize,
+                             ReferenceLayout.ItemLabelFont, SortOrder.TileLabel);
+        label.fontSizeMin = ReferenceLayout.ItemLabelMinFont;
+        label.fontSharedMaterial = HandoffBuilder.MaskedBoldMaterial();
 
         var tile = root.AddComponent<ItemTile>();
         var so = new SerializedObject(tile);
         so.FindProperty("_item").objectReferenceValue = item;
+        so.FindProperty("_label").objectReferenceValue = label;
         so.FindProperty("_flash").objectReferenceValue = flash;
         so.FindProperty("_size").vector2Value = CellSize;
-        so.FindProperty("_itemBox").vector2Value = CellSize * 0.88f;
+        so.FindProperty("_itemBox").vector2Value = ReferenceLayout.ItemArtBox;
         so.ApplyModifiedPropertiesWithoutUndo();
         tile.Setup(new TileData(0), item.sprite, "Red cap");
         tile.name = "ItemTile";
@@ -225,17 +208,16 @@ public static class AssetBuilder
 
     // ---------- FileRef ----------
 
-    private static void FillFileRef(Cell cell, ItemTile itemTile, CategoryTag tag, Dictionary<string, Customer> customers)
+    private static void FillFileRef(Cell cell, ItemTile itemTile)
     {
         var fileRef = FileRef.Instance;      // creates Resources/FileRef.asset if missing
         var so = new SerializedObject(fileRef);
 
         SetIfEmpty(so.FindProperty("_cellPrefab"), cell);
         SetIfEmpty(so.FindProperty("_itemTilePrefab"), itemTile);
-        SetIfEmpty(so.FindProperty("_categoryTagPrefab"), tag);
-        SetIfEmpty(so.FindProperty("_spark"), LoadSprite(SolidSprite));
-
-        HandoffBuilder.FillCatalog(so, customers);
+        var library = AssetDatabase.LoadAssetAtPath<TilewrapContentLibrary>(HandoffBuilder.LibraryPath);
+        if (library == null) Debug.LogWarning($"[AssetBuilder] {HandoffBuilder.LibraryPath} is missing: run Tools > Chichingo > Tilewrap > Build 30-level content.");
+        SetIfEmpty(so.FindProperty("_content"), library);
 
         if (so.FindProperty("_music").objectReferenceValue == null)
         {
@@ -249,7 +231,8 @@ public static class AssetBuilder
         {
             foreach (SoundType type in Enum.GetValues(typeof(SoundType)))
             {
-                var clips = FindSoundClips(type);
+                float[] gains = null;
+                var clips = PackSounds(type, library, out gains) ?? FindSoundClips(type);
                 if (clips.Length == 0) continue;
                 var entry = AppendElement(sounds);
                 entry.FindPropertyRelative("Type").intValue = (int)type;
@@ -257,6 +240,9 @@ public static class AssetBuilder
                 var clipArray = entry.FindPropertyRelative("Clips");
                 clipArray.arraySize = clips.Length;
                 for (int i = 0; i < clips.Length; i++) clipArray.GetArrayElementAtIndex(i).objectReferenceValue = clips[i];
+                var gainArray = entry.FindPropertyRelative("ClipVolumes");
+                gainArray.arraySize = gains != null ? gains.Length : 0;
+                for (int i = 0; i < gainArray.arraySize; i++) gainArray.GetArrayElementAtIndex(i).floatValue = gains[i];
             }
         }
 
@@ -264,7 +250,25 @@ public static class AssetBuilder
         EditorUtility.SetDirty(fileRef);
     }
 
-    // SoundType.TileMatch -> SFX/tile_match.wav, or tile_match_01.wav, tile_match_02.wav... in name order.
+    // The pack's own sounds at their manifest gains: match_1..3 for TileMatch (1, 2, 3+ new
+    // matches), level_win for LevelComplete. Null for other types.
+    private static AudioClip[] PackSounds(SoundType type, TilewrapContentLibrary library, out float[] gains)
+    {
+        gains = null;
+        string[] keys = type == SoundType.TileMatch ? new[] { "match_1", "match_2", "match_3" }
+                      : type == SoundType.LevelComplete ? new[] { "level_win" } : null;
+        if (keys == null || library == null || library.audio == null) return null;
+        var clips = new List<AudioClip>();
+        var volumes = new List<float>();
+        foreach (string key in keys)
+            foreach (var entry in library.audio)
+                if (entry.id == key && entry.clip != null) { clips.Add(entry.clip); volumes.Add(entry.volume); }
+        if (clips.Count != keys.Length) return null;
+        gains = volumes.ToArray();
+        return clips.ToArray();
+    }
+
+    // SoundType.Undo -> SFX/undo.wav, or undo_01.wav, undo_02.wav... in name order.
     private static AudioClip[] FindSoundClips(SoundType type)
     {
         string baseName = Regex.Replace(type.ToString(), "(?<=[a-z0-9])([A-Z])", "_$1").ToLowerInvariant();

@@ -1,29 +1,24 @@
 // Pure board model: no Unity objects. Cells are [row, col]; row 0 is the top row.
 // Each tile knows the cell it belongs in (TileData.Id = row * Size + col). A cell is "home" (a
 // matched slot) when it holds that tile. Matches are shown: the tile gets a check and the column's
-// customer wears the item, for as long as it stays home.
-//
-// Steps: StepRows is the level's clue order (one row per category, e.g. Hats, Shirts, Bags). The
-// active step is the first one whose row is not complete, so finishing a row moves the clues on,
-// and breaking one brings them back. Everything is derived from the board, never stored, so Undo
-// needs no special case. Solved = every slot matched at the same time.
+// subject shows the fitted part, for as long as it stays home. Correct tiles stay movable: nothing
+// is locked or banked, everything is derived from the board, so Undo needs no special case.
+// Solved = every slot matched at the same time.
 public class BoardState
 {
     private readonly TileData[,] _cells;
 
     public int Size { get; }
-    public int[] StepRows { get; }
 
     public TileData this[int row, int col] => _cells[row, col];
 
-    public BoardState(int size, int[] stepRows, TileData[,] cells)
+    public BoardState(int size, TileData[,] cells)
     {
         Size = size;
-        StepRows = (int[])stepRows.Clone();
         _cells = (TileData[,])cells.Clone();
     }
 
-    public BoardState(LevelDefinition level) : this(level.Size, level.StepRows, level.StartCells) { }
+    public BoardState(LevelDefinition level) : this(level.Size, level.StartCells) { }
 
     // dir +1 = right, -1 = left. The tile pushed off one end wraps to the other.
     public void ShiftRow(int row, int dir)
@@ -67,59 +62,35 @@ public class BoardState
 
     public int CellCount => Size * Size;
 
-    public int StepCount => StepRows.Length;
-
-    // Index into StepRows of the first step whose row is not complete; StepCount when all are.
-    public int ActiveStep
-    {
-        get
-        {
-            for (int i = 0; i < StepRows.Length; i++)
-                if (!IsRowComplete(StepRows[i])) return i;
-            return StepRows.Length;
-        }
-    }
-
-    // The row the clues are about, or -1 when the board is solved.
-    public int ActiveRow
-    {
-        get
-        {
-            int step = ActiveStep;
-            return step < StepRows.Length ? StepRows[step] : -1;
-        }
-    }
-
     public bool IsSolved => MatchedCount == CellCount;
 
-    // Which of a step's clues to show, as indexes into clueTiles (each clue's tile id, in the level's
-    // preferred order). The first `count` are shown, except that when all of them are matched while
-    // another clue of the step is not, the first is swapped for that one: the cards should point at
-    // what is still wrong.
-    public int[] PickClues(int[] clueTiles, int count)
+    // The top row that still has an unmatched slot, or -1 when the board is solved.
+    public int FirstIncompleteRow
     {
-        count = System.Math.Min(count, clueTiles.Length);
-        var picked = new int[count];
-        bool allMatched = true;
-        for (int i = 0; i < count; i++)
+        get
         {
-            picked[i] = i;
-            if (!IsTileHome(clueTiles[i])) allMatched = false;
+            for (int r = 0; r < Size; r++)
+                if (!IsRowComplete(r)) return r;
+            return -1;
         }
-        if (!allMatched || count == 0) return picked;
+    }
 
-        for (int i = count; i < clueTiles.Length; i++)
-        {
-            if (IsTileHome(clueTiles[i])) continue;
-            picked[0] = i;
-            break;
-        }
+    // Which `count` of a row's clues to show, as column indexes: the unmatched ones first (left to
+    // right), then matched ones to fill up. The cards point at what is still wrong.
+    public int[] PickClues(int row, int count)
+    {
+        count = System.Math.Min(count, Size);
+        var picked = new int[count];
+        int n = 0;
+        for (int pass = 0; pass < 2 && n < count; pass++)
+            for (int c = 0; c < Size && n < count; c++)
+                if (IsHome(row, c) == (pass == 1)) picked[n++] = c;
         return picked;
     }
 
     public TileData[,] CopyCells() => (TileData[,])_cells.Clone();
 
-    // Tile ids row-major (BoardSolver's input).
+    // Tile ids row-major (= each cell's item as an index into the goal board).
     public int[] TileIds()
     {
         var ids = new int[Size * Size];

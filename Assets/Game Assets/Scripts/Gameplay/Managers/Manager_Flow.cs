@@ -1,27 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+using Chichingo.TilewrapVaried;
 using DG.Tweening;
 using UnityEngine;
 
-// The onboarding flow around the board (the approved clue prototype v2): lessons, the coach line,
-// toasts, Hint (explain first, then solve the current board and guide the next swipe), the
-// Notebook, the win / out-of-moves popups, the level selector, the menu, the first-clear reward,
-// the end-of-playtest feedback and the local playtest log. It decides; popups and the HUD display
-// (they get callbacks and listen to the events below). Board rules stay in Manager_Game / BoardState.
+// The flow around the board (the ten-case plan and storyboards, the 30-case handoff): the tutorial
+// line and toasts, Hint (explain the clue first, then the next swipe from the current board, from
+// the content's hint table), the Notebook, the win / out-of-moves popups, the case map, the menu,
+// the first-clear reward, the end-of-campaign feedback and the local playtest log. It decides;
+// popups and the HUD display (they get callbacks and listen to the events below). Board rules stay
+// in Manager_Game / BoardState.
 public class Manager_Flow : Singleton<Manager_Flow>
 {
-    public event Action<string, bool> OnCoachChanged = delegate { };   // text, success (green)
     public event Action<string> OnToast = delegate { };
     public event Action OnHintAttention = delegate { };                 // pulse the Hint button
-    public event Action OnHintStateChanged = delegate { };              // HintPending changed
     public event Action OnWinCelebration = delegate { };                // confetti
-
-    public string Coach { get; private set; } = "";
-    public bool CoachSuccess { get; private set; }
-    public bool HintPending { get; private set; }
 
     private static Manager_Game Game => Manager_Game.Instance;
     private static Manager_Board Board => Manager_Board.Instance;
@@ -29,7 +22,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
     private static OfflineData Save => OfflineData.Instance;
     private int LevelCount => Mathf.Max(1, Manager_Level.Instance.LevelCount);
 
-    // Bumped on every level start: a hint computed for an older level is dropped.
+    // Bumped on every level start.
     private int _session;
     private LevelMove _hint;
     private Tween _attention;
@@ -41,8 +34,6 @@ public class Manager_Flow : Singleton<Manager_Flow>
     private float _levelStartTime;
     private float _activeSeconds;
 
-    // Snapshot when a line is picked up, to word the coach line after the move settles.
-    private int _stepAtPickUp;
     private int _matchedAtPickUp;
     private LevelMove _pendingMove;
     private bool _undoing;
@@ -72,7 +63,6 @@ public class Manager_Flow : Singleton<Manager_Flow>
         var level = Game.Level;
         _session++;
         _hint = null;
-        SetHintPending(false);
         _firstAction = false;
         _pendingMove = null;
         _undoing = false;
@@ -80,59 +70,21 @@ public class Manager_Flow : Singleton<Manager_Flow>
         _levelStartTime = Time.unscaledTime;
         _outcomeDelay?.Kill();
 
-        SetCoach(level.Coach, false);
-        Log("level_start", $"budget={level.MoveLimit}; lesson={level.Lesson?.id ?? "none"}");
+        Log("case_start", $"case={level.Title}; difficulty={level.Difficulty}; budget={level.MoveLimit}; minimum={level.MinimumMoves}");
         RefreshGuide();
         StartAttentionTimer();
 
+        // A teaching case says what to do until it has been cleared once.
+        if (!string.IsNullOrEmpty(level.TutorialText) && !Save.CompletedLevels.Contains(levelNumber)) Toast(level.TutorialText);
+
         bool firstOpen = !_firstLevelOpened;
         _firstLevelOpened = true;
-        if (level.Lesson != null && !Save.Lessons.Contains(level.Lesson.id)) ShowLesson(level);
-        else if (firstOpen && Save.CompletedLevels.Count >= LevelCount) ShowLevelSelect();
-    }
-
-    private void ShowLesson(LevelDefinition level)
-    {
-        var lesson = level.Lesson;
-        UI_CrewPortrait.Entry[] crew = null;
-        int moves = 0;
-        string kicker = "LESSON";
-        switch (lesson.illustration)
-        {
-            case "neutralCrew":
-                crew = CrewEntries(level);
-                kicker = "LEARN THE GOAL";
-                break;
-            case "categoryOrder":
-                crew = CategoryEntries(level);
-                kicker = "LEARN COLUMNS";
-                break;
-            case "moveCounter":
-                moves = level.MoveLimit;
-                kicker = "LEARN MOVES";
-                break;
-        }
-
-        Log("tutorial_open", $"lesson={lesson.id}");
-        var popup = PopUps.GetPopup<PopUp_Lesson>(PopupName.Lesson);
-        popup.Setup($"LEVEL {Game.CurrentLevel} · {kicker}", lesson, crew, moves, () =>
-        {
-            if (!Save.Lessons.Contains(lesson.id)) Save.Lessons.Add(lesson.id);
-            Save.Save();
-            Log("tutorial_acknowledged", $"lesson={lesson.id}");
-            PopUps.ClosePopup(PopupName.Lesson);
-        });
-        PopUps.ShowPopup(PopupName.Lesson);
+        if (firstOpen && Save.CompletedLevels.Count >= LevelCount) ShowMap();
     }
 
     // ---------- Moves ----------
 
-    private void HandleLinePickedUp()
-    {
-        var state = Board.State;
-        _stepAtPickUp = state.ActiveStep;
-        _matchedAtPickUp = state.MatchedCount;
-    }
+    private void HandleLinePickedUp() => _matchedAtPickUp = Board.State.MatchedCount;
 
     private void HandleMoveCommitted(LevelMove move)
     {
@@ -149,9 +101,8 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
     private void HandleMoveRejected(LevelMove expected)
     {
-        string text = $"First, swipe the {expected.Describe(Game.Level.Size)}.";
         Log("tutorial_other_move", $"expected={expected.Describe(Game.Level.Size)}");
-        Toast(text);
+        Toast($"First, swipe the {expected.Describe(Game.Level.Size)}.");
     }
 
     private void HandleUndone()
@@ -161,7 +112,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
         Board.HideGuide();
     }
 
-    // After the slide: the move's log entry, the coach line and the guide, from the settled board.
+    // After the slide: the move's log entry and the guide, from the settled board.
     private void HandleBoardSettled()
     {
         var level = Game.Level;
@@ -172,7 +123,6 @@ public class Manager_Flow : Singleton<Manager_Flow>
         {
             _undoing = false;
             Log("undo", $"matched={state.MatchedCount}; remaining={Remaining()}");
-            SetCoach(Game.MovesUsed == 0 ? level.Coach : "Move restored. Take your time.", false);
             RefreshGuide();
             return;
         }
@@ -180,23 +130,9 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
         var move = _pendingMove;
         _pendingMove = null;
-        int matched = state.MatchedCount;
-        Log("move", $"move={move.Describe(level.Size)}; matchedBefore={_matchedAtPickUp}; matchedAfter={matched}; remaining={Remaining()}");
-
-        int step = state.ActiveStep;
-        if (Game.State == GameState.Won) SetCoach($"{matched}/{state.CellCount} matched. Everyone is ready!", true);
-        else if (Game.State == GameState.Failed) SetCoach("Out of moves. Undo is free.", false);
-        else if (step > _stepAtPickUp && _stepAtPickUp < state.StepCount)
-            SetCoach($"{level.Categories[state.StepRows[_stepAtPickUp]]} matched. Now read the {CategoryOf(state)} clues.", true);
-        else if (Board.LastNewMatches > 0)
-            SetCoach($"{matched}/{state.CellCount} matched. Read the {CategoryOf(state)} clues above.", true);
-        else SetCoach("You can move a matched item again. Undo is always free.", false);
-
+        Log("move", $"move={move.Describe(level.Size)}; matchedBefore={_matchedAtPickUp}; matchedAfter={state.MatchedCount}; remaining={Remaining()}");
         RefreshGuide();
     }
-
-    private string CategoryOf(BoardState state) =>
-        state.ActiveRow >= 0 ? Game.Level.Categories[state.ActiveRow] : "";
 
     // ---------- Win / out of moves ----------
 
@@ -205,51 +141,51 @@ public class Manager_Flow : Singleton<Manager_Flow>
         _outcomeDelay?.Kill();
         if (state == GameState.Won)
         {
-            bool first = RecordClear(Game.CurrentLevel);
-            _lastWinWasFirstClear = first;
-            Log("level_complete", $"moves={Game.MovesUsed}; activeSeconds={_activeSeconds:0.0}; firstClear={first}; coins={(first ? Tuning.FirstClearCoins : 0)}");
-            _outcomeDelay = DOVirtual.DelayedCall(Tuning.WinPopupDelay, () => ShowWin(first)).SetLink(gameObject);
+            int coins = RecordClear(Game.CurrentLevel, Game.Level.FirstClearCoins);
+            _lastWinWasFirstClear = coins > 0;
+            Log("case_complete", $"moves={Game.MovesUsed}; activeSeconds={_activeSeconds:0.0}; firstClear={coins > 0}; coins={coins}");
+            _outcomeDelay = DOVirtual.DelayedCall(Tuning.WinPopupDelay, () => ShowWin(_lastWinWasFirstClear)).SetLink(gameObject);
         }
         else if (state == GameState.Failed)
         {
-            Log("level_failed", $"moves={Game.MovesUsed}; matched={Board.State.MatchedCount}; activeSeconds={_activeSeconds:0.0}");
+            Log("case_failed", $"moves={Game.MovesUsed}; matched={Board.State.MatchedCount}; activeSeconds={_activeSeconds:0.0}");
             _outcomeDelay = DOVirtual.DelayedCall(Tuning.WinPopupDelay, ShowFailed).SetLink(gameObject);
         }
         if (state != GameState.Playing) Board.HideGuide();
     }
 
-    // Saves the clear and its reward together, once per level, before the popup shows.
-    private bool RecordClear(int level)
+    // Saves the clear and its reward together, once per case, before the popup shows. Replays give 0.
+    private int RecordClear(int level, int coins)
     {
         var save = Save;
-        if (save.CompletedLevels.Contains(level)) return false;
+        if (save.CompletedLevels.Contains(level)) return 0;
         save.CompletedLevels.Add(level);
         save.CompletedLevels.Sort();
-        save.Coins += Tuning.FirstClearCoins;
+        save.Coins += coins;
         save.Save();
-        return true;
+        return coins;
     }
 
     private void ShowWin(bool firstClear)
     {
         if (Game.State != GameState.Won) return;
         var level = Game.Level;
-        int n = Game.CurrentLevel;
-        int cells = level.Size * level.Size;
-        string stats = $"{Game.MovesUsed} {(Game.MovesUsed == 1 ? "swipe" : "swipes")}" +
-                       (level.HasMoveLimit ? $" · {Game.MovesLeft} moves left" : " · relaxed practice");
-        bool last = n >= LevelCount;
+        int next = level.NextLevelId;
+        bool last = next <= 0 || next > LevelCount;
+        string upNext = last ? null : TitleOf(next);
 
         var popup = PopUps.GetPopup<PopUp_Win>(PopupName.Win);
-        popup.Setup($"LEVEL {n} COMPLETE · {Mathf.Min(n, LevelCount)}/{LevelCount}", level.Completion, CrewEntries(level),
-                    $"{cells}/{cells} items matched",
-                    firstClear ? $"+{Tuning.FirstClearCoins} coins" : "First-clear reward already collected",
-                    stats,
-                    last ? "Finish the five-level playtest" : $"Next: {TitleOf(n + 1)}",
-                    last ? (Action)Finish : () => StartLevel(n + 1),
-                    ShowLevelSelect);
+        popup.Setup(last ? "All 30 cases complete!" : "Case complete!",
+                    last ? FileRef.Instance.Campaign?.endingText ?? level.Completion : level.Completion,
+                    Subjects(level),
+                    firstClear ? $"+{level.FirstClearCoins} coins" : "+0 coins",
+                    firstClear ? "First completion reward" : "Reward already collected",
+                    upNext,
+                    last ? "Choose a case" : "Next case",
+                    last ? (Action)Finish : () => StartLevel(next),
+                    last ? null : (Action)ShowMap);
         PopUps.ShowPopup(PopupName.Win);
-        if (_celebratedSession != _session)     // not again when the popup comes back from the level selector
+        if (_celebratedSession != _session)     // not again when the popup comes back from the map
         {
             _celebratedSession = _session;
             OnWinCelebration();
@@ -261,15 +197,15 @@ public class Manager_Flow : Singleton<Manager_Flow>
         if (Game.State != GameState.Failed) return;
         var state = Board.State;
         var popup = PopUps.GetPopup<PopUp_Failed>(PopupName.Failed);
-        popup.Setup($"You matched <b>{state.MatchedCount}/{state.CellCount}</b> items. You can undo your last move or try the same board again.\n\nUndo is free and returns your move.",
+        popup.Setup($"You matched <b>{state.MatchedCount}/{state.CellCount}</b> items. Try the same board again, or undo your last move.\n\nUndo is free and returns your move.",
                     () => { PopUps.ClosePopup(PopupName.Failed); Game.Undo(); },
                     () => StartLevel(Game.CurrentLevel),
-                    ShowLevelSelect);
+                    ShowMap);
         PopUps.ShowPopup(PopupName.Failed);
     }
 
-    // Closing the level selector or notebook over a finished level brings its outcome popup back,
-    // so the player is never left on a finished board without a way on.
+    // Closing the map or notebook over a finished case brings its outcome popup back, so the
+    // player is never left on a finished board without a way on.
     private void ReturnToLevel()
     {
         PopUps.CloseAll();
@@ -285,78 +221,61 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
     // ---------- Hint ----------
 
-    // Step one: explain the first unmatched assignment of the active category.
+    // The selected category's first unsatisfied fact, then the next swipe of a shortest solve from
+    // the current board (TilewrapWrapPuzzle over the precomputed table; never a stale authored move).
     public void OpenHint()
     {
         var level = Game.Level;
         var state = Board.State;
-        if (HintPending || Game.State != GameState.Playing || Board.IsAnimating || Board.IsDragging || state == null) return;
-        int row = state.ActiveRow;
+        if (Game.State != GameState.Playing || Board.IsAnimating || Board.IsDragging || state == null) return;
+        int row = Board.SelectedRow;
         if (row < 0) return;
 
         int column = -1;
         for (int c = 0; c < state.Size; c++)
             if (!state.IsHome(row, c)) { column = c; break; }
-        if (column < 0) return;
+        if (column < 0) column = 0;
+        var item = level.Items[row * state.Size + column];
 
-        string itemId = level.Items[row * state.Size + column];
-        var item = FileRef.Instance.GetItem(itemId);
-        string character = FileRef.Instance.TryGetCharacter(level.Characters[column], out var data) ? data.Name : level.Characters[column];
-        string clue = ClueText(level, itemId) ?? $"{character} gets the {item.Name.ToLowerInvariant()}.";
-        string category = level.Categories[row];
-
-        Log("clue_hint_open", $"item={itemId}");
+        var move = Game.RequiredMove ?? NextMove(level, state);
+        Log("clue_hint_open", $"item={item.Id}; move={move?.Describe(state.Size) ?? "none"}");
         PopUps.GetPopup<PopUp_Hint>(PopupName.Hint).Setup(
-            $"HINT · {category.ToUpperInvariant()}", item.Sprite, clue,
-            $"Put the <b>{item.Name.ToLowerInvariant()}</b> in the <b>{category}</b> row, under <b>{character}</b>.\n\n" +
-            $"You can move any row or column. Match <b>all {state.CellCount} items together</b> to finish.",
-            () => { PopUps.ClosePopup(PopupName.Hint); RequestHintMove(); },
+            FileRef.Instance.Sprite(item.Sprite), item.Clue,
+            move != null ? $"Swipe the {move.Describe(state.Size)}." : null,
+            move?.DescribeWrap(),
+            () => { PopUps.ClosePopup(PopupName.Hint); ShowHintMove(move); },
             () => PopUps.ClosePopup(PopupName.Hint));
         PopUps.ShowPopup(PopupName.Hint);
     }
 
-    // Step two: solve the current board off the main thread and guide its first move. The result
-    // is dropped if the level, the board or the state changed meanwhile.
-    private async void RequestHintMove()
+    private void ShowHintMove(LevelMove move)
     {
-        if (HintPending || Game.State != GameState.Playing) return;
-        var state = Board.State;
-        int[] tiles = state.TileIds();
-        int size = state.Size;
-        int session = _session;
-        SetHintPending(true);
-        Log("hint_requested");
-
-        try
-        {
-            var route = await Task.Run(() => BoardSolver.Solve(tiles, size));
-            if (session != _session || Game.State != GameState.Playing || !SameTiles(Board.State.TileIds(), tiles)) return;
-            if (route == null || route.Count == 0)
-            {
-                Toast("Everything is already matched.");
-                return;
-            }
-            _hint = route[0];
-            SetCoach($"Hint: swipe the {_hint.Describe(size)}.", false);
-            Log("hint_shown", $"move={_hint.Describe(size)}; routeLength={route.Count}");
-            RefreshGuide();
-        }
-        catch (Exception e)
-        {
-            Debug.LogWarning($"[Flow] Hint failed: {e.Message}");
-            if (session == _session) Toast("The hint could not load. Please try again.");
-        }
-        finally
-        {
-            if (session == _session) SetHintPending(false);
-        }
+        if (Game.State != GameState.Playing || move == null) return;
+        _hint = move;
+        Log("hint_shown", $"move={move.Describe(Game.Level.Size)}");
+        RefreshGuide();
     }
 
-    private static bool SameTiles(int[] a, int[] b)
+    // Null when solved or the table is missing (logged).
+    private static LevelMove NextMove(LevelDefinition level, BoardState state)
     {
-        if (a.Length != b.Length) return false;
-        for (int i = 0; i < a.Length; i++) if (a[i] != b[i]) return false;
-        return true;
+        var distances = FileRef.Instance.HintDistances;
+        if (distances == null || state.Size != 3)
+        {
+            Debug.LogWarning("[Flow] No hint table for this board.");
+            return null;
+        }
+        // Tile ids are already each cell's index into the goal board, which is all the table needs.
+        var board = new string[state.CellCount];
+        var goal = new string[state.CellCount];
+        int[] ids = state.TileIds();
+        for (int i = 0; i < ids.Length; i++)
+        {
+            board[i] = ids[i].ToString();
+            goal[i] = i.ToString();
+        }
+        if (!TilewrapWrapPuzzle.TryNextMove(board, goal, distances, out var next)) return null;
+        return new LevelMove { axis = next.axis, line = next.line, direction = next.direction };
     }
 
     // The hint's move if one is shown, else the level's required first swipe while it applies.
@@ -376,13 +295,6 @@ public class Manager_Flow : Singleton<Manager_Flow>
         }).SetLink(gameObject);
     }
 
-    private void SetHintPending(bool pending)
-    {
-        if (HintPending == pending) return;
-        HintPending = pending;
-        OnHintStateChanged();
-    }
-
     // ---------- Notebook ----------
 
     public void OpenNotebook()
@@ -392,52 +304,54 @@ public class Manager_Flow : Singleton<Manager_Flow>
         if (level == null || state == null || Board.IsAnimating) return;
         Log("notebook_open", $"matched={state.MatchedCount}");
 
-        var text = new StringBuilder();
-        text.Append("<b>This is the goal.</b> Follow all nine item assignments below. The clue cards on screen focus on the highlighted row.\n");
-        for (int r = 0; r < state.Size; r++)
+        var names = new string[level.Subjects.Length];
+        for (int c = 0; c < names.Length; c++) names[c] = level.Subjects[c].Name;
+        var entries = new PopUp_Notebook.Entry[state.CellCount];
+        for (int i = 0; i < entries.Length; i++)
         {
-            string category = level.Categories[r];
-            text.Append($"\n<b>{category.ToUpperInvariant()}</b>{(r == state.ActiveRow ? "  <color=#368779>· clues on screen</color>" : "")}\n");
-            for (int c = 0; c < state.Size; c++)
+            var item = level.Items[i];
+            entries[i] = new PopUp_Notebook.Entry
             {
-                string itemId = level.Items[r * state.Size + c];
-                string clue = ClueText(level, itemId) ?? FileRef.Instance.GetItem(itemId).Name;
-                text.Append(state.IsHome(r, c) ? $"{clue}  <color=#4A9A24><b>matched</b></color>\n" : $"{clue}\n");
-            }
+                Icon = FileRef.Instance.Sprite(item.Sprite),
+                Label = item.Label,
+                Matched = state.IsTileHome(i),
+            };
         }
-        string[] places = { "Top", "Middle", "Bottom" };
-        var order = new StringBuilder();
-        for (int r = 0; r < state.Size; r++)
-            order.Append($"{(state.Size == 3 ? places[r] : $"Row {r + 1}")} row: {level.Categories[r].ToLowerInvariant()}. ");
-        text.Append($"\n<b>{order.ToString().TrimEnd()}</b>\n");
-        text.Append("Swipe a whole row or column. Tiles leaving an edge wrap around to the opposite edge.\n");
-        text.Append($"A check means an item is in the right place <b>now</b>. All {state.CellCount} must be right together to win.");
-
-        PopUps.GetPopup<PopUp_Notebook>(PopupName.Notebook).Setup(CrewEntries(level), text.ToString(), ReturnToLevel);
+        PopUps.GetPopup<PopUp_Notebook>(PopupName.Notebook).Setup(names, level.Categories, entries,
+            $"Swipe rows or columns. Tiles wrap. All {state.CellCount} must match together.", ReturnToLevel);
         PopUps.ShowPopup(PopupName.Notebook);
     }
 
-    // ---------- Level selector, menu ----------
+    // ---------- Case map, menu ----------
 
-    public void ShowLevelSelect()
+    // A case is open once the one before it is cleared (or it is cleared itself); level 1 always.
+    private bool IsUnlocked(int level) => level <= 1 || Save.CompletedLevels.Contains(level) || Save.CompletedLevels.Contains(level - 1);
+
+    public void ShowMap()
     {
-        Log("level_selector_open");
-        var rows = new List<PopUp_LevelSelect.Row>();
+        var campaign = FileRef.Instance.Campaign;
+        if (campaign?.map == null)
+        {
+            Debug.LogError("[Flow] The campaign has no map. Check FileRef's content library.");
+            return;
+        }
+        Log("map_open");
+        int latest = 1;
+        var nodes = new List<PopUp_Map.Node>();
         for (int n = 1; n <= LevelCount; n++)
         {
-            var level = Manager_Level.Instance.Load(n);
-            rows.Add(new PopUp_LevelSelect.Row
+            bool open = IsUnlocked(n);
+            if (open) latest = n;
+            nodes.Add(new PopUp_Map.Node
             {
                 Level = n,
-                Title = level?.Name ?? $"Level {n}",
-                Subtitle = level != null && level.HasMoveLimit ? $"Practice · {level.MoveLimit} moves" : "Learn · no move limit",
+                State = n == Game.CurrentLevel ? PopUp_Map.NodeState.Current : open ? PopUp_Map.NodeState.Open : PopUp_Map.NodeState.Locked,
                 Done = Save.CompletedLevels.Contains(n),
-                Current = n == Game.CurrentLevel,
             });
         }
-        PopUps.GetPopup<PopUp_LevelSelect>(PopupName.LevelSelect).Setup(
-            $"{Save.CompletedLevels.Count}/{LevelCount} levels complete. Choose any level for this playtest.",
-            rows, StartLevel, ReturnToLevel);
+        PopUps.GetPopup<PopUp_Map>(PopupName.LevelSelect).Setup(
+            $"{Save.CompletedLevels.Count}/{LevelCount} cases complete · {Save.Coins} coins",
+            campaign, nodes, latest, StartLevel, ReturnToLevel);
         PopUps.ShowPopup(PopupName.LevelSelect);
     }
 
@@ -448,27 +362,9 @@ public class Manager_Flow : Singleton<Manager_Flow>
         popup.Setup(audio == null || audio.SoundOn,
                      () => { audio?.ToggleSound(); popup.SetSound(audio == null || audio.SoundOn); },
                      () => StartLevel(Game.CurrentLevel),
-                     ShowLevelSelect,
-                     ExportReport,
-                     ConfirmFreshTest,
+                     ShowMap,
                      ReturnToLevel);
         PopUps.ShowPopup(PopupName.Menu);
-    }
-
-    private void ConfirmFreshTest()
-    {
-        PopUps.GetPopup<PopUp_Confirm>(PopupName.Confirm).Setup(
-            "NEW PLAYTEST", "Start a fresh test?",
-            "This clears the saved level progress, coins and feedback <b>on this device</b>. Save the results first if you need them.",
-            "Start from level 1", () =>
-            {
-                OfflineData.Clear();
-                PlaytestLog.Clear();
-                Manager_Audio.Instance?.SetSoundOn(Manager_Audio.Instance.SoundOn);   // keep the current switch
-                StartLevel(1);
-            },
-            "Keep this test", OpenMenu);
-        PopUps.ShowPopup(PopupName.Confirm);
     }
 
     private void ExportReport()
@@ -487,7 +383,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
         }
     }
 
-    // ---------- End of the playtest ----------
+    // ---------- End of the campaign ----------
 
     private void Finish()
     {
@@ -499,10 +395,10 @@ public class Manager_Flow : Singleton<Manager_Flow>
                 Options = new[] { ("clear", "Yes, I knew what to match"), ("unclear", "I wasn’t sure what to match") } },
             new PopUp_Feedback.Question { Key = "wrap", Title = "Did wrapping make sense?", Selected = save.FeedbackWrap,
                 Options = new[] { ("clear", "Yes, after trying it"), ("unclear", "I still found it confusing") } },
-            new PopUp_Feedback.Question { Key = "difficulty", Title = "How were the first five levels?", Selected = save.FeedbackDifficulty,
+            new PopUp_Feedback.Question { Key = "difficulty", Title = "How were the cases?", Selected = save.FeedbackDifficulty,
                 Options = new[] { ("easy", "Too easy"), ("right", "About right"), ("hard", "Too difficult") } },
         };
-        PopUps.GetPopup<PopUp_Feedback>(PopupName.Feedback).Setup(questions, answers =>
+        PopUps.GetPopup<PopUp_Feedback>(PopupName.Feedback).Setup($"{LevelCount}/{LevelCount} CASES COMPLETE", questions, answers =>
         {
             save.FeedbackGoal = answers.TryGetValue("goal", out var goal) ? goal : "";
             save.FeedbackWrap = answers.TryGetValue("wrap", out var wrap) ? wrap : "";
@@ -510,19 +406,12 @@ public class Manager_Flow : Singleton<Manager_Flow>
             save.Save();
             Log("feedback_saved", $"goal={save.FeedbackGoal}; wrap={save.FeedbackWrap}; difficulty={save.FeedbackDifficulty}");
             ExportReport();
-            ShowLevelSelect();
-        }, ShowLevelSelect);
+            ShowMap();
+        }, ShowMap);
         PopUps.ShowPopup(PopupName.Feedback);
     }
 
     // ---------- Helpers ----------
-
-    private void SetCoach(string text, bool success)
-    {
-        Coach = text ?? "";
-        CoachSuccess = success;
-        OnCoachChanged(Coach, success);
-    }
 
     private void Toast(string text) => OnToast(text);
 
@@ -530,41 +419,13 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
     private void Log(string type, string data = "") => PlaytestLog.Log(type, Game != null ? Game.CurrentLevel : 0, data);
 
-    private static string TitleOf(int levelNumber) => Manager_Level.Instance.Load(levelNumber)?.Name ?? $"Level {levelNumber}";
+    private static string TitleOf(int levelNumber) => Manager_Level.Instance.Load(levelNumber)?.Title ?? $"Case {levelNumber}";
 
-    // The clue sentence the level gives for an item (any step), or null.
-    private static string ClueText(LevelDefinition level, string itemId)
+    private static PopUp_Win.Subject[] Subjects(LevelDefinition level)
     {
-        foreach (var step in level.Steps)
-            foreach (var clue in step.clues)
-                if (clue.item == itemId) return clue.text;
-        return null;
-    }
-
-    private static UI_CrewPortrait.Entry[] CrewEntries(LevelDefinition level)
-    {
-        var entries = new UI_CrewPortrait.Entry[level.Characters.Length];
-        for (int i = 0; i < entries.Length; i++)
-        {
-            FileRef.Instance.TryGetCharacter(level.Characters[i], out var character);
-            entries[i] = new UI_CrewPortrait.Entry { Customer = character.Customer, Symbol = character.Symbol, Caption = character.Name ?? level.Characters[i] };
-        }
-        return entries;
-    }
-
-    private static UI_CrewPortrait.Entry[] CategoryEntries(LevelDefinition level)
-    {
-        string[] places = { "Top", "Middle", "Bottom" };
-        var entries = new UI_CrewPortrait.Entry[level.Categories.Length];
-        for (int r = 0; r < entries.Length; r++)
-        {
-            string place = level.Categories.Length == 3 ? places[r] : $"Row {r + 1}";
-            entries[r] = new UI_CrewPortrait.Entry
-            {
-                Icon = FileRef.Instance.CategoryIcon(level.Categories[r]),
-                Caption = $"{place}: {level.Categories[r].ToLowerInvariant()}",
-            };
-        }
-        return entries;
+        var subjects = new PopUp_Win.Subject[level.Subjects.Length];
+        for (int i = 0; i < subjects.Length; i++)
+            subjects[i] = new PopUp_Win.Subject { Rig = FileRef.Instance.Rig(level.Subjects[i].RigId), Name = level.Subjects[i].Name };
+        return subjects;
     }
 }

@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 2,
+  "id": 16,
+  "title": "Cosy cottages",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "Finish the homes before their new neighbours arrive.",
+  "completionText": "Three cosy cottages are ready to welcome their neighbours.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 8,
+  "minimumMoves": 6,
+  "startingCells": [
+    "cottages_07",
+    "cottages_05",
+    "cottages_00",
+    "cottages_01",
+    "cottages_02",
+    "cottages_04",
+    "cottages_08",
+    "cottages_06",
+    "cottages_03"
+  ],
+  "goalCells": [
+    "cottages_00",
+    "cottages_01",
+    "cottages_02",
+    "cottages_03",
+    "cottages_04",
+    "cottages_05",
+    "cottages_06",
+    "cottages_07",
+    "cottages_08"
+  ],
+  "subjects": [
+    {
+      "id": "cottages_0",
+      "name": "Rose cottage",
+      "column": 0,
+      "rigId": "cottages_0"
+    },
+    {
+      "id": "cottages_1",
+      "name": "Sunny cottage",
+      "column": 1,
+      "rigId": "cottages_1"
+    },
+    {
+      "id": "cottages_2",
+      "name": "Moon cottage",
+      "column": 2,
+      "rigId": "cottages_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cottages_row_0",
+      "label": "Roofs",
+      "row": 0
+    },
+    {
+      "id": "cottages_row_1",
+      "label": "Doors",
+      "row": 1
+    },
+    {
+      "id": "cottages_row_2",
+      "label": "Gardens",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "cottages_00",
+      "label": "Blue roof",
+      "sprite": "cottages_00",
+      "targetCell": 0,
+      "categoryId": "cottages_row_0",
+      "clue": "Rose cottage has the blue roof."
+    },
+    {
+      "id": "cottages_01",
+      "label": "Red tile roof",
+      "sprite": "cottages_01",
+      "targetCell": 1,
+      "categoryId": "cottages_row_0",
+      "clue": "Sunny cottage has the red tile roof."
+    },
+    {
+      "id": "cottages_02",
+      "label": "Purple dome",
+      "sprite": "cottages_02",
+      "targetCell": 2,
+      "categoryId": "cottages_row_0",
+      "clue": "Moon cottage has the purple dome."
+    },
+    {
+      "id": "cottages_03",
+      "label": "Green round door",
+      "sprite": "cottages_03",
+      "targetCell": 3,
+      "categoryId": "cottages_row_1",
+      "clue": "Rose cottage has the green round door."
+    },
+    {
+      "id": "cottages_04",
+      "label": "Yellow panel door",
+      "sprite": "cottages_04",
+      "targetCell": 4,
+      "categoryId": "cottages_row_1",
+      "clue": "Sunny cottage has the yellow panel door."
+    },
+    {
+      "id": "cottages_05",
+      "label": "Brown arch door",
+      "sprite": "cottages_05",
+      "targetCell": 5,
+      "categoryId": "cottages_row_1",
+      "clue": "Moon cottage has the brown arch door."
+    },
+    {
+      "id": "cottages_06",
+      "label": "White fence",
+      "sprite": "cottages_06",
+      "targetCell": 6,
+      "categoryId": "cottages_row_2",
+      "clue": "Rose cottage has the white fence."
+    },
+    {
+      "id": "cottages_07",
+      "label": "Flower patch",
+      "sprite": "cottages_07",
+      "targetCell": 7,
+      "categoryId": "cottages_row_2",
+      "clue": "Sunny cottage has the flower patch."
+    },
+    {
+      "id": "cottages_08",
+      "label": "Mailbox",
+      "sprite": "cottages_08",
+      "targetCell": 8,
+      "categoryId": "cottages_row_2",
+      "clue": "Moon cottage has the mailbox."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 17,
+  "difficulty": "hard",
+  "chapterId": 3,
+  "designSeed": 30316
+}

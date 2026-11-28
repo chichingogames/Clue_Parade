@@ -17,10 +17,11 @@ public class OfflineData
     public int CurrentLevel = 1;        // 1-based; the level to open on launch. Writer: Manager_Game (on win)
     public int PassedLevels = 0;        // highest level number ever won. Writer: Manager_Game (on win)
     public bool IsSoundOn = true;       // music + effects. Writer: Manager_Audio.SetSoundOn
-    // Onboarding playtest (writer: Manager_Flow).
+    // Campaign and playtest (writer: Manager_Flow). Case ids 1-5 are the five-case build's levels,
+    // so a save from it keeps its clears.
     public List<int> CompletedLevels = new List<int>();   // first clears, ascending
     public int Coins = 0;                                  // first-clear rewards
-    public List<string> Lessons = new List<string>();     // acknowledged lesson ids
+    public List<string> Lessons = new List<string>();     // retired: the five-case lesson ids (no writer now)
     public string FeedbackGoal = "";                       // feedback answers ("" = not answered)
     public string FeedbackWrap = "";
     public string FeedbackDifficulty = "";

@@ -1,30 +1,47 @@
 using System;
+using Chichingo.TilewrapVaried;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// "Everyone's ready!": the payoff line, the fully dressed crew, 9/9 matched, the first-clear reward
-// (or that it was already collected), the move stats, and Next (or Finish) plus Choose a level.
-// It has no close button: the player always leaves through one of its actions.
+// "Case complete!": the completion line, the three subjects finished (the same rigs as the board,
+// every part fitted), the first-clear reward (or that it was collected before), a named preview of
+// the next case ("UP NEXT"), Next case, and Choose a case (the map). After the last case: "All 30
+// cases complete!" and the map. It has no close button: the player always leaves through an action.
 public class PopUp_Win : BasePopUp
 {
-    [SerializeField] private UI_CrewPortrait[] _crew = new UI_CrewPortrait[0];
-    [SerializeField] private TMP_Text _matched;
+    public struct Subject
+    {
+        public TilewrapRigView Rig;
+        public string Name;
+    }
+
+    [SerializeField] private UI_SubjectCard[] _subjects = new UI_SubjectCard[0];
     [SerializeField] private TMP_Text _reward;
-    [SerializeField] private TMP_Text _stats;
+    [SerializeField] private TMP_Text _rewardNote;
+    [SerializeField] private GameObject _upNext;
+    [SerializeField] private TMP_Text _upNextTitle;
     [SerializeField] private Button _nextButton;
     [SerializeField] private TMP_Text _nextLabel;
-    [SerializeField] private Button _levelsButton;
+    [SerializeField] private Button _mapButton;
 
-    public void Setup(string kicker, string payoff, UI_CrewPortrait.Entry[] crew, string matched, string reward, string stats,
-                      string nextLabel, Action onNext, Action onLevels)
+    // upNext null hides the preview card (the last case).
+    public void Setup(string title, string completion, Subject[] subjects, string reward, string rewardNote,
+                      string upNext, string nextLabel, Action onNext, Action onMap)
     {
-        SetTexts(kicker, "Everyone’s ready!", payoff);
-        UI_CrewPortrait.ShowRow(_crew, crew, dressed: true);
-        _matched.text = matched;
+        SetTexts("", title, completion);
+        for (int i = 0; i < _subjects.Length; i++)
+        {
+            if (subjects == null || i >= subjects.Length) { _subjects[i].Hide(); continue; }
+            _subjects[i].Show(subjects[i].Rig, subjects[i].Name);
+            _subjects[i].ShowCompleted();
+        }
         _reward.text = reward;
-        _stats.text = stats;
+        _rewardNote.text = rewardNote;
+        _upNext.SetActive(!string.IsNullOrEmpty(upNext));
+        _upNextTitle.text = upNext ?? "";
         Bind(_nextButton, _nextLabel, nextLabel, onNext);
-        Bind(_levelsButton, onLevels);
+        Bind(_mapButton, onMap);
+        _mapButton.gameObject.SetActive(onMap != null);
     }
 }

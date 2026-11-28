@@ -112,7 +112,7 @@ public class Manager_Game : Singleton<Manager_Game>
         var level = Manager_Level.Instance.Load(levelNumber);
         if (level == null)
         {
-            // JsonLevelSource has logged why; the previous level (if any) stays on screen, input off.
+            // CaseLevelSource has logged why; the previous level (if any) stays on screen, input off.
             Debug.LogError($"[Game] Level {levelNumber} could not be loaded.");
             return;
         }
@@ -122,8 +122,8 @@ public class Manager_Game : Singleton<Manager_Game>
 
         SetState(GameState.Playing);
         OnLevelStarted(levelNumber);
-        Debug.Log($"[Game] Level {levelNumber} started (file {Level.Number}, \"{Level.Name}\", {Level.Size}x{Level.Size}, " +
-                  $"step {Manager_Board.Instance.State.ActiveStep + 1}/{Level.Steps.Length}).");
+        Debug.Log($"[Game] Level {levelNumber} started (\"{Level.Title}\", {Level.Difficulty}, " +
+                  $"{(Level.HasMoveLimit ? $"{Level.MoveLimit} moves" : "no move limit")}, minimum {Level.MinimumMoves}).");
     }
 
     public void RestartLevel()

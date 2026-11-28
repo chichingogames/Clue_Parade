@@ -1,8 +1,8 @@
 # Clue Parade (Tilewrap) — Architecture
 
-Written 2026-11-10 against commit `2241067`; rewritten for the Tilewrap handoff UI and onboarding flow on 2026-11-27 (uncommitted working tree). **All game code, art, prefabs and the
-`Game.unity` scene are uncommitted at the time of writing.** `2241067` holds only the template project, `skeleton.md` and
-the skills.
+Written 2026-11-10 against commit `2241067`; rewritten for the Tilewrap handoff UI and onboarding flow on 2026-11-27;
+rewritten for the **30-case content pack** (`Tilewrap_30_Level_Unity_Production`, the ten-case plan and storyboards)
+on 2026-11-28 against `1ea9dea` plus uncommitted work.
 **This file is maintained by hand.** When you change a system, edit the matching section.
 See `ARCHITECTURE-HISTORY.md` for what changed and when.
 
@@ -10,23 +10,24 @@ See `ARCHITECTURE-HISTORY.md` for what changed and when.
 
 ## 1  What this is
 
-A portrait mobile puzzle game (**Clue Parade**; Player Settings name **Tilewrap**), built to the **Tilewrap Unity handoff**
-(five onboarding levels, approved clue prototype v2). The board is a 3×3 grid of item tiles: **columns are people** (Mia,
-Leo, Zoe) and **rows are item categories** (Hats, Shirts, Bags). The player swipes a whole row sideways or a whole column
-up or down, one cell per move; tiles wrap around the edge. Every tile has one correct cell (a *slot*), which the player
-works out from **clues**. A slot is *matched* while its item is in it: the tile shows a check and the column's
-**customer** wears the item (a modular prefab whose accessory layers are switched on). The level is won when all nine
-slots are matched at the same time. **Steps** are the level's clue order of rows: the active step is the first row not
-complete; its row is highlighted and two of its clues are shown.
+A portrait mobile puzzle game (**Clue Parade**; Player Settings name **Tilewrap**). The board is a 3×3 grid of item
+tiles. Every **case** (level) is a new situation: **columns are subjects** (Mia, Leo, Zoe; three pets; three rooms;
+three bags; three boats…) and **rows are categories** (Hats / Shirts / Bags; Wear / Beds / Extras; Walls / Floors /
+Furniture…). The player swipes a whole row sideways or a whole column up or down, one cell per move; tiles wrap around
+the edge. Every tile has one correct cell (a *slot*), stated by its **clue fact** ("Trail bag gets the raincoat.").
+A slot is *matched* while its item is in it: the tile shows a check and the column's **subject rig** shows the fitted
+part (one base plus registered layers). The case is won when all nine slots are matched **at the same time**. Correct
+tiles stay movable; nothing is locked or banked.
 
-Everything the handoff specifies is built: the loading screen, the HUD on the handoff's 1080×1920 layout and sprites,
-lessons (levels 1, 3, 4) with required first swipes, the coach line, Hint (explain, then solve the current board and
-guide the next swipe), Notebook, win / out-of-moves popups, the level selector, the menu (sound, restart, levels, save
-results, fresh test), first-clear coins, end-of-playtest feedback, the local playtest log and report, match sparks and
-win confetti. The onboarding flow lives in `Manager_Flow`; popups are `PopUp_X` views over `Manager_PopUp`.
+30 cases in five chapters (campaign map). Levels 1–5 teach (only 1 and 3 have a guided first swipe; 1–3 have no move
+limit), the rest are Practice (limit ≥ 2× minimum) or **Hard** (minimum + 2, Hard badge). Everything around the board
+follows the storyboards: HUD, two clue cards for the selected category (a category tab tap changes them, no move),
+Hint (explain the fact, then the next swipe from the current board), Notebook (all nine facts), win ("Case complete!",
+the finished subjects, +30 coins on first clear, "Up next"), out of moves (Retry / Undo / Choose a case), the case map,
+the menu, end-of-campaign feedback, the local playtest log.
 
-The code follows the architecture blueprint in `skeleton.md` (ported from an earlier game, "Color Farm"). That file
-describes the *target*; this file describes what exists.
+The code follows the architecture blueprint in `skeleton.md` (ported from "Color Farm"). That file describes the
+*target*; this file describes what exists.
 
 ---
 
@@ -34,9 +35,17 @@ describes the *target*; this file describes what exists.
 
 ```
 Assets/
-  Tilewrap/                           the handoff, as delivered: Data/game_config.json (catalog, layout, timings) + Data/Levels
-                                      (5 source levels), Sprites/{Characters/{id}/, Items/, UI/, Tutorial/}, Audio/, Fonts/
-                                      (TilewrapUI-Regular/ExtraBold + OFL), Editor/TilewrapAssetImporter.cs (sprite import settings)
+  TilewrapVaried/                     the content pack, as delivered (do not edit; re-copy to update):
+    Data/content.json                 manifest: sprite import settings, the 90 rigs' layers, levels, fonts, audio gains
+    Data/Levels/level_001..030.json   the cases (format §7.1)
+    Data/campaign.json                chapters, map node positions / sections, ending text
+    Data/ui_layout.json               1080x1920 regions, text sizes, timings (HUD / board layout source)
+    Data/hint_distances.bytes         shortest-solve distance of all 362,880 3x3 states (Hint, validator)
+    Sprites/{UI, FX, Tutorial, Items, Rigs/<crew…>, Cases/<theme>/{Items,Rigs}}   Audio/ (match_1..3, level_win)
+    Fonts/ (TilewrapUI-Regular/ExtraBold + OFL)
+    Runtime/  TilewrapCaseData, TilewrapContentLibrary, TilewrapRigView, TilewrapWrapPuzzle   (namespace Chichingo.TilewrapVaried)
+    Editor/TilewrapContentImporter.cs Tools > Chichingo > Tilewrap > Build 30-level content
+    Generated/                        made by that importer: TilewrapContentLibrary.asset, Rigs/<id>.prefab (90 uGUI rigs)
   Game Assets/
     Scenes/Game.unity                 the only scene (in Build Settings, index 0)
     Scripts/
@@ -45,39 +54,34 @@ Assets/
                                       Haptics, OfflineData (the save), PlaytestLog (local event log + report export)
         Managers/
           Manager_Game.cs             state machine, drag rules, required first swipe, win/fail, undo, input gate
-          Manager_Board.cs            board model owner, all board views, guide, sparks, customers, camera fit
+          Manager_Board.cs            board model owner, tiles, checks, selected-row highlight, guide, match FX, camera fit
           Manager_Input.cs            pointer → press/drag/release events
-          Manager_Level.cs            level number → LevelDefinition
+          Manager_Level.cs            level number → LevelDefinition (CaseLevelSource)
           Manager_Audio.cs            music, effects, the sound switch
           Manager_PopUp.cs            popup registry (by PopupName), show/close, IsPopUpActive
-          Manager_Flow.cs             the onboarding flow: lessons, coach, toasts, hint, notebook, win/fail, levels, menu,
-                                      rewards, feedback, playtest log
-        GameElements/                 world views: Cell, ItemTile, CategoryTag, CharacterRow, Customer, BoardGuide
-        BoardState.cs                 pure board model: shifts, matches, active step, clue picking
-        BoardSolver.cs                exact shortest-route solver (bidirectional BFS), thread-safe; the Hint's
-        LevelDefinition.cs  JsonLevelSource.cs   levels (§7.1)
-        ReferenceLayout.cs            the handoff layout in world units (board, tabs, checks, crew, name tabs)
+          Manager_Flow.cs             the flow: tutorial toast, hint, notebook, win/fail, map, menu, rewards, feedback, log
+        GameElements/                 world views: Cell, ItemTile, BoardGuide
+        BoardState.cs                 pure board model: shifts, matches, clue picking
+        LevelDefinition.cs  CaseLevelSource.cs   levels (§7.1)
+        ReferenceLayout.cs            the pack's layout in world units (board, cells, tile art / name / check)
         Common.cs                     enums (GameState, PopupName, HapticType, SoundType), TileData, SortOrder
         Tuning.cs  GameTuning.cs  FileRef.cs  TestManager.cs
-      UI/                             UI_InGame (HUD), UI_ReferenceFit, UI_Loading, UI_Toast, UI_Confetti (+Listener),
-                                      UI_CrewPortrait (a Customer drawn in uGUI), UI_ChoiceRow
-        Popups/                       Popup, BasePopUp, PopUp_{Lesson, Win, Failed, Hint, Notebook, LevelSelect, Menu, Confirm, Feedback}
+      UI/                             UI_InGame (HUD), UI_SubjectCard (a rig in a card), UI_CategoryTab, UI_ReferenceFit,
+                                      UI_Loading, UI_Toast, UI_Confetti (+Listener), UI_ChoiceRow
+        Popups/                       Popup, BasePopUp, PopUp_{Win, Failed, Hint, Notebook, Map, Menu, Feedback}
       Sortify/                        [Button] attribute + inspector drawer
       Editor/                         AssetBuilder, HandoffBuilder, SceneBuilder, UIBuilder, PopUpBuilder, LevelValidator, BuildNaming
-    Prefabs/Gameobjects/              Cell, ItemTile, CategoryTag, Customer + Customer_{Mia,Leo,Zoe} (variants)
-    Sprites/Placeholder/Solid.png     generated white square (board mask, dividers, sparks)
+    Prefabs/Gameobjects/              Cell, ItemTile
+    Sprites/Placeholder/Solid.png     generated white square (board mask, dividers)
     Sprites/Branding/                 app icon and splash art (referenced by Player Settings only)
-    Fonts/                            TMP font assets: TilewrapUI-{ExtraBold,Regular} SDF (used); older Nunito / Open Sans (unused)
-    Audio/Music/ Audio/SFX/           music loop + sound effects (files named after SoundType, see §7)
-  Resources/
-    FileRef.asset                     the asset registry, loaded by name at runtime
-    Levels/level-001..005.json        the five levels (schemaVersion 2, format in §7.1), converted from Tilewrap/Data/Levels
+    Fonts/                            TMP font assets: TilewrapUI-{ExtraBold,Regular} SDF, TilewrapUI-ExtraBold SDF Masked.mat
+    Audio/Music/ Audio/SFX/           music loop + our effects (ui_tap, swipe_settle, out_of_moves, restart, undo)
+  Resources/FileRef.asset             the asset registry, loaded by name at runtime
   Plugins/Demigiant/DOTween/          all animation and timed delays (see §5)
   Settings/                           URP 2D renderer assets (template)
 AgentScripts/                         CLI scripts run with `unity command script run` (not compiled into the game):
                                       PlayCheck (status, real swipes), FlowCheck (flow status, tap popup/HUD buttons, toast),
-                                      UnusedSprites, one-off migrations (MigrateToCustomers, MigrateToHandoffUI, FixNameTabs,
-                                      FixFlowLayout, older ones that no longer compile); Out/ = captures
+                                      SaveBackup (back up / restore the Editor save around tests), UnusedSprites; Out/ = captures
 skeleton.md  CLAUDE.md
 ```
 
@@ -85,92 +89,58 @@ skeleton.md  CLAUDE.md
 
 ## 3  The main flow
 
-Boot → level → one drag → win → next level. Real names, in order.
-
 ```
 Scene load (Game.unity)
  ├ GameTuning.OnEnable                      [order -1000, ExecuteAlways]  GameTuning.Active = this
  ├ SingletonManager.Awake                   [order -900]
- │   ├ OfflineData.Load()                    once: PlayerPrefs "OfflineData" JSON → OfflineData.Instance (fresh if missing)
+ │   ├ OfflineData.Load()                    once
  │   └ for each in _singletonsToInitialize (Inspector order):  ISingleton.Initialize() → Awake2()
- │       ├ Manager_Level.Awake2             FileRef.Instance (Resources.Load "FileRef") → new JsonLevelSource(fileRef);
- │       │                                   LevelCount = files level-001… up to the first missing number
- │       ├ Manager_Board                    (no Awake2)
- │       ├ Manager_Input                    (no Awake2)
- │       └ Manager_Game.Awake2              subscribes Manager_Input.OnPress/OnDrag/OnRelease/OnCancel
- │   ├ Application.targetFrameRate = 60
- │   └ DOTween.SetTweensCapacity(500, 100)
- ├ (each Singleton's own Awake → Initialize() → no-op, already initialized)
- ├ UI_Loading.Awake                   → Manager_Game.HoldLaunch() (skipped if Loading Screen is inactive / Skip In Editor)
- ├ Manager_Game.Start                 → Launch() now, unless held
- └ UI_Loading.Start                   → DOTween sequence: bar fills (LoadingDuration, InOutSine) → Manager_Game.Launch()
-                                        → fade out (LoadingFadeDuration) under which the board + HUD intros play → SetActive(false)
+ │       ├ Manager_Level.Awake2             new CaseLevelSource(FileRef.Instance): reads each case's id from
+ │       │                                   FileRef.Content.levels; LevelCount = 1..N without a gap (30)
+ │       ├ Manager_Game.Awake2              subscribes Manager_Input; popup events → ApplyInputGate
+ │       └ Manager_Flow.Awake2              subscribes Manager_Game / Manager_Board events
+ ├ UI_Loading.Awake → Manager_Game.HoldLaunch();  UI_Loading.Start → bar fills → Manager_Game.Launch() → fade
 Manager_Game.Launch (once)
-     └ StartLevel(OfflineData.CurrentLevel)       (skipped if the Tester already loaded a level)
-         ├ SetState(Loading)                 → Manager_Input.AcceptInput = false
-         ├ Manager_Level.Load(n)             → file ((n-1) % LevelCount) + 1 → JsonLevelSource.Load (null if invalid:
-         │                                     StartLevel logs and stops, input stays off)
-         │    Resources.Load<TextAsset>("Levels/level-001") → TryParse (§7.1) → TryCheckArt (items, characters in FileRef)
-         ├ Manager_Board.Build(level)
-         │    ├ Clear()                       stop animation, destroy Cells/Tiles/Tags children
-         │    ├ State = new BoardState(level); _boardRoot at ReferenceLayout.BoardCenter
-         │    ├ size Frame (grid + FramePadding), Mask (grid) and Active Row (one row)
-         │    ├ Instantiate FileRef.CellPrefab ×N², ItemTile ×N² (SpawnTile → ItemTile.Setup(data, item sprite, name))
-         │    ├ Instantiate CategoryTag ×N rows (level.Categories), left of the grid
-         │    ├ PlaceCharacters()             CharacterRow at the world origin; each column's character shown over it
-         │    ├ FitCamera()                   the 10.8×19.2 reference screen fitted into the safe area
-         │    └ RefreshIndicators()           checks on matched cells, highlight + gold tab on the active row,
-         │                                    customer accessories (RefreshCustomers)
-         ├ MovesUsed = 0
-         ├ SetState(Playing)                 → AcceptInput = true
-         └ OnLevelStarted(1); log "[Game] Level 1 started (…)"
-
-One drag (Manager_Input.Update reads Pointer.current each frame)
- ├ press   → OnPress(pos)       → Manager_Game.HandlePress
- │                                 _pressOnBoard = Playing && !board.IsAnimating && board.TryGetCell(pos)
- ├ move    → OnDrag(start, now) → Manager_Game.HandleDrag
- │                                 first time |delta| ≥ DragStartThreshold·min(screen):
- │                                   lock axis (|dx| ≥ |dy| → row) → board.BeginDrag(isRow, index)
- │                                 board.SetDragOffset(DragOffset())  → RenderHeldLine()
- └ release → OnRelease(start, end, secs) → Manager_Game.HandleRelease
-                                   steps = StepsForRelease(offset, secs)   0 or ±1: offset is clamped to ±MaxStepsPerMove (1)
-                                                                           in DragOffset, so the line never follows past one cell
-                                   ├ steps == 0 → board.CancelDrag()  → AnimateHeldLine(0, 0)
-                                   └ else       → board.CommitDrag(steps)
-                                                    ├ BoardState.ShiftRow/ShiftColumn(index, steps)   model now
-                                                    └ AnimateHeldLine(steps, steps)                   views later
-                                                  MovesUsed += |steps|; OnMoveMade()
-                                                  EvaluateEndConditions()
-                                                    ├ State.IsSolved (all steps)  → SetState(Won)
-                                                    └ limit && MovesUsed ≥ limit  → SetState(Failed)
-
-AnimateHeldLine (DOTween.To on _offset, ShiftDuration × clamp(|distance|, 0.35, 1.5), Ease.OutCubic, SetLink)
- └ OnComplete → SettleHeldLine: reorder _tiles to match the model, snap positions, ReleaseHeldLine (destroy ghost),
-              RefreshIndicators(), PlaySettleFeedback(), OnBoardSettled()
-
-SetState(Won)    → AcceptInput = false; log. UI_InGame shows the win panel + Next level → AdvanceLevel() → StartLevel(n+1)
-SetState(Failed) → AcceptInput = false; log. UI_InGame shows the fail panel; Undo → back to Playing, Restart → StartLevel(n)
-Undo()           → pop _history, Manager_Board.Shift*(index, -steps), MovesUsed -= |steps|, SetState(Playing), OnMoveMade
+     └ StartLevel(OfflineData.CurrentLevel clamped to 1..30)
+         ├ Manager_Level.Load(n)             CaseLevelSource: TilewrapCaseData.Parse → TryConvert (§7.1) → TryCheckArt
+         │                                   (every item sprite and rig is in the library); cached per case
+         ├ Manager_Board.Build(level)        tiles (FileRef.Sprite(item.Sprite), item.Label), cells, frame, highlight,
+         │                                   FitCamera, intro / tile spawn wave, checks
+         ├ SetState(Playing); OnLevelStarted(n)
+         │   ├ UI_InGame.ShowLevel           each column's rig (FileRef.Rig → UI_SubjectCard.Show: Instantiate + FitInto),
+         │   │                               category tabs, ApplyBoard(animate: false)
+         │   └ Manager_Flow                  log case_start; guide for requiredFirstSwipe; 16 s hint attention;
+         │                                   tutorial.entryText as a toast until the case is cleared once
+One drag: unchanged from the five-case build (Manager_Input → Manager_Game.HandlePress / HandleDrag / HandleRelease
+          → Manager_Board.BeginDrag / SetDragOffset / CommitDrag or CancelDrag); one cell per swipe, one move.
+AnimateHeldLine → SettleHeldLine
+ ├ reorder tiles; LastNewMatches; LastSettleCelebrated (false for Undo)
+ ├ CelebrateNewMatches (played moves): tile flash, fx_ring, 2-4 fx_star per newly matched cell
+ ├ a category the player chose stays selected until a move completes its row
+ ├ RefreshIndicators: checks, highlight on SelectedRow
+ ├ PlaySettleFeedback: swipe_settle + level_win (solved) or one of match_1..3 (new matches) + one haptic
+ └ OnBoardSettled → UI_InGame: rigs ApplyBoard(animate = LastSettleCelebrated): new parts fade in 0.16 s, card pops
+SetState(Won)    → Manager_Flow: RecordClear (completed + level.FirstClearCoins, once) → after 0.38 s PopUp_Win
+                   (+ confetti): completion text, finished rigs, reward, "Up next <title>", Next case → nextLevelId;
+                   case 30 (nextLevelId 0): "All 30 cases complete!", ending text → feedback → map
+SetState(Failed) → after 0.38 s PopUp_Failed: Retry / Undo / Choose a case
 ```
 
-Around the board (`Manager_Flow`, listening to the events above):
+Around the board (`Manager_Flow`):
 
 ```
-OnLevelStarted   → coach = level.coach; log level_start; guide (required first swipe); 16 s hint-attention timer;
-                   lesson popup if the level has one not yet acknowledged; on the first open with every level cleared,
-                   the level selector
-swipe ≠ required → Manager_Game.HandleRelease cancels the drag (no move), OnMoveRejected → toast "First, swipe the …"
-OnMoveCommitted  → log first_move; clear hint + guide;  OnLinePickedUp → snapshot step / matched count
-OnBoardSettled   → log move; coach line (won / step done / new matches / neutral); guide again
-OnStateChanged   → Won: RecordClear (completed + coins, saved once) → after WinPopupDelay PopUp_Win + confetti
-                   Failed: after WinPopupDelay PopUp_Failed (Undo last move / Try again / Choose a level)
-Hint button      → OpenHint: PopUp_Hint for the first unmatched clue of the active row → "Show the next swipe":
-                   BoardSolver.Solve on a worker thread → if the level, board and state are unchanged: guide + coach
-Popups open      → Manager_PopUp.OnPopupShown → Manager_Game.ApplyInputGate (AcceptInput false, a held line cancels)
+swipe ≠ required    → cancelled, no move; toast "First, swipe the top row right."
+category tab tap    → Manager_Board.SelectRow(row) → OnSelectionChanged → HUD clue cards + gold tab; highlight moves
+Hint button         → PopUp_Hint: the selected row's first unsatisfied fact (item picture + clue), and the next swipe:
+                      the required swipe, else TilewrapWrapPuzzle.TryNextMove over FileRef.HintDistances from the
+                      CURRENT board ("Swipe the top row left." + which item wraps). "Show the next swipe" → guide.
+Notebook / "All facts in Notebook" → PopUp_Notebook: names over three columns, each category's items (icon, name,
+                      check while in place), rules line
+Level pill          → PopUp_Map (PopupName.LevelSelect): 30 nodes, current / open / locked, checks
+Popups open         → Manager_PopUp.OnPopupShown → Manager_Game.ApplyInputGate
 ```
 
-**The model changes at commit; the views catch up at the end of the animation.** The win is decided at commit, before
-the slide has finished. `IsAnimating` blocks new presses (dropped, not queued) until the slide ends.
+**The model changes at commit; the views catch up at the end of the animation.** The win is decided at commit.
 
 ---
 
@@ -180,174 +150,144 @@ the slide has finished. `IsAnimating` blocks new presses (dropped, not queued) u
 
 | File | Owns | Calls | Called by |
 |---|---|---|---|
-| `Singleton.cs` | `Singleton<T>.Instance`; init exactly once per instance (`_initialized`); a duplicate component logs `[Singleton]` and `Destroy(this)` (the component, not the shared GameObject); `OnDestroy` clears `Instance` | `Awake2()` | Unity `Awake`, `SingletonManager` |
-| `Haptics.cs` | `Haptics.Play(HapticType)` → `CandyCoded.HapticFeedback.HapticFeedback.Light/Medium/HeavyFeedback()`. Always on. Behind `#if UNITY_ANDROID \|\| UNITY_IOS \|\| UNITY_EDITOR` because the package only compiles for those; a native exception disables it for the session with one warning. Editor-only `DebugLog` | package `xyz.candycoded.hapticfeedback` | `Manager_Board`, `Manager_Game`, `UI_InGame` |
-| `OfflineData.cs` | The save: `CurrentLevel` (1-based, level to open), `PassedLevels` (highest won), `IsSoundOn`. Public fields, JSON in PlayerPrefs key `OfflineData`, append-only; `Load()` (repairs values < 1), `Save()`, `Clear()` (tester) | `PlayerPrefs`, `JsonUtility` | `SingletonManager.Awake` (Load, once); writers: `Manager_Game.SaveProgress` (levels), `Manager_Audio.SetSoundOn` (sound) |
-| `SingletonManager.cs` | `OfflineData.Load()` once, then boot order (`_singletonsToInitialize`, Inspector-wired), `targetFrameRate = 60`, DOTween capacity | `ISingleton.Initialize()` | Unity (order −900) |
-| `ScriptableSingleton.cs` | `ScriptableSingleton<T>.Instance` via `Resources.Load(<[AssetPath]>)`. **Editor only:** creates the asset if missing. | `Resources.Load`, `AssetDatabase.CreateAsset` | `FileRef.Instance` users |
-
-`Singleton<T>` deliberately differs from the `skeleton.md` version: the guard there is a **static** flag, so a duplicate
-skips its `Destroy`. Here it is per instance.
+| `Singleton.cs` | `Singleton<T>.Instance`; init exactly once per instance; a duplicate logs `[Singleton]` and destroys the component | `Awake2()` | Unity `Awake`, `SingletonManager` |
+| `Haptics.cs` | `Haptics.Play(HapticType)` → CandyCoded HapticFeedback. Always on. Editor-only `DebugLog` | package | `Manager_Board`, `Manager_Game`, UI |
+| `OfflineData.cs` | The save: `CurrentLevel`, `PassedLevels`, `IsSoundOn`, `CompletedLevels`, `Coins`, `Lessons` (retired, no writer), `Feedback*`. JSON in PlayerPrefs `OfflineData`, append-only | `PlayerPrefs` | `SingletonManager` (Load once); writers: `Manager_Game.SaveProgress`, `Manager_Audio.SetSoundOn`, `Manager_Flow` |
+| `SingletonManager.cs` | `OfflineData.Load()` once, boot order, frame rate, DOTween capacity | | Unity (order −900) |
+| `ScriptableSingleton.cs` | `Resources.Load` of `[AssetPath]`; Editor creates if missing | | `FileRef.Instance` |
+| `PlaytestLog.cs` | Local event log (PlayerPrefs `PlaytestLog`), JSON report export | | `Manager_Flow` |
 
 ### 4.2  Managers (all on the `Managers` GameObject)
 
-Init order (`SingletonManager._singletonsToInitialize`): Audio, Level, Board, Input, PopUp, Game, Flow.
+Init order: Audio, Level, Board, Input, PopUp, Game, Flow.
 
-| Manager | Owns | Calls | Called by |
-|---|---|---|---|
-| `Manager_Game` | `GameState`, `CurrentLevel` (launch opens `OfflineData.CurrentLevel` clamped to the level count), `Level`, `MovesUsed`; press/drag state; drag→steps rule; **`RequiredMove`** (the level's `requiredFirstSwipe` while no move is made and the board is the start board; any other swipe is cancelled, costs nothing, raises `OnMoveRejected`); win/fail; undo history (`Undo()` works from Playing, Won and Failed, raises `OnUndone`); **input gate** `ApplyInputGate`: `AcceptInput = Playing && !IsPaused`, `IsPaused` = `Manager_PopUp.IsPopUpActive` (re-run on state change, popup shown, popup close finished). `SaveProgress` on a win (CurrentLevel = min(max(saved, n+1), count)). Events: `OnStateChanged`, `OnLevelStarted`, `OnMoveMade`, `OnMoveCommitted(move)`, `OnMoveRejected(expected)`, `OnUndone` | `Manager_Level`, `Manager_Board`, `Manager_Input` | input events; `Manager_Flow`; HUD Undo; `TestManager` |
-| `Manager_Board` | `BoardState`, `Level`; Cells, ItemTiles, CategoryTags, **Customers** (one instance of each column's `Customer_{Name}` variant on its stand); held line + ghost; indicators (checks on matched cells, active-row highlight, gold tab, customers' accessories); `LastNewMatches`; match celebration (`CelebrateNewMatches`: tile flash + 6 sparks per new match, played moves only); the guide (`ShowGuide(move)` / `HideGuide`); dividers; camera fit | `FileRef`, `BoardState` | `Manager_Game`, `Manager_Flow` |
-| `Manager_Input` | Press tracking; `AcceptInput` (false cancels a press) | `Pointer.current` | `Manager_Game` |
-| `Manager_Level` | `JsonLevelSource`; `LevelCount`; `FileNumber(n)` wraps | `FileRef` | `Manager_Game`, `Manager_Flow` |
-| `Manager_Audio` | Music / SFX sources; `SoundOn` (saved) | `FileRef` | board, game, HUD, popups, menu |
-| `Manager_PopUp` | Every `Popup` under `Canvas/Container/PopUps`, keyed by `PopupName`; `ShowPopup` (closes others), `ClosePopup`, `CloseAll`, `GetPopup<T>`, `IsOpen`, `IsPopUpActive` (open or still closing); events `OnPopupShown`, `OnPopupClosed`, `OnPopupCloseFinished` | `Popup.Show/Close` | `Manager_Flow`, `BasePopUp.Dismiss`, `Manager_Game` (gate) |
-| `Manager_Flow` | The onboarding flow (§3): `Coach` + `OnCoachChanged`, `OnToast`, `OnHintAttention`, `HintPending` + `OnHintStateChanged`, `OnWinCelebration`; lessons (acknowledgement saved per lesson id), Hint (explain → async solve → guide; result dropped if the session / board / state changed), Notebook, level selector, menu, fresh-test confirm, report export, win (first-clear reward recorded before the popup), fail, feedback after the last level; active play time; every event into `PlaytestLog`. Writer of `OfflineData.CompletedLevels / Coins / Lessons / Feedback*` | managers, popups' `Setup`, `PlaytestLog`, `BoardSolver` | HUD buttons, Manager_Game / Manager_Board events |
+| Manager | Owns | Called by |
+|---|---|---|
+| `Manager_Game` | `GameState`, `CurrentLevel`, `Level`, `MovesUsed`; drag→steps rule; `RequiredMove`; win/fail; undo; input gate; `SaveProgress` | input events, `Manager_Flow`, HUD Undo, `TestManager` |
+| `Manager_Board` | `BoardState`, `Level`; Cells, ItemTiles; held line + ghost; checks; **`SelectedRow`** (the player's tab choice until a move completes that row, else the top incomplete row; −1 solved) + `SelectRow` + `OnSelectionChanged`; highlight; `LastNewMatches`, `LastSettleCelebrated`; match FX (fx_ring / fx_star); settle sounds; guide; dividers; camera fit | `Manager_Game`, `Manager_Flow`, HUD |
+| `Manager_Input` | Press tracking; `AcceptInput` | `Manager_Game` |
+| `Manager_Level` | `CaseLevelSource`; `LevelCount`; `Load(n)` clamps to 1..LevelCount | `Manager_Game`, `Manager_Flow` |
+| `Manager_Audio` | Music / SFX sources; `SoundOn`; `PlaySound(type, variant)` (Volume × per-clip `ClipVolumes`) | everything that makes noise |
+| `Manager_PopUp` | Every `Popup` under `Canvas/Container/PopUps`, keyed by `PopupName` | `Manager_Flow`, `BasePopUp`, `Manager_Game` |
+| `Manager_Flow` | Tutorial toast, toasts, hint attention, Hint (sync, table), Notebook, map (unlock: level 1, a cleared case, or the one after a cleared case), menu (sound, restart, choose a case, back), win / fail, feedback after the last case (saving it exports the report), active time, `PlaytestLog` events (`case_start`, `move`, `undo`, `case_complete`, `case_failed`, `clue_hint_open`, `hint_shown`, `notebook_open`, `map_open`, …) | HUD buttons, events |
 
-**HUD** (`UI_InGame` on `Canvas/Container/InGame`, objects under `InGame/Reference`, fitted by `UI_ReferenceFit` exactly as
-`FitCamera` fits the world; every rect is a `game_config.json` `layoutTopLeft` group or inside one): level pill
-("LEVEL n of 5" → level selector), moves panel (`panel_moves` with the count, or `panel_practice` "Practice / no move
-limit"; low colour at ≤ 3), menu button; title (level name) and subtitle (goal line); clue heading "CLUES · HATS", "n/3
-matched", "All 9" (→ Notebook); two clue cards (`panel_clue`, pin, item icon, rich text; `panel_clue_matched` + check
-badge while matched; `BoardState.PickClues` chooses them); coach line (capsule, green when a success); match meter
-("6/9 matched" + bar); control note; Undo / Notebook (badge 9) / Hint (gold; pulses twice on `OnHintAttention`). The handoff's brand footer is left out.
-The toast (`UI_Toast`) lives in `Canvas/Container/Overlay` so it shows over popups.
+**HUD** (`UI_InGame` on `Canvas/Container/InGame`, objects under `InGame/Reference`, fitted by `UI_ReferenceFit`;
+every rect is a `ui_layout.json` region): level pill ("Level n" → map), menu icon, Hard badge (`level.IsHard`), moves
+panel (`panel_moves` count or `panel_practice` "Practice / no move limit"; low colour at ≤ 3), title, goal line,
+"CLUES" + "All facts in Notebook", two clue cards (`BoardState.PickClues(SelectedRow, 2)`: unsatisfied first;
+`panel_clue_matched` + check while satisfied), three `UI_SubjectCard`s (white card, rig, name tab) above the board
+columns, three `UI_CategoryTab`s beside the rows (gold on `SelectedRow`), control note, "x/9 matched", Undo / Notebook
+/ Hint (pulses after 16 idle s). The toast (`UI_Toast`) lives in `Container/Overlay` (over popups).
 
-**Popups** (`Canvas/Container/PopUps`, reference-fitted; built by `PopUpBuilder`): `Popup` (dim fade + holder scale,
-`SetUpdate(true)`), `BasePopUp` (kicker / title / body, `Bind` plays the tap, `Dismiss`), `PopUp_X.Setup(..., callbacks)`.
-Popups only display and report taps; `Manager_Flow` decides. Win and Failed have no close: the player leaves through an
-action; closing the level selector or notebook over a finished level brings its popup back (`ReturnToLevel`).
+**Subjects:** `TilewrapRigView` prefabs (the pack's importer: a RectTransform of `nativeSize` with one Image per layer
+at its registered rect; `bindings[]` = layer, `goalIndex`, `expectedItem`; `ApplyBoard(board ids)` shows a part while
+board[goalIndex] == expectedItem; `ShowCompleted()`; `FitInto(frame)`). `UI_SubjectCard` instantiates one per column
+into its frame and fades newly shown parts. The same prefabs draw the win popup's finished scene.
 
-**Customers and crew portraits:** the board's customers are world sprites (`Customer`, SortingGroup); the lesson, win and
-notebook crews are `UI_CrewPortrait`s that read the same prefab's layers (`Customer.GetLayers`) into uGUI Images, so
-the art and the accessory grouping exist once.
+**Popups** (`Canvas/Container/PopUps`, reference-fitted; built by `PopUpBuilder`): `Popup` (dim fade + holder scale),
+`BasePopUp` (kicker / title / body, hidden when empty; `Bind`), `PopUp_X.Setup(..., callbacks)`. Popups display and
+report taps; `Manager_Flow` decides. Win and Failed have no close; closing the map or notebook over a finished case
+brings its popup back (`ReturnToLevel`). `PopUp_Map` is full screen and clones its path / heading / node templates from
+`campaign.json` the first time it opens.
 
-**Haptics / sounds on settle** (`Manager_Board.PlaySettleFeedback`, played moves only): `SwipeSettle`, then
-`LevelComplete` (solved, Heavy) or `TileMatch` variant `min(new matches, 3) − 1` (Medium), else Light. Undo shifts with
-`celebrate: false`. `OutOfMoves` on Failed. UI taps: `UiTap` + Light.
+**Loading screen** (`UI_Loading`): teal background, "Tilewrap", a line, a gold bar, CHICHINGO; holds `Launch()`.
 
-**Loading screen** (`UI_Loading`): the teal background, "Tilewrap", "Getting the crew ready…", a gold bar, CHICHINGO; it
-holds `Manager_Game.Launch()` until the bar is full, then fades while the board and HUD intros play.
-
-**Intro, spawn, checks, line rendering:** unchanged: `PlayIntro` once per launch, `AnimateTileSpawn` diagonal wave,
-`Cell.SetMatched` pops a check when it appears, a held line wraps with a ghost tile under `Board/Mask`.
-
-### 4.3  Model and levels (no Unity objects except `Mathf`)
+### 4.3  Model and levels (no Unity objects)
 
 | File | Owns | Notes |
 |---|---|---|
-| `BoardState.cs` | `TileData[,]` cells `[row, col]`, `StepRows` (the clue row order); `ShiftRow/ShiftColumn(index, dir)` (any integer dir); `IsHome(r, c)` (the cell holds the tile whose id is `r·N + c`), `IsTileHome(id)`, `IsRowComplete`, `MatchedCount` / `CellCount`; steps: `ActiveStep` (first step whose row is not complete), `ActiveRow` (−1 when solved); `IsSolved` (all cells home); `PickClues(clueTiles, count)` (which of a step's clues the HUD shows: the first `count`, but the first is swapped for an unmatched one when all shown are matched); `Wrap` | Row 0 is the top. Constructors clone their inputs. **Progress is derived, never stored:** a move that breaks a matched slot removes its check and accessory, and Undo restores them. |
-| `LevelDefinition.cs` | `Number` (the file's), `Size`, `StartCells`, `MoveLimit` (0 = unlimited), `Name`, `Characters` (column ids), `Categories` (row labels), `Items` (item id per home cell), `Steps` (`LevelStep`: row, goal, clues), `StepRows`, `ItemFor(tile)`, `Solution`; `ILevelSource` | Plain class. |
-| `JsonLevelSource.cs` | Loads, validates and converts one level file (§7.1). `TryParse` (structure) and `TryCheckArt` (every item and character is in FileRef) are static so the validator shares them. `Exists(n)`. | Logs an error and returns null on a bad file. |
+| `BoardState.cs` | `TileData[,]` `[row, col]`; `ShiftRow/ShiftColumn`; `IsHome`, `IsTileHome`, `IsRowComplete`, `MatchedCount`, `IsSolved`, `FirstIncompleteRow`; `PickClues(row, count)` (column indexes, unmatched first); `TileIds()` (= each cell's index into the goal board: the hint table's input) | Progress is derived, never stored. |
+| `LevelDefinition.cs` | `Number`, `Size`, `StartCells`, `MoveLimit` (0 = unlimited), `MinimumMoves`, `Title`, `Goal`, `Setup`, `Completion`, `Difficulty` (`IsHard`), `ChapterId`, `NextLevelId`, `FirstClearCoins`, `Subjects[]` (Id, Name, RigId), `Categories[]`, `Items[]` by tile id (Id, Label, Sprite, Clue), `Solution`, `RequiredFirstMove`, `TutorialText`; `LevelMove` (`Describe`, `DescribeWrap`); `ILevelSource` | Plain classes. |
+| `CaseLevelSource.cs` | Case file → `LevelDefinition` (`TryConvert`, `TryCheckArt`, shared with the validator) | Logs and returns null on a bad case. |
 
 ### 4.4  Views (GameElements)
 
 | View | Shows | Serialized refs |
 |---|---|---|
-| `Cell` | A board position and its check badge (`check_badge`, 0.5 units, bottom-right) while matched (`SetMatched`) | `_check` |
-| `ItemTile` | The item icon (88% of the cell, no surface: the board panel shows through) and a pale green `Flash` behind it. `Size` (2.2667 square = the handoff's 680/3 px; **the board's cell size**) | `_item`, `_flash`, `_size`, `_itemBox` |
-| `CategoryTag` | The row's tab beside the board (`tab_category`, gold `tab_category_active` on the active step's row) with the category icon and label. `Setup(label, icon)`, `SetActive(bool)` | `_tab`, `_icon`, `_label`, `_normal`, `_active` |
-| `CharacterRow` | Scene object `Board/Characters`: per slot a `Customer Stand` (feet at y 2.08, scale 2.3/9) and a name tab (`tab_name`, symbol + name). `Show(i, x, name, symbol)`, `Hide(i)`, `StandOf(i)` | `_slots[]` (`Stand`, `Plate`, `Symbol`, `Name`) |
-| `Customer` | One person: prefab `Customer` (base) → `Customer_Mia/Leo/Zoe` (**prefab variants**: only `_id` and the five sprites differ). Root = feet (`SortingGroup`, `SortOrder.Character`) → `Body` (pops) → `Bag Rear`, `Base`, `Shirt`, `Bag Straps`, `Hat` (orders 0–4, all at (0, 4.5): the registered 600×900 layers share one rect). `_accessories[]` = {Category, Layers}: Hats → Hat, Shirts → Shirt, Bags → Bag Rear + Bag Straps. `SetEquipped` (SetActive), `SetAllEquipped`, `IsEquipped`, `Pop`, `GetLayers` | `_id`, `_body`, `_accessories` |
-| `BoardGuide` | `Board/Guide`: a gold band over a row / column, `tutorial_arrow` rotated to the swipe, `tutorial_hand` (pivot at the fingertip) sliding along it on a 1.7 s loop. `Show(center, size, dir, travel)`, `Hide` | `_band`, `_arrow`, `_hand` |
+| `Cell` | A board position and its check badge (`check_badge`, 0.44 units, top-right) while matched | `_check` |
+| `ItemTile` | The item icon (art rect 2.40×2.05, 0.275 above centre), its name under it (world TMP, masked material), a pale green `Flash`. `Size` 2.9 (290 px; **the board's cell size**) | `_item`, `_label`, `_flash`, `_size`, `_itemBox` |
+| `BoardGuide` | `Board/Guide`: gold band, `tutorial_arrow`, `tutorial_hand` sliding on a 1.7 s loop | `_band`, `_arrow`, `_hand` |
 
-Views never read `FileRef` or any manager; `Manager_Board` hands them sprites and names. UI views (`UI_*`, `PopUp_*`) may
-read managers; they never change game state except through manager commands.
+Views never read `FileRef` or managers; `Manager_Board` hands them sprites and names. UI views (`UI_*`, `PopUp_*`) may
+read managers; they change game state only through manager commands.
 
 ### 4.5  Configuration
 
 | File | Owns |
 |---|---|
-| `Tuning.cs` | `const` defaults + static read facade `Tuning.X` → `GameTuning.Active` or the default |
-| `GameTuning.cs` | Inspector overrides on `Managers`; `[ExecuteAlways]`, order −1000. **The scene values ship**, not the consts. |
-| `FileRef.cs` | Prefabs (Cell, ItemTile, CategoryTag); `Spark` (Solid); the catalog from `game_config.json`: `_items` (Id, Name, Sprite), `_characters` (Id, Name, `Customer` variant, `Symbol`), `_categories` (Label, Icon; `CategoryIcon(label)`); music and sounds; **Validate references** |
-| `ReferenceLayout.cs` | The handoff layout in world units: reference screen 10.8×19.2, `BoardCenter` (0.30, −2.16), `FramePadding` 0.20, divider width, tab size/offset, check offset/size, crew (feet y, customer height), name tabs. Art positions, not tuning. |
-| `Common.cs` | `GameState`, `PopupName`, `HapticType`, `SoundType`, `TileData`, `SortOrder` |
+| `Tuning.cs` / `GameTuning.cs` | const defaults + facade / scene overrides (the scene values ship) |
+| `FileRef.cs` | Cell and ItemTile prefabs; **`Content`** (the pack's `TilewrapContentLibrary`) with lookups `Sprite(key)`, `Rig(id)`, `Campaign`, `HintDistances`; music and sounds (+ `ClipVolumes`); **Validate references** |
+| `ReferenceLayout.cs` | The pack layout in world units: `BoardCenter` (0.65, −2.75), `CellSize` 2.9, `FramePadding` (0.15, 0.10), divider width, tile art / name / check offsets and sizes |
+| `Common.cs` | `GameState`, `PopupName` (Lesson retired; LevelSelect = the map), `HapticType`, `SoundType` (LineComplete not played), `TileData`, `SortOrder` |
 
-Current tuning (scene values; new fields start at their defaults):
-
-| Field | Value | Meaning |
-|---|---|---|
-| ShiftDuration | 0.15 | seconds per cell of animated travel (clamped 0.35–1.5 cells) |
-| BoardIntroDelay / BoardIntroDuration | 0.22 / 0.45 | launch only: the board scales 0 → 1 |
-| TileSpawnDuration / TileSpawnStagger | 0.28 / 0.045 | every level: diagonal tile pop-in |
-| CheckPopDuration | 0.22 | a matched check's scale-up (the tile flash lasts twice this) |
-| EquipPopDuration / EquipPopScale | 0.4 / 1.06 | a customer's pop when a move puts an item on them |
-| WinPopupDelay | 0.38 | winning (or failing) move → its popup |
-| HintAttentionDelay | 16 | idle seconds (no move yet) before the Hint button pulses twice |
-| FirstClearCoins | 30 | reward for a level's first clear |
-| LoadingDuration / LoadingFadeDuration | 1.6 / 0.4 | loading bar fill; fade-out as the level opens |
-| UiIntroDelay / UiIntroDuration / UiIntroStagger | 0.1 / 0.35 / 0.06 | HUD pop-in on launch |
-| DragStartThreshold / DragCommitThreshold / FlickMaxDuration | 0.02 / 0.5 / 0.25 | input |
+Current tuning: ShiftDuration 0.15, BoardIntro 0.22 / 0.45, TileSpawn 0.28 / 0.045, CheckPop 0.22, EquipPop 0.4 / 1.06
+(subject card pop), SlotFade 0.16, WinPopupDelay 0.38, HintAttentionDelay 16, Loading 1.6 / 0.4, UiIntro 0.1 / 0.35 /
+0.06, DragStart 0.02, DragCommit 0.5, FlickMax 0.25. Coins come from each case's `firstClearCoins` (30).
 
 ### 4.6  Editor builders
 
 | Builder | Menu | Does | Never overwrites |
 |---|---|---|---|
-| `TilewrapAssetImporter` (handoff) | Tools/Chichingo/Tilewrap/Apply sprite import settings | Applies `game_config.json` `sprites` (pivot, border, FullRect, 100 PPU, uncompressed) to `Assets/Tilewrap/Sprites/**` | — |
-| `AssetBuilder` | ShiftSort/Build Assets | Writes `Solid.png`; imports audio; builds Cell / ItemTile / CategoryTag on the handoff art; runs `HandoffBuilder.BuildCustomers`; fills `FileRef` (prefabs, spark, music, sounds; catalog through `HandoffBuilder.FillCatalog`) | an existing PNG, prefab, filled slot or non-empty table |
-| `HandoffBuilder` | ShiftSort/Build Customers | `Customer.prefab` + `Customer_{name}` variants; `FillCatalog` (items, characters + symbols, categories + icons); `LoadSprite(relative)`; the TilewrapUI TMP font assets (`BoldFont`, `RegularFont`) | an existing prefab, variant, font asset, non-empty table |
-| `SceneBuilder` | ShiftSort/Build Scene | Managers (+ init order; missing managers are inserted at their place), `GamePlay/Background` (background_teal), `Board/{Frame (board_frame), Dividers, Active Row (row_highlight), Mask, Cells, Tiles, Tags, Guide, Characters}`, camera, sound, `Canvas/Container/{InGame, PopUps}`, `Canvas/Confetti`, loading / transition placeholders, EventSystem, Tester; then UIBuilder, BuildLoading, PopUpBuilder | existing objects (by path), filled refs |
-| `UIBuilder` | ShiftSort/Build UI | The HUD (§4.2) on the handoff layout, every `UI_InGame` field, the intro order; `Container/Overlay/Toast`. Shared helpers (`Place`, `Label`, `AddImage`, `MakeButton`…) | the HUD once `InGame` has `UI_InGame` |
-| `UIBuilder.BuildLoading` | ShiftSort/Build Loading Screen | The handoff loading screen (§4.2) | the screen once it has `UI_Loading` |
-| `PopUpBuilder` | ShiftSort/Build PopUps | Every `PopUp_{Name}` under `Container/PopUps` (+ `UI_ReferenceFit` on PopUps): Dim, Holder (`panel_modal`, vertical layout + content size fitter), kicker / title / body, crew rows (`UI_CrewPortrait`), scroll areas, choice rows (`UI_ChoiceRow`), primary (`button_gold`) / secondary (`button_cream`) / text buttons; wires `Manager_PopUp._popUpParent` | a popup whose object exists (delete it to rebuild) |
-| `BuildNaming` | ShiftSort/Build Name Settings | Android build file naming | other platforms |
-| `LevelValidator` | ShiftSort/Validate Levels | Parses every level, checks art, replays `solution` within `moveBudget` | read-only |
+| `TilewrapContentImporter` (pack) | Tools/Chichingo/Tilewrap/Build 30-level content | Sprite import settings from `content.json` (512 px cases / 2048 px UI, ASTC 4×4 mobile), 90 rig prefabs, `Generated/TilewrapContentLibrary.asset` | — (rebuilds its own `Generated/`) |
+| `AssetBuilder` | ShiftSort/Build Assets | `Solid.png`; audio import settings (ours + the pack's); Cell / ItemTile; fills `FileRef` (prefabs, content library, music, sounds: TileMatch = match_1..3, LevelComplete = level_win at manifest gains, others `Audio/SFX/{snake_case}.wav`) | an existing PNG, prefab, filled slot or non-empty table |
+| `HandoffBuilder` | — | `LoadSprite` from the pack, the TilewrapUI TMP font assets, the masked tile-name material | an existing font asset / material |
+| `SceneBuilder` | ShiftSort/Build Scene | Managers, `GamePlay/Background`, `Board/{Frame, Dividers, Active Row, Mask, Cells, Tiles, Guide}`, camera, sound, Canvas (`Container/{InGame, PopUps, Overlay}`, Confetti, Loading Screen), EventSystem, Tester; then UIBuilder, BuildLoading, PopUpBuilder | existing objects (by path), filled refs |
+| `UIBuilder` | ShiftSort/Build UI | The HUD (§4.2) on `ui_layout.json`; `SubjectCard` helper (shared with the win popup); toast | the HUD once `InGame` has `UI_InGame` |
+| `PopUpBuilder` | ShiftSort/Build PopUps | `PopUp_{Win, Failed, Hint, Notebook, LevelSelect (map), Menu, Feedback}` | a popup whose object exists (delete it to rebuild) |
+| `LevelValidator` | ShiftSort/Validate Levels | Every case: converts, art and rigs exist, `nextLevelId` chain, not solved at start, solution solves within the limit, **hint table distance = `minimumMoves`** | read-only |
+| `BuildNaming` | ShiftSort/Build Name Settings | Android build file naming | |
 
-Because builders skip existing assets, **changing a builder does not update an asset that already exists.** Edit the
-prefab / scene object, or delete it and rebuild (§10).
+Because builders skip existing assets, **changing a builder does not update an asset that already exists.** Delete it
+and rebuild (§10).
 
 ---
 
 ## 5  Cross-cutting patterns
 
-- **Managers decide, views display.** Views have no game logic and no access to managers or `FileRef`.
-- **Ordered init.** Put setup in `Awake2()`. A manager that is not in `_singletonsToInitialize` still initializes from its
-  own `Awake`, but in arbitrary order.
-- **Events default to `delegate { }`.** Subscribed: `Manager_Input`'s four events (`Manager_Game`); `OnLevelStarted`, `OnStateChanged`, `OnMoveMade`, `OnBoardSettled` (`UI_InGame`); `OnBoardSettled` (`TestManager`, during Play Solution). `OnLayoutChanged` has no subscriber.
-- **Numbers in `Tuning`, assets in `FileRef`.** No literals in managers, except the generator seed constants and the
-  animation easing (`Ease.OutCubic`). All animation and timed delays go through DOTween (no coroutines); every
-  tween is `SetLink`ed to its owner and killed on `Clear` / `StartLevel`.
+- **Managers decide, views display.** World views have no game logic and no access to managers or `FileRef`.
+- **Ordered init** in `Awake2()`; **events default to `delegate { }`**; listeners subscribe, then read.
+- **Numbers in `Tuning`, assets in `FileRef`.** All animation and timed delays through DOTween (`SetLink`).
 - **Re-runnable Editor builders** instead of hand-edited scene/prefab YAML.
-- **No pooling.** Cells, tiles and tags are destroyed and re-instantiated on every `Build`; one ghost tile is
-  created per drag.
+- **The content pack is data.** Code outside `Assets/TilewrapVaried` reads it through `FileRef.Content`; the pack's
+  four runtime scripts are used as delivered (`TilewrapCaseData` parsing, `TilewrapRigView`, `TilewrapWrapPuzzle`).
+- **No pooling.** Cells and tiles are rebuilt every `Build`; rigs are re-instantiated when the prefab changes.
 
 ---
 
 ## 6  Data formats and conventions
 
-### 6.1  Directions and coordinates (the convention most likely to be broken)
+### 6.1  Directions and coordinates
 
 | Where | Convention |
 |---|---|
-| `BoardState` | cells `[row, col]`; row 0 = top; `ShiftRow` dir + = right; `ShiftColumn` dir + = **down** |
-| `Manager_Board` | board-local: centred on `_boardRoot`, x right, y up; cells are `CellSize` = (w, h) = (2.96, 2.56), not square; `CellPosition(r, c) = ((c − (N−1)/2)·w, ((N−1)/2 − r)·h)`; held-line offset row + = right, column + = down |
-| `Manager_Game.DragOffset` | `isRow ? cells.x : −cells.y`, cells measured per axis (`ScreenDeltaToCells`: x / w, y / h) (**screen up = toward row 0 = negative column offset**) |
-| `TryGetCell` | inverse of `CellPosition`: `col = floor((x + N·w/2)/w)`, `row = floor((N·h/2 − y)/h)` |
-| World ↔ reference layout | world origin = centre of the pack's 1080×1920 screen, 1 unit = 100 px, y up: px (x, y from top-left) → ((x − 540)/100, (960 − y)/100) |
+| `BoardState` | cells `[row, col]`; row 0 = top; `ShiftRow` + = right; `ShiftColumn` + = **down** |
+| Case files, `LevelMove`, `TilewrapWrapPuzzle` | `line` 0-based; `direction` +1 = right / down, −1 = left / up |
+| `Manager_Board` | board-local, centred on `_boardRoot`, x right, y up; `CellPosition(r, c) = ((c − 1)·2.9, (1 − r)·2.9)` |
+| `Manager_Game.DragOffset` | `isRow ? cells.x : −cells.y` (**screen up = toward row 0 = negative column offset**) |
+| World ↔ reference layout | px (x, y from top-left) → ((x − 540)/100, (960 − y)/100) |
+| HUD / map | `UIBuilder.Place(x, y, w, h)` in top-left px; the map content is 1080 × 6000, top-left pivot, nodes at (x, −y) |
 
 ### 6.2  Serialized by ordinal — append only
 
-`SoundType` is written into `FileRef.asset` as integers, `PopupName` into each popup. `GameState` is not serialized yet but is declared append-only.
-**Never renumber, reorder or reuse a value.** `SoundType.TileMatch` is no longer played but keeps its ordinal.
-(`TileShape` / `TileColor` were removed with the Shift & Sort mode; stale `FileRef` fields from them are dropped on save.)
+`SoundType` (in `FileRef.asset`), `PopupName` (on each popup), `GameState`. **Never renumber, reorder or reuse a value.**
 
-### 6.3  Art file names → catalog ids
+### 6.3  Content ids
 
-Item and character ids come from `Assets/Tilewrap/Data/game_config.json` (`items[].id` → `FileRef._items[].Id`, icon
-`Sprites/Items/{sprite}.png`; `recipients[].id` → `_characters[].Id`, layers `Sprites/Characters/{id}/{id}_{base|shirt|hat|bag_rear|bag_straps}.png`).
-Level files use them in `items`, `characters` and clue `item`. An accessory's `Category` must equal the level's row label
-("Hats"), compared ignoring case. Renaming an id breaks every level that names it (Validate Levels reports it).
+Item ids (`luggage_03`), sprite keys (= the PNG name, `FileRef.Sprite`), rig ids (`luggage_0`, `crew_mia`,
+`FileRef.Rig`) all come from the pack. A tile's id is its item's index in the case's `goalCells`. A rig layer is bound
+to a goal cell **and** an item id, so a case's rigs must use its own item ids.
 
 ### 6.4  Rules implemented in more than one place
 
 | Rule | Places | Risk |
 |---|---|---|
-| Cell ↔ board-local position | `Manager_Board.CellPosition` and its hand-written inverse in `TryGetCell` | Change the layout (gaps, offset, non-square) in one and taps hit the wrong cell. **Two sites.** |
-| Tag position | `Build` (`−grid/2 − TagOffset`) and `GetLocalBounds` (`… − TagSize.x/2`) | Both read `ReferenceLayout`, so they stay in step; a third place would not. |
-| Wrap modulo | `BoardState.Wrap` (int) and `Manager_Board.Mod` (float, used in `RenderHeldLine`) | Same maths, two implementations. |
-| Column direction sign | `BoardState.ShiftColumn` (+ = down), `Manager_Board` offset (+ = down), `Manager_Game.DragOffset` (`−cells.y`) | Flip one and columns move against the finger. **Three sites.** |
-| Cell size | `ItemTile._size` (prefab, = `Manager_Board.CellSize`) and `AssetBuilder.ItemTileSize` (builds the prefab) | Change one only and tiles overlap or leave gaps. |
-| Layout px → units | `ReferenceLayout` (runtime) and `AssetBuilder` (prefab internals: item box, label, tag label) | Both copy numbers from `Layout_1080x1920.csv` by hand. |
+| Cell ↔ board-local position | `Manager_Board.CellPosition` and its inverse in `TryGetCell` | Two sites. |
+| Board / HUD geometry | `ReferenceLayout` (world board) and `UIBuilder` (subjects over 290 px columns at x 170, tabs centred on rows at y 800) | Move the board in one only and subjects / tabs no longer line up. |
+| Wrap modulo | `BoardState.Wrap`, `Manager_Board.Mod`, `TilewrapWrapPuzzle.ApplyMove` | Same maths, three implementations. |
+| Column direction sign | `BoardState.ShiftColumn`, `Manager_Board` offset, `Manager_Game.DragOffset` | Three sites. |
+| Cell size | `ItemTile._size` (prefab), `AssetBuilder.CellSize`, `ReferenceLayout.CellSize` | Rebuild the prefab after a change. |
+| "Matched" for a subject part | `BoardState.IsHome` (tiles, checks) and `TilewrapRigView.ApplyBoard` (item id in goal cell) | Equivalent while ids are unique per case (the case format guarantees it). |
+| Board → hint table input | `Manager_Flow.NextMove` and `LevelValidator.Distance` (tile ids as strings, goal "0".."8") | Two copies. |
 
 ---
 
@@ -355,60 +295,45 @@ Level files use them in `items`, `characters` and clue `item`. An accessory's `C
 
 | Asset | Loaded by | How |
 |---|---|---|
-| `Resources/FileRef.asset` | `FileRef.Instance` | `Resources.Load<FileRef>("FileRef")` |
-| `Resources/Levels/level-NNN.json` | `JsonLevelSource` | TextAsset (§7.1) |
-| `Prefabs/Gameobjects/{Cell, ItemTile, CategoryTag}.prefab` | `Manager_Board.Build` | `FileRef` prefab slots |
-| `Prefabs/Gameobjects/Customer_{Name}.prefab` | `Manager_Board.PlaceCharacters`, `UI_CrewPortrait` | `FileRef._characters[].Customer` |
-| `Assets/Tilewrap/Sprites/Items/*` | tiles, clue cards, hint | `FileRef._items[].Sprite` |
-| `Assets/Tilewrap/Sprites/Characters/{id}/*` | `Customer_{Name}` variants | serialized |
-| `Assets/Tilewrap/Sprites/UI/*` | board objects, prefabs, HUD, popups, loading screen | serialized by the builders; symbols / category icons through `FileRef` |
-| `Assets/Tilewrap/Sprites/Tutorial/*` | `Board/Guide` | serialized |
-| `Assets/Tilewrap/Data/game_config.json`, `Data/Levels/*` | editor only: `HandoffBuilder`, the import helper | source of the catalog and of `Resources/Levels` (converted once) |
-| `Assets/Tilewrap/Audio/*` | **nothing yet** | match_1..3 / level_win; the game plays `Audio/SFX` (TileMatch variants, LevelComplete) |
-| `Fonts/TilewrapUI-{ExtraBold,Regular} SDF` | HUD, popups, world labels | made by `HandoffBuilder` from `Assets/Tilewrap/Fonts` |
-| `Sprites/Placeholder/Solid.png` | `Board/Mask`, `Board/Dividers`, sparks | serialized / `FileRef.Spark` |
-| `Sprites/Branding/*` | Player Settings only | app icon, splash background, splash logo |
-| `Audio/Music/*.wav`, `Audio/SFX/*.wav` | `Manager_Audio` | `FileRef` (§ sounds) |
-| PlayerPrefs `OfflineData`, `PlaytestLog` | `OfflineData`, `PlaytestLog` | JSON; the report is written to `persistentDataPath/Tilewrap_Clues_Onboarding_Playtest_{date}.json` |
+| `Resources/FileRef.asset` | `FileRef.Instance` | `Resources.Load` |
+| `TilewrapVaried/Generated/TilewrapContentLibrary.asset` | `FileRef.Content` | serialized |
+| `TilewrapVaried/Data/Levels/level_NNN.json` | `CaseLevelSource` | `library.levels` TextAssets |
+| `TilewrapVaried/Data/campaign.json` | `FileRef.Campaign` → `Manager_Flow.ShowMap`, win (ending text) | `library.campaign` |
+| `TilewrapVaried/Data/hint_distances.bytes` | `FileRef.HintDistances` → Hint, validator | `library.hintDistances` |
+| `TilewrapVaried/Generated/Rigs/*.prefab` | `UI_SubjectCard` (HUD, win popup) | `FileRef.Rig(id)` |
+| `TilewrapVaried/Sprites/**` | tiles, clue cards, hint, notebook, FX (`FileRef.Sprite`); UI sprites serialized by the builders | library / serialized |
+| `TilewrapVaried/Audio/*` | `Manager_Audio` (TileMatch, LevelComplete) | `FileRef` sounds |
+| `TilewrapVaried/Data/ui_layout.json`, `content.json` | editor only (layout numbers copied into the builders; the importer) | — |
+| `Prefabs/Gameobjects/{Cell, ItemTile}.prefab` | `Manager_Board.Build` | `FileRef` |
+| `Fonts/TilewrapUI-* SDF`, `… Masked.mat` | HUD, popups, tile names | made by `HandoffBuilder` |
+| `Audio/Music/*.wav`, `Audio/SFX/*.wav` | `Manager_Audio` | `FileRef` |
+| PlayerPrefs `OfflineData`, `PlaytestLog` | `OfflineData`, `PlaytestLog` | JSON |
 
-The old fair-booth pack (`Sprites/Tilewrap`), the Shift & Sort art (`Sprites/Sprites`) and the generated `BoardFrame` /
-`Panel` sprites were deleted once nothing referenced them (2026-11-27; they are in git history).
+### 7.1  Case files
 
----
-
-### 7.1  Level files
-
-`Resources/Levels/level-NNN.json`, three-digit number = level number (level 1 = `level-001.json`). No index: level `n`
-plays file `((n − 1) mod LevelCount) + 1`, where `LevelCount` counts files from 001 to the first gap, so play loops.
+`Assets/TilewrapVaried/Data/Levels/level_NNN.json` (schemaVersion 2, the pack's format; `TilewrapCaseData.Validate`
+checks 3×3, nine unique goal ids, a permutation start, three subjects / categories, nine items each bound to its goal
+cell).
 
 | Key | Meaning |
 |---|---|
-| `schemaVersion` | must be 2 (Shift & Sort's version 1 files were removed) |
-| `id` | must equal the number in the file name |
-| `name` | → `LevelDefinition.Name` (logged, not shown yet) |
-| `characters` | N character ids (2..4), one per column, left to right; each must be in `FileRef._characters` |
-| `categories` | N row labels, top to bottom ("Hats"), shown on the category tags |
-| `items` | N² different item ids, row-major: **the solved board**. Each must be in `FileRef._items` |
-| `board` | N² tile ids, row-major from the top-left: the start board. **A tile's id is the cell it belongs in when solved** (`id = row·N + col`, so it shows `items[id]`), and the solved board is `0, 1, 2, …`. Must be a permutation of `0..N²-1`. |
-| `steps` | exactly N, in play order, each naming a different row: `{row, goal, clues: [{item, text}]}`. `goal` is the step's title ("Pack their bags"); clue `text` may use TMP rich text (`<color=#ED3937>red</color>`); clue `item` (optional) must be on the board and is for the clue's icon. |
-| `moveBudget` | → `MoveLimit`; 0 = unlimited |
-| `solution` | `{axis: "row"/"column", line, direction}`, direction +1 = right/down (same as `BoardState.Shift*`). Read by `LevelValidator` and the tester's Play Solution. |
-| `subtitle` | optional: the goal line under the title |
-| `coach` / `completion` | optional: the coach line when the level opens / the win popup's payoff line |
-| `requiredFirstSwipe` | optional move: the only move accepted while no move is made and the board is the start board (guided, others cost nothing) |
-| `lesson` | optional `{id, title, paragraphs[], illustration: neutralCrew / categoryOrder / moveCounter, button}`: a popup shown once per id |
+| `id`, `title`, `goalText`, `setupText`, `completionText`, `difficulty` (tutorial / practice / hard), `chapterId` | shown / logged |
+| `startingCells` / `goalCells` | 9 item ids, row-major. Tile id = index in `goalCells`. |
+| `subjects[]` | `{id, name, column, rigId}` |
+| `categories[]` | `{id, label, row}` |
+| `items[]` | `{id, label, sprite, targetCell, categoryId, clue}`; `categoryId`'s row must be `targetCell / 3` |
+| `moveLimit` / `minimumMoves` | 0 = unlimited / verified shortest solve |
+| `solution` | `{axis, line, direction}`; replayed by the validator and the tester |
+| `requiredFirstSwipe` | optional; levels 1 and 3 |
+| `tutorial.entryText` | optional; levels 1–5; shown as a toast until the case is cleared |
+| `firstClearCoins` / `nextLevelId` | 30 / next id (0 on case 30) |
 
-The five files are converted from the handoff's `Data/Levels/level_00N.json` (schema 1) and `game_config.json`: board =
-each start item's index in `goalCells`; steps = `clueRowOrder`, each with all three clues in the preferred card order
-(default Mia, Zoe, Leo; `clueOverrides` put first); `moveLimit` → `moveBudget`. Level 4's button text arrived with broken
-characters and was repaired to "Got it — let’s practice".
+To change content, replace `Assets/TilewrapVaried` from a new pack (keep `Generated` out of hand edits), run the pack's
+importer, then **ShiftSort > Validate Levels**.
 
-The validator cannot check that the clues decide the answer; that is the level author's job. With only row swipes, a
-row has N arrangements (its rotations), so one clue per row is enough when every item starts in its own row.
+---
 
 ## 8  Wiring
-
-**`Game.unity`**:
 
 ```
 Main Camera            orthographic, teal; fitted by Manager_Board.FitCamera
@@ -417,32 +342,24 @@ Sound                  Music, SFX AudioSources (volumes live here)
 GamePlay
   Background           background_teal, scaled to cover the view
   Board                _boardRoot at ReferenceLayout.BoardCenter
-    Frame              board_frame, sliced, order Board (the panel the tiles sit on)
-    Dividers           4 Solid lines (#C5A581), placed by Manager_Board
-    Active Row         row_highlight, sliced, behind the active step's row
-    Mask               SpriteMask (Solid) over the grid
-    Cells / Tiles / Tags   runtime-filled (sparks also go under Cells)
-    Guide              BoardGuide (Band, Arrow, Hand), inactive until shown
-    Characters         CharacterRow: Customer Stand 1–3 (a Customer variant instance each, per level), Name Tab 1–3 → Symbol, Name
+    Frame, Dividers (4 Solid lines), Active Row (row_highlight), Mask (SpriteMask), Cells, Tiles, Guide (BoardGuide)
 Canvas                 Screen Space Overlay, 1080×1920 match 0.5
   Container            SafeArea
-    InGame             UI_InGame → Reference (UI_ReferenceFit): the HUD
-    PopUps             UI_ReferenceFit; PopUp_Lesson, _Win, _Failed, _Hint, _Notebook, _LevelSelect, _Menu, _Confirm,
+    InGame             UI_InGame → Reference (UI_ReferenceFit): the HUD, incl. Subject 1-3, Category 1-3
+    PopUps             UI_ReferenceFit; PopUp_Win, _Failed, _Hint, _Notebook, _LevelSelect (PopUp_Map), _Menu,
                        _Feedback (each: Dim + Holder), inactive until shown
     Overlay            UI_ReferenceFit → Toast (UI_Toast)
-  Dark Area            unused (each popup has its own Dim)
   Confetti             UI_Confetti + UI_ConfettiListener
-  Loading Screen       UI_Loading (Art, Content → Title, Line, Progress Bar → Fill, Brand)
-  Transition Screen    empty
+  Loading Screen       UI_Loading
 EventSystem            InputSystemUIInputModule
 Tester                 TestManager (EditorOnly)
 ```
 
 **Names are load-bearing:** builders and `AgentScripts/FlowCheck` find objects by path (`PopUp_{Name}/Holder/{Button}`,
-`InGame/Reference/{Hint Button}`, `GamePlay/Board/Cells/Cell r,c`).
+`InGame/Reference/{Hint Button | Category 2 | Level Button}`, `GamePlay/Board/Cells/Cell r,c`).
 
 **Sorting orders** (`SortOrder`): Background −10 · Board 0 · Divider 1 · ActiveRow 2 · TileFlash 3 · TileItem 5 ·
-TileCheck 9 · Tag 10 · TagIcon 11 · Character 12 (SortingGroup) · NamePlate 14 · NameLabel 15 · Guide 20–22 · Particles 25.
+TileLabel 6 · TileCheck 9 · Guide 20–22 · Particles 25. Subjects and category tabs are uGUI (over the world).
 
 ---
 
@@ -450,56 +367,40 @@ TileCheck 9 · Tag 10 · TagIcon 11 · Character 12 (SortingGroup) · NamePlate 
 
 | | |
 |---|---|
-| Unity | 6000.3.17f1, URP 17.3 with the 2D Renderer (template `Universal 2D`) |
-| Input | Input System 1.19 only (`activeInputHandler: 1`): legacy `UnityEngine.Input` throws |
-| Packages of note | `com.unity.pipeline` 0.10.0-exp.1 (drives the Editor from the `unity` CLI), `com.unity.test-framework` 1.6 (no tests yet), uGUI 2.0 (includes TMP) |
-| Packages | `xyz.candycoded.hapticfeedback` 1.0.3 from git (`CandyCoded/HapticFeedback.git#v1.0.3`; not on OpenUPM); its assemblies only include Android, iOS and Editor |
-| Plugins | DOTween (Demigiant) in `Assets/Plugins`; added the `DOTWEEN` define to `ProjectSettings` for all build targets |
-| Target | portrait mobile (Canvas reference 1080×1920). No platform module configuration checked. |
-| Assemblies | everything in `Assembly-CSharp` / `Assembly-CSharp-Editor`, global namespace, no asmdefs |
+| Unity | 6000.3.17f1, URP 17.3 with the 2D Renderer |
+| Input | Input System only (`activeInputHandler: 1`) |
+| Packages of note | `com.unity.pipeline` (CLI), `com.unity.test-framework` (no tests yet), uGUI 2.0 (TMP) |
+| Packages | `xyz.candycoded.hapticfeedback` 1.0.3 (git) |
+| Plugins | DOTween in `Assets/Plugins` (`DOTWEEN` define) |
+| Assemblies | everything in `Assembly-CSharp` / `-Editor`; the pack's scripts are in namespace `Chichingo.TilewrapVaried` |
 
 ---
 
 ## 10  Working with it
 
-The `unity` CLI drives the open Editor. Always pin the project:
-
 ```bash
 P="--project-path C:/Project/Clue_Parade"
-unity status $P                                        # Editor "ready"?
-unity recompile $P --format json                       # errors in data.errors; a second call says "up_to_date"
-unity command script.eval --code 'AssetBuilder.Build(); SceneBuilder.Build(); return "ok";' $P
-unity command scene.get_hierarchy $P --format json
-unity command console.get --tail 20 --level warning $P --format json
-unity command editor.playmode.start $P                 # .stop to leave
+unity status $P
+unity recompile $P --format json
+unity command script.eval --code 'return LevelValidator.Validate();' $P
+unity command editor.playmode.set_run_in_background --enabled true $P   # before Play from the CLI
+unity command editor.playmode.start $P
+unity command script run --file AgentScripts/PlayCheck.cs --entry PlayCheck.Status $P
+unity command script run --file AgentScripts/PlayCheck.cs --entry PlayCheck.Swipe --args '[0, 0, 1, 0]' $P
+unity command script run --file AgentScripts/FlowCheck.cs --entry FlowCheck.Hud --args '["Category 3"]' $P
 unity command capture.game_view --width 540 --height 960 --output-path <file.png> $P
 ```
 
 Gotchas:
 
-- **Unfocused Editor = frozen Play mode.** Frames stop at 1–2, tweens never finish, and `IsAnimating` sticks at true,
-  so every press is rejected. Run `unity command editor.playmode.set_run_in_background --enabled true $P` first. This is
-  a session override; it does not touch `ProjectSettings`.
-- **The loading screen delays the level ~2 s** after Play starts (nothing is built and input is off until
-  `Manager_Game.HasLaunched`). Wait for it, or tick `Skip In Editor` on `Canvas/Loading Screen` (UI_Loading). A domain
-  reload on entering Play usually takes longer than the screen, so to inspect it, reactivate it and set the fill by hand.
-- **Command names use dots** (`scene.get_hierarchy`, `editor.playmode.start`). The tag names (`scenes`, `editor/playmode`)
-  are not commands.
-- **Tester:** select `Tester` in Play mode for buttons: Load/Next/Previous/Restart Level, Force Win/Fail, Play Solution
-  (restarts and plays the file's `solution` through `ApplyMove`, one move per `OnBoardSettled`), Shift Line, Log State,
-  time scale, Validate Level Files. From the CLI, invoke its private button methods by reflection on
-  `Object.FindFirstObjectByType<TestManager>()`. Buttons need parameterless methods; arguments are serialized fields.
-- **Simulating input:** call the private `Manager_Game.HandlePress / HandleDrag / HandleRelease` by reflection, with
-  screen positions from `Camera.main.WorldToScreenPoint(GameObject.Find("/GamePlay/Board/Cells/Cell r,c").position)`. One
-  cell in pixels is the x distance between `Cell 0,1` and `Cell 0,0`. To test the win, call
-  `Manager_Board.Build(new LevelDefinition(…))` with a board one move from solved.
-- **Rebuilding a prefab:** the builders skip existing assets. Either edit the prefab
-  (`PrefabUtility.LoadPrefabContents` → change → `SaveAsPrefabAsset` → `UnloadPrefabContents`), or delete it and run
-  Build Assets. `FileRef` slots keep their old reference until cleared.
-- **Refilling a `FileRef` table:** clear the array in the Inspector, then Build Assets.
-- **`script.eval` after `UnloadPrefabContents`:** objects from the unloaded contents are destroyed. Read what you need
-  before unloading, or you get `MissingReferenceException` on the return line, *after* the save has already happened.
-- **Batch mode** (`Unity.exe -batchmode -runTests …`) refuses a project that is open in the Editor.
+- **Unfocused Editor = frozen Play mode** unless run-in-background is on.
+- **The loading screen delays the level ~2 s** after Play starts.
+- **Winning writes the save.** Back up first: `SaveBackup.Backup` / `SaveBackup.Restore` with a folder argument.
+- **The pack importer takes minutes** (it reimports ~640 sprites); `script.eval` times out at 30 s but the import
+  finishes in the Editor. Wait for `Generated/TilewrapContentLibrary.asset`.
+- **Rebuilding a prefab or popup:** builders skip existing ones. Delete it (prefab, `PopUp_X`, `InGame/Reference` +
+  `UI_InGame`) and rerun Build Assets / Build Scene. `FileRef` slots keep their old reference until cleared.
+- **Batch mode** refuses a project that is open in the Editor.
 
 ---
 
@@ -507,26 +408,23 @@ Gotchas:
 
 | Item | Kind | Detail |
 |---|---|---|
-| Handoff audio | not wired | `Assets/Tilewrap/Audio` (match_1..3, level_win, with config volumes) is unused; the game plays its own `Audio/SFX` |
-| Diagonal rejection | different | The prototype rejects diagonal swipes with a toast; here hold-and-drag locks to the dominant axis |
-| Responsive layout | partial | The 1080×1920 reference is fitted uniformly (letterboxed on other aspects); the handoff's "shrink gaps / grow the board" rules are not implemented. Not checked on devices or notches |
-| Reduced motion | not built | Effects always play |
-| Report sharing | partial | The report is saved to `persistentDataPath` (path logged); no share sheet on mobile |
-| Active time | approximate | Counted in `Manager_Flow.Update` while playing, unpaused and focused |
-| Hint solver | thread | `Task.Run`: not available on WebGL (not a target) |
-| Old AgentScripts | stale | ItemTilePreview, MigrateBoardScene, RetireShiftSort, MoveCharactersToWorld, MigrateToCustomers reference removed code; kept as history, they no longer compile |
-| Unused fonts | leftover | `Fonts/TilewrapNunito-*`, `OpenSans-*` and the masked material are no longer used |
-| Tests | never built | `BoardState`, `BoardSolver` and `PickClues` would be the first candidates |
-| Touch on a device | unverified | Flow verified in the Windows Editor with `AgentScripts/PlayCheck` + `FlowCheck` (real swipes through the input handlers, popup buttons invoked) |
+| Hint choice | simple | The first shortest-path move found (row before column); it does not prefer the selected category's line |
+| Audio gains | unverified | The pack's match / win gains (0.08–0.10) are honoured; our own effects play at 1.0, so the match tones may be quiet next to them. Listen on a device |
+| Ads / wallet | not built | The pack's profile: hints free, ads off. Coins are only counted |
+| Diagonal rejection | different | Hold-and-drag locks to the dominant axis |
+| Responsive layout | partial | The 1080×1920 reference is fitted uniformly (letterboxed); not checked on devices or notches |
+| Texture memory | unverified | The importer caps case art at 512 px, ASTC 4×4; check on the oldest test device |
+| Reduced motion | not built | |
+| Report sharing | partial | Saved to `persistentDataPath`; no share sheet |
+| Tests | never built | `BoardState`, `CaseLevelSource` and `PickClues` would be the first candidates |
+| Touch on a device | unverified | Verified in the Windows Editor with PlayCheck / FlowCheck |
 
 ---
 
 ## 12  Conventions
 
-- **Naming:** `Manager_X` (scene singletons), `PopUp_X` / `UI_X` (reserved for UI), `[SerializeField] private _camelCase`
-  fields exposed through expression-bodied properties, global namespace.
-- **One MonoBehaviour per file**, file named after the class.
-- **Comments:** short `//` lines explaining why, above the member. No `TODO`/`HACK` markers are in use yet.
-- **Log tags** (grep these): `[Game]` (level start, complete, failed), `[FileRef]`, `[AssetBuilder]`, `[SceneBuilder]`,
-  `[Singleton]`, `[SingletonManager]`, `[ScriptableSingleton]`.
-- **Menus:** `ShiftSort/Build Assets`, `ShiftSort/Build Scene`.
+- **Naming:** `Manager_X`, `PopUp_X` / `UI_X`, `[SerializeField] private _camelCase` with expression-bodied properties,
+  global namespace (the pack keeps its own namespace).
+- **One MonoBehaviour per file**, file named after the class. **Comments:** short `//` lines explaining why.
+- **Log tags:** `[Game]`, `[Flow]`, `[FileRef]`, `[CaseLevelSource]`, `[AssetBuilder]`, `[SceneBuilder]`, `[UIBuilder]`,
+  `[PopUpBuilder]`, `[LevelValidator]`, `[Singleton]`.

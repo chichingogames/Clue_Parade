@@ -4,8 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// "How did it feel?" after the last level: optional answers to three questions (goal clarity,
-// wrapping, difficulty), one answer each, then Save feedback (and the report) or Back to the levels.
+// "How did it feel?" after the last case: optional answers to three questions (goal clarity,
+// wrapping, difficulty), one answer each, then Save feedback (and the report) or Back to the map.
 // Questions and answers are spawned from inactive templates inside the scrolling list.
 public class PopUp_Feedback : BasePopUp
 {
@@ -25,10 +25,10 @@ public class PopUp_Feedback : BasePopUp
     private readonly List<GameObject> _spawned = new List<GameObject>();
     private readonly Dictionary<string, string> _answers = new Dictionary<string, string>();
 
-    public void Setup(IReadOnlyList<Question> questions, Action<IReadOnlyDictionary<string, string>> onSave, Action onBack)
+    public void Setup(string kicker, IReadOnlyList<Question> questions, Action<IReadOnlyDictionary<string, string>> onSave, Action onBack)
     {
-        SetTexts("5/5 LEVELS COMPLETE", "How did it feel?",
-                 "You’ve finished the five-level playtest. A little feedback helps us improve the onboarding. Optional.");
+        SetTexts(kicker, "How did it feel?",
+                 "You’ve finished every case. A little feedback helps us improve the game. Optional.");
         foreach (var go in _spawned) Destroy(go);
         _spawned.Clear();
         _answers.Clear();

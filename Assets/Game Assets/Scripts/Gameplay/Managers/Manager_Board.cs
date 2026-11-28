@@ -1,22 +1,21 @@
 using System;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-// Owns the BoardState and its views: builds the board from Cell / ItemTile / CategoryTag prefabs,
-// drags and shifts lines, and animates. Also drives the CharacterRow above the board. Board-local space: centered on _boardRoot, row 0 at the top,
-// cells CellSize wide and high (the ItemTile prefab's size; 2.96 x 2.56 units for the pack's tiles).
+// Owns the BoardState and its views: builds the board from Cell / ItemTile prefabs, drags and
+// shifts lines, and animates. Board-local space: centered on _boardRoot, row 0 at the top, cells
+// CellSize wide and high (the ItemTile prefab's size; 2.9 units = the pack's 290 px cells).
 //
 // One line (row or column) at a time can be "held": its tiles are drawn at a fractional offset
 // (in cells; row + = right, column + = down) and wrap around the edge, with a ghost copy showing
 // the part of the wrapping tile that is past the edge. _mask hides everything outside the board
 // (the tile labels too, through their stencil material).
 //
-// Matches: every tile in its home cell shows a check, and the column's Customer wears it (the
-// accessory for that row's category). The active step's row (the clues' category) has the
-// highlight behind it and the gold category tab. All derived from BoardState after each settle, so
-// undo and broken matches need no special case. A played move that matches new cells flashes
-// them pale green and throws a few sparks; the guide (Board/Guide) shows a swipe to make.
+// Matches: every tile in its home cell shows a check (the HUD's subject rigs show the fitted part).
+// The selected category's row (SelectedRow: the clues on screen) has the highlight behind it. All
+// derived from BoardState after each settle, so undo and broken matches need no special case. A
+// played move that matches new cells flashes them pale green with a ring and a few stars; the
+// guide (Board/Guide) shows a swipe to make.
 public class Manager_Board : Singleton<Manager_Board>
 {
     [SerializeField] private Transform _boardRoot;
@@ -27,10 +26,6 @@ public class Manager_Board : Singleton<Manager_Board>
     [SerializeField] private SpriteRenderer _background;
     [SerializeField] private Transform _cellsRoot;
     [SerializeField] private Transform _tilesRoot;
-    [FormerlySerializedAs("_markersRoot")]
-    [SerializeField] private Transform _tagsRoot;
-    [Tooltip("Board/Characters: the customers and name tabs over the board.")]
-    [SerializeField] private CharacterRow _characters;
     [Tooltip("Board/Dividers: grid lines, the first half vertical, the rest horizontal (N - 1 each).")]
     [SerializeField] private SpriteRenderer[] _dividers = new SpriteRenderer[0];
     [Tooltip("Board/Guide: band, arrow and hand showing a swipe.")]
@@ -39,9 +34,8 @@ public class Manager_Board : Singleton<Manager_Board>
     // Raised when a line has finished animating and the indicators are up to date.
     public event Action OnBoardSettled = delegate { };
 
-    // Raised after Build has placed the board and fitted the camera, i.e. whenever the board's
-    // on-screen area may have changed. UI that lays out around the board listens to this.
-    public event Action OnLayoutChanged = delegate { };
+    // Raised when SelectedRow changes without a move (a category tab tap).
+    public event Action OnSelectionChanged = delegate { };
 
     // Raised when a line is picked up (a player's drag, or a shift from code: undo, ApplyMove).
     public event Action OnLinePickedUp = delegate { };
@@ -54,10 +48,16 @@ public class Manager_Board : Singleton<Manager_Board>
     public float DragOffset => _offset;
     // Cells the last settled move matched that were not matched when it was picked up.
     public int LastNewMatches { get; private set; }
+    // Whether the last settle was a played move (not Undo): its new matches are celebrated.
+    public bool LastSettleCelebrated { get; private set; }
+
+    // The category whose clues are on screen: the player's choice (a category tab) until a move
+    // completes that row, otherwise the top row that is not complete. -1 when solved.
+    public int SelectedRow => State == null || State.IsSolved ? -1 : _chosenRow >= 0 ? _chosenRow : State.FirstIncompleteRow;
 
     private Cell[,] _cells;
     private ItemTile[,] _tiles;
-    private CategoryTag[] _tags;
+    private int _chosenRow = -1;
 
     // Held line
     private bool _held;
@@ -77,9 +77,6 @@ public class Manager_Board : Singleton<Manager_Board>
     // False for a shift that takes a move back (Undo): its matches come back without celebration.
     private bool _celebrate;
 
-    // The column's customer (null where the column has no character).
-    private Customer[] _customers = new Customer[0];
-
     private int Size => State.Size;
 
     // One cell = one tile, no gap.
@@ -93,13 +90,14 @@ public class Manager_Board : Singleton<Manager_Board>
         State = new BoardState(level);
         var fileRef = FileRef.Instance;
 
+        _chosenRow = -1;
         _boardRoot.localPosition = ReferenceLayout.BoardCenter;
 
         // The frame is 9-sliced: sized, not scaled, so its corners stay sharp. The mask (a 1-unit
         // sprite) is scaled to the grid.
         _frame.drawMode = SpriteDrawMode.Sliced;
         _frame.transform.localScale = Vector3.one;
-        _frame.size = GridSize + Vector2.one * (2f * ReferenceLayout.FramePadding);
+        _frame.size = GridSize + 2f * ReferenceLayout.FramePadding;
         _mask.transform.localScale = new Vector3(GridSize.x, GridSize.y, 1f);
         _activeRow.drawMode = SpriteDrawMode.Sliced;
         _activeRow.size = new Vector2(GridSize.x, CellSize.y) - Vector2.one * 0.08f;
@@ -120,25 +118,23 @@ public class Manager_Board : Singleton<Manager_Board>
             }
         }
 
-        _tags = new CategoryTag[Size];
-        float tagX = -GridSize.x * 0.5f - ReferenceLayout.TagOffset;
-        for (int r = 0; r < Size; r++)
-        {
-            var tag = Instantiate(fileRef.CategoryTagPrefab, _tagsRoot);
-            tag.transform.localPosition = new Vector3(tagX, CellPosition(r, 0).y, 0f);
-            tag.Setup(level.Categories[r], fileRef.CategoryIcon(level.Categories[r]));
-            _tags[r] = tag;
-        }
-
-        PlaceCharacters();
-
         FitCamera();
-        OnLayoutChanged();
         if (!_introPlayed) PlayIntro();
         float spawnStart = AnimateTileSpawn();
 
         // Each check pops in once its own tile has finished spawning.
         RefreshIndicators((r, c) => spawnStart + (r + c) * Tuning.TileSpawnStagger + Tuning.TileSpawnDuration);
+    }
+
+    // ---------- Category selection ----------
+
+    // A category tab tap: show that row's clues (and its highlight). Costs no move.
+    public void SelectRow(int row)
+    {
+        if (State == null || State.IsSolved || row < 0 || row >= Size || row == SelectedRow) return;
+        _chosenRow = row;
+        RefreshHighlight();
+        OnSelectionChanged();
     }
 
     // ---------- Dragging ----------
@@ -234,16 +230,20 @@ public class Manager_Board : Singleton<Manager_Board>
         int gained = CountNewMatches();
         LastNewMatches = committedSteps != 0 ? gained : 0;
         bool celebrate = _celebrate && committedSteps != 0;
+        LastSettleCelebrated = celebrate;
         if (celebrate && gained > 0) CelebrateNewMatches();
+        // A chosen category stays on screen until a move completes it.
+        if (committedSteps != 0 && _chosenRow >= 0 && State.IsRowComplete(_chosenRow)) _chosenRow = -1;
         ReleaseHeldLine();
-        RefreshIndicators(popCustomers: celebrate);
+        RefreshIndicators();
         if (committedSteps != 0) PlaySettleFeedback(celebrate ? gained : 0);
         OnBoardSettled();
     }
 
     // One layered cue per settled move: the slide sound, then the best thing it achieved, and a
     // single haptic pulse (Heavy = solved, Medium = new matches, Light = anything else). New
-    // matches play TileMatch variant 1..3 by their count (as the handoff's match_1..3).
+    // matches play one of match_1..3 (TileMatch variants) by their count, never all three; the
+    // solve plays level_win (LevelComplete) once.
     private void PlaySettleFeedback(int newMatches)
     {
         var audio = Manager_Audio.Instance;
@@ -271,42 +271,63 @@ public class Manager_Board : Singleton<Manager_Board>
         return home;
     }
 
-    // Each newly matched cell: a pale green flash on its tile and six small sparks rising from it.
+    // Each newly matched cell: a pale green flash on its tile, the shared ring growing and fading,
+    // and 2-4 stars rising from it (ui_layout.json timings: newMatch 0.4, ring 0.5, stars 0.65 s).
     private static readonly Color MatchFlash = new Color32(0xDF, 0xF2, 0xA2, 0x99);
-    private static readonly Color[] SparkColors =
-    {
-        new Color32(0xFF, 0xD7, 0x48, 0xFF), new Color32(0xF9, 0xFF, 0xF0, 0xFF), new Color32(0x8E, 0xD2, 0xA3, 0xFF),
-    };
-    private const float SparkSeconds = 0.65f;
+    private const float NewMatchSeconds = 0.4f;
+    private const float RingSeconds = 0.5f;
+    private const float StarSeconds = 0.65f;
 
     private void CelebrateNewMatches()
     {
+        var ring = FileRef.Instance.Sprite("fx_ring");
+        var star = FileRef.Instance.Sprite("fx_star");
         for (int r = 0; r < Size; r++)
         {
             for (int c = 0; c < Size; c++)
             {
                 if (!State.IsHome(r, c) || _homeAtPickUp[r, c]) continue;
-                _tiles[r, c].Flash(MatchFlash, Tuning.CheckPopDuration * 2f);
+                _tiles[r, c].Flash(MatchFlash, NewMatchSeconds);
                 Vector3 origin = CellPosition(r, c);
-                for (int i = 0; i < 6; i++)
+
+                if (ring != null)
                 {
-                    var spark = new GameObject("Spark").AddComponent<SpriteRenderer>();
-                    spark.transform.SetParent(_cellsRoot, false);
-                    spark.transform.localPosition = origin;
-                    spark.transform.localScale = Vector3.one * 0.12f;
-                    spark.sprite = FileRef.Instance.Spark;
-                    spark.color = SparkColors[i % SparkColors.Length];
-                    spark.sortingOrder = SortOrder.Particles;
-                    var target = origin + new Vector3((i % 3 - 1) * 0.55f, 0.35f + i / 3 * 0.5f, 0f);
+                    var fx = Effect("Ring", ring, origin, CellSize.x * 0.55f);
+                    var target = fx.transform.localScale * 1.7f;
                     DOTween.Sequence()
-                        .Append(spark.transform.DOLocalMove(target, SparkSeconds).SetEase(Ease.OutQuad))
-                        .Join(spark.transform.DOLocalRotate(new Vector3(0f, 0f, 110f), SparkSeconds))
-                        .Join(spark.DOFade(0f, SparkSeconds).SetEase(Ease.InQuad))
-                        .OnComplete(() => Destroy(spark.gameObject))
-                        .SetLink(spark.gameObject);
+                        .Append(fx.transform.DOScale(target, RingSeconds).SetEase(Ease.OutCubic))
+                        .Join(fx.DOFade(0f, RingSeconds).SetEase(Ease.InQuad))
+                        .OnComplete(() => Destroy(fx.gameObject))
+                        .SetLink(fx.gameObject);
+                }
+                if (star == null) continue;
+                int stars = 2 + (r * Size + c) % 3;      // 2..4, varied but the same every time
+                for (int i = 0; i < stars; i++)
+                {
+                    float angle = (90f + (i - (stars - 1) * 0.5f) * 38f) * Mathf.Deg2Rad;
+                    var fx = Effect("Star", star, origin, CellSize.x * 0.16f);
+                    var target = origin + new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * CellSize.x * 0.42f;
+                    DOTween.Sequence()
+                        .Append(fx.transform.DOLocalMove(target, StarSeconds).SetEase(Ease.OutQuad))
+                        .Join(fx.transform.DOLocalRotate(new Vector3(0f, 0f, 120f), StarSeconds))
+                        .Join(fx.DOFade(0f, StarSeconds).SetEase(Ease.InQuad))
+                        .OnComplete(() => Destroy(fx.gameObject))
+                        .SetLink(fx.gameObject);
                 }
             }
         }
+    }
+
+    // A one-shot effect sprite `size` units wide over the cells (destroyed by its own tween).
+    private SpriteRenderer Effect(string effectName, Sprite sprite, Vector3 localPosition, float size)
+    {
+        var fx = new GameObject(effectName).AddComponent<SpriteRenderer>();
+        fx.transform.SetParent(_cellsRoot, false);
+        fx.transform.localPosition = localPosition;
+        fx.transform.localScale = Vector3.one * (size / sprite.bounds.size.x);
+        fx.sprite = sprite;
+        fx.sortingOrder = SortOrder.Particles;
+        return fx;
     }
 
     private int CountNewMatches()
@@ -411,71 +432,25 @@ public class Manager_Board : Singleton<Manager_Board>
 
     private void SetupTile(ItemTile tile, TileData data)
     {
-        var item = FileRef.Instance.GetItem(Level.ItemFor(data));
-        tile.Setup(data, item.Sprite, item.Name);
+        var item = Level.ItemFor(data);
+        tile.Setup(data, FileRef.Instance.Sprite(item.Sprite), item.Label);
     }
 
     // A check on every matched cell (popping in when it appears: after checkDelay(row, col) if
-    // given, otherwise right away), the highlight and gold tab on the active step's row, and the
-    // customers' accessories. popCustomers: a customer who gains one pops.
-    private void RefreshIndicators(Func<int, int, float> checkDelay = null, bool popCustomers = false)
+    // given, otherwise right away) and the highlight behind the selected category's row.
+    private void RefreshIndicators(Func<int, int, float> checkDelay = null)
     {
-        int activeRow = State.ActiveRow;
         for (int r = 0; r < Size; r++)
-        {
             for (int c = 0; c < Size; c++)
                 _cells[r, c].SetMatched(State.IsHome(r, c), Tuning.CheckPopDuration, checkDelay?.Invoke(r, c) ?? 0f);
-            _tags[r].SetActive(r == activeRow);
-        }
-
-        _activeRow.gameObject.SetActive(activeRow >= 0);
-        if (activeRow >= 0) _activeRow.transform.localPosition = CellPosition(activeRow, (Size - 1) * 0.5f);
-
-        RefreshCustomers(popCustomers);
+        RefreshHighlight();
     }
 
-    // ---------- Customers ----------
-
-    // Each of the level's characters over its board column, as a fresh instance of its Customer
-    // prefab variant on the slot's stand; columns without one, and slots beyond the board, are
-    // hidden. The row sits at the world origin, so its x is the column's world x.
-    private void PlaceCharacters()
+    private void RefreshHighlight()
     {
-        foreach (var customer in _customers)
-            if (customer != null) Destroy(customer.gameObject);
-
-        _customers = new Customer[_characters.Count];
-        _characters.transform.localPosition = -(Vector3)ReferenceLayout.BoardCenter;
-        for (int c = 0; c < _characters.Count; c++)
-        {
-            if (!TryGetCharacter(c, out var character))
-            {
-                _characters.Hide(c);
-                continue;
-            }
-            _characters.Show(c, ReferenceLayout.BoardCenter.x + CellPosition(0, c).x, character.Name, character.Symbol);
-            var customer = Instantiate(character.Customer, _characters.StandOf(c));
-            customer.transform.localPosition = Vector3.zero;
-            customer.transform.localRotation = Quaternion.identity;
-            customer.transform.localScale = Vector3.one;
-            customer.SetAllEquipped(false);
-            _customers[c] = customer;
-        }
-    }
-
-    // Column c's customer wears row r's item while cell (r, c) is matched. pop: one who gains an
-    // accessory pops (not on level load, nor for Undo).
-    private void RefreshCustomers(bool pop)
-    {
-        for (int c = 0; c < _customers.Length && c < Size; c++)
-        {
-            var customer = _customers[c];
-            if (customer == null) continue;
-            bool gained = false;
-            for (int r = 0; r < Size; r++)
-                gained |= customer.SetEquipped(Level.Categories[r], State.IsHome(r, c));
-            if (gained && pop) customer.Pop(Tuning.EquipPopScale, Tuning.EquipPopDuration);
-        }
+        int row = SelectedRow;
+        _activeRow.gameObject.SetActive(row >= 0);
+        if (row >= 0) _activeRow.transform.localPosition = CellPosition(row, (Size - 1) * 0.5f);
     }
 
     // ---------- Guide ----------
@@ -514,19 +489,10 @@ public class Manager_Board : Singleton<Manager_Board>
         }
     }
 
-    public Customer CustomerOf(int column) => column >= 0 && column < _customers.Length ? _customers[column] : null;
-
-    private bool TryGetCharacter(int column, out FileRef.CharacterData character)
-    {
-        character = default;
-        return column < Size && column < Level.Characters.Length
-            && FileRef.Instance.TryGetCharacter(Level.Characters[column], out character);
-    }
-
     // ---------- Intro ----------
 
     // Scales _boardRoot from 0 to its scene scale (DOTween, OutBack), in step with UI_InGame's HUD
-    // intro. Runs after FitCamera / OnLayoutChanged, which measure the board at full size.
+    // intro. Runs after FitCamera.
     private void PlayIntro()
     {
         _introPlayed = true;
@@ -567,40 +533,6 @@ public class Manager_Board : Singleton<Manager_Board>
 
     public bool HasBoard => State != null;
 
-    // World-space area of the board. withTags false: the frame only (grid + FramePadding).
-    // withTags true: also the category tags on the left. Board rotation is not supported.
-    public Bounds GetWorldBounds(bool withTags)
-    {
-        GetLocalBounds(withTags, out var min, out var max);
-        var a = _boardRoot.TransformPoint(min);
-        var b = _boardRoot.TransformPoint(max);
-        var bounds = new Bounds((a + b) * 0.5f, Vector3.zero);
-        bounds.Encapsulate(a);
-        bounds.Encapsulate(b);
-        return bounds;
-    }
-
-    // The same area in screen pixels (origin bottom-left), through Camera.main.
-    public Rect GetScreenRect(bool withTags)
-    {
-        var cam = Camera.main;
-        if (cam == null || !HasBoard) return default;
-
-        var bounds = GetWorldBounds(withTags);
-        Vector2 a = cam.WorldToScreenPoint(bounds.min);
-        Vector2 b = cam.WorldToScreenPoint(bounds.max);
-        return Rect.MinMaxRect(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y), Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
-    }
-
-    private void GetLocalBounds(bool withTags, out Vector2 min, out Vector2 max)
-    {
-        Vector2 half = (HasBoard ? GridSize : Vector2.zero) * 0.5f + Vector2.one * ReferenceLayout.FramePadding;
-        min = -half;
-        max = half;
-        if (withTags && HasBoard)
-            min.x = Mathf.Min(min.x, -GridSize.x * 0.5f - ReferenceLayout.TagOffset - ReferenceLayout.TagSize.x * 0.5f);
-    }
-
     // Shows the 10.8 x 19.2 reference screen, centred on the world origin, as large as it fits in
     // the safe area (uniform scale), with the board at its reference place inside it.
     private void FitCamera()
@@ -632,20 +564,6 @@ public class Manager_Board : Singleton<Manager_Board>
         }
     }
 
-#if UNITY_EDITOR
-    // Scene view: green = frame, yellow = frame + category tags.
-    private void OnDrawGizmos()
-    {
-        if (!HasBoard || _boardRoot == null) return;
-        var frame = GetWorldBounds(false);
-        var all = GetWorldBounds(true);
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(frame.center, frame.size);
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(all.center, all.size);
-    }
-#endif
-
     private void Clear()
     {
         _animation?.Kill();
@@ -654,7 +572,6 @@ public class Manager_Board : Singleton<Manager_Board>
         HideGuide();
         DestroyChildren(_cellsRoot);
         DestroyChildren(_tilesRoot);
-        DestroyChildren(_tagsRoot);
     }
 
     private static void DestroyChildren(Transform parent)

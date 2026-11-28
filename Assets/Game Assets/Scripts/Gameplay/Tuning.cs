@@ -14,11 +14,11 @@ public static class Tuning
     public const float TileSpawnDurationDefault = 0.28f;  // each tile's scale-up when a level loads
     public const float TileSpawnStaggerDefault = 0.045f;  // extra delay per diagonal step (row + col) from the top-left
     public const float CheckPopDurationDefault = 0.22f;   // a matched check's scale-up (after its tile spawns, or when a move matches it)
-    public const float EquipPopDurationDefault = 0.4f;    // a customer's pop when a move puts an item on them (handoff: equipmentPopSeconds)
+    public const float EquipPopDurationDefault = 0.4f;    // a subject card's pop when a move fits one of its parts
     public const float EquipPopScaleDefault = 1.06f;      // peak scale of that pop
+    public const float SlotFadeDurationDefault = 0.16f;   // a newly fitted part's fade-in (ui_layout.json slotFadeSeconds)
     public const float WinPopupDelayDefault = 0.38f;      // seconds from the winning move to the win popup (handoff: winDelaySeconds)
     public const float HintAttentionDelayDefault = 16f;   // idle seconds after a level opens before the Hint button pulses
-    public const int FirstClearCoinsDefault = 30;         // reward for a level's first clear (replays: 0)
     public const float LoadingDurationDefault = 1.6f;     // loading bar fill time
     public const float LoadingFadeDurationDefault = 0.4f; // loading screen fade-out, while the board and HUD intros start
 
@@ -38,9 +38,9 @@ public static class Tuning
     public static float CheckPopDuration => Source != null ? Source.CheckPopDuration : CheckPopDurationDefault;
     public static float EquipPopDuration => Source != null ? Source.EquipPopDuration : EquipPopDurationDefault;
     public static float EquipPopScale => Source != null ? Source.EquipPopScale : EquipPopScaleDefault;
+    public static float SlotFadeDuration => Source != null ? Source.SlotFadeDuration : SlotFadeDurationDefault;
     public static float WinPopupDelay => Source != null ? Source.WinPopupDelay : WinPopupDelayDefault;
     public static float HintAttentionDelay => Source != null ? Source.HintAttentionDelay : HintAttentionDelayDefault;
-    public static int FirstClearCoins => Source != null ? Source.FirstClearCoins : FirstClearCoinsDefault;
     public static float LoadingDuration => Source != null ? Source.LoadingDuration : LoadingDurationDefault;
     public static float LoadingFadeDuration => Source != null ? Source.LoadingFadeDuration : LoadingFadeDurationDefault;
 }

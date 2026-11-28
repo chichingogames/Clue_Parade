@@ -1,0 +1,263 @@
+{
+  "referenceWidth": 1080,
+  "referenceHeight": 1920,
+  "safeAreaRequired": true,
+  "canvasMatchWidthOrHeight": 0,
+  "pixelsPerUnit": 100,
+  "colors": {
+    "ink": "#40281f",
+    "cream": "#fff1d8",
+    "gold": "#ffc82e",
+    "success": "#4a9a24",
+    "divider": "#c5a581",
+    "mapLockedInk": "#2d574f"
+  },
+  "regions": [
+    {
+      "id": "level",
+      "x": 40,
+      "y": 30,
+      "width": 280,
+      "height": 85
+    },
+    {
+      "id": "moves",
+      "x": 760,
+      "y": 25,
+      "width": 280,
+      "height": 107
+    },
+    {
+      "id": "title",
+      "x": 40,
+      "y": 150,
+      "width": 1000,
+      "height": 74
+    },
+    {
+      "id": "goal",
+      "x": 40,
+      "y": 235,
+      "width": 1000,
+      "height": 44
+    },
+    {
+      "id": "clueHeading",
+      "x": 40,
+      "y": 285,
+      "width": 1000,
+      "height": 38
+    },
+    {
+      "id": "clues",
+      "x": 40,
+      "y": 330,
+      "width": 1000,
+      "height": 165
+    },
+    {
+      "id": "subjects",
+      "x": 170,
+      "y": 515,
+      "width": 870,
+      "height": 213
+    },
+    {
+      "id": "subjectNames",
+      "x": 170,
+      "y": 728,
+      "width": 870,
+      "height": 54
+    },
+    {
+      "id": "board",
+      "x": 170,
+      "y": 800,
+      "width": 870,
+      "height": 870
+    },
+    {
+      "id": "categories",
+      "x": 15,
+      "y": 800,
+      "width": 140,
+      "height": 870
+    },
+    {
+      "id": "controlNote",
+      "x": 40,
+      "y": 1680,
+      "width": 1000,
+      "height": 40
+    },
+    {
+      "id": "progress",
+      "x": 40,
+      "y": 1725,
+      "width": 1000,
+      "height": 44
+    },
+    {
+      "id": "actions",
+      "x": 40,
+      "y": 1790,
+      "width": 1000,
+      "height": 110
+    },
+    {
+      "id": "boardFrame",
+      "x": 155,
+      "y": 790,
+      "width": 900,
+      "height": 890
+    },
+    {
+      "id": "menu",
+      "x": 340,
+      "y": 45,
+      "width": 64,
+      "height": 64
+    },
+    {
+      "id": "difficulty",
+      "x": 470,
+      "y": 45,
+      "width": 210,
+      "height": 62
+    }
+  ],
+  "strings": {
+    "practice": "Practice",
+    "unlimited": "no move limit",
+    "movesLeft": "moves left",
+    "clues": "CLUES",
+    "undo": "Undo",
+    "notebook": "Notebook",
+    "hint": "Hint",
+    "goal": "Match all 9 items using the clues.",
+    "controls": "Swipe rows or columns. Tiles wrap.",
+    "win": "Case complete!",
+    "next": "Next case",
+    "end": "All 30 cases complete!",
+    "endAction": "Choose a case",
+    "retry": "Retry",
+    "fail": "Out of moves",
+    "showHint": "Show the next swipe",
+    "allFacts": "All facts in Notebook",
+    "hard": "Hard"
+  },
+  "timings": {
+    "swipeSeconds": 0.23,
+    "slotFadeSeconds": 0.16,
+    "newMatchSeconds": 0.4,
+    "ringSeconds": 0.5,
+    "starSeconds": 0.65,
+    "winDelaySeconds": 0.38,
+    "confettiSeconds": 2.2,
+    "hintAttentionDelaySeconds": 16,
+    "hintPulseSeconds": 1.3
+  },
+  "effects": {
+    "newMatchRing": "fx_ring",
+    "newMatchStar": "fx_star",
+    "matchCheck": "check_badge",
+    "rewardCoin": "icon_coin"
+  },
+  "rules": {
+    "movesPerSwipe": 1,
+    "allCorrectSimultaneously": true,
+    "correctTilesRemainMovable": true,
+    "undoRestoresMoves": true,
+    "hintExplanationFree": true,
+    "nextSwipeHintFree": true,
+    "adsEnabled": false
+  },
+  "textSizes": {
+    "title": 60,
+    "goal": 34,
+    "clue": 34,
+    "name": 32,
+    "item": 31,
+    "longItem": 28,
+    "category": 29,
+    "longCategory": 26,
+    "button": 39,
+    "progress": 34,
+    "small": 25,
+    "moveNumber": 43,
+    "nameMin": 22,
+    "nameMax": 32,
+    "clueMin": 26,
+    "clueMax": 34,
+    "categoryMin": 21,
+    "categoryMax": 29
+  },
+  "elementSprites": {
+    "level": "capsule_white",
+    "practice": "panel_practice",
+    "moves": "panel_moves",
+    "clue": "panel_clue",
+    "matchedClue": "panel_clue_matched",
+    "subjectCard": "capsule_white",
+    "name": "tab_name",
+    "category": "tab_category",
+    "activeCategory": "tab_category_active",
+    "boardFrame": "board_frame",
+    "modal": "panel_modal",
+    "undoButton": "button_cream",
+    "notebookButton": "button_cream",
+    "hintButton": "button_gold",
+    "undoIcon": "icon_undo",
+    "notebookIcon": "icon_notebook",
+    "hintIcon": "icon_hint",
+    "menuIcon": "icon_menu",
+    "guideHighlight": "row_highlight",
+    "guideHand": "tutorial_hand",
+    "guideArrow": "tutorial_arrow"
+  },
+  "geometry": {
+    "cellSize": 290,
+    "subjectCardWidth": 280,
+    "subjectGap": 10,
+    "subjectArtInset": [
+      17,
+      5,
+      246,
+      200
+    ],
+    "clueCardWidth": 490,
+    "clueCardGap": 20,
+    "clueIconRect": [
+      14,
+      24,
+      105,
+      105
+    ],
+    "clueTextRect": [
+      132,
+      21,
+      335,
+      130
+    ],
+    "itemArtRect": [
+      25,
+      15,
+      240,
+      205
+    ],
+    "itemLabelY": 221,
+    "checkRect": [
+      238,
+      14,
+      44,
+      44
+    ]
+  },
+  "mapSprites": {
+    "path": "map_path",
+    "current": "map_node_current",
+    "open": "map_node_open",
+    "locked": "map_node_locked",
+    "completeCheck": "check_badge"
+  }
+}

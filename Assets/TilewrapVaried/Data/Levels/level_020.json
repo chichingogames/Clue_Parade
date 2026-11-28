@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 2,
+  "id": 20,
+  "title": "Festival floats",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "Finish the floats for the afternoon parade.",
+  "completionText": "The floats roll out and the festival parade begins.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 9,
+  "minimumMoves": 7,
+  "startingCells": [
+    "floats_02",
+    "floats_07",
+    "floats_01",
+    "floats_00",
+    "floats_08",
+    "floats_03",
+    "floats_04",
+    "floats_06",
+    "floats_05"
+  ],
+  "goalCells": [
+    "floats_00",
+    "floats_01",
+    "floats_02",
+    "floats_03",
+    "floats_04",
+    "floats_05",
+    "floats_06",
+    "floats_07",
+    "floats_08"
+  ],
+  "subjects": [
+    {
+      "id": "floats_0",
+      "name": "Bloom float",
+      "column": 0,
+      "rigId": "floats_0"
+    },
+    {
+      "id": "floats_1",
+      "name": "Sun float",
+      "column": 1,
+      "rigId": "floats_1"
+    },
+    {
+      "id": "floats_2",
+      "name": "Rainbow float",
+      "column": 2,
+      "rigId": "floats_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "floats_row_0",
+      "label": "Displays",
+      "row": 0
+    },
+    {
+      "id": "floats_row_1",
+      "label": "Trims",
+      "row": 1
+    },
+    {
+      "id": "floats_row_2",
+      "label": "Gifts",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "floats_00",
+      "label": "Giant flower",
+      "sprite": "floats_00",
+      "targetCell": 0,
+      "categoryId": "floats_row_0",
+      "clue": "Bloom float gets the giant flower."
+    },
+    {
+      "id": "floats_01",
+      "label": "Golden sun",
+      "sprite": "floats_01",
+      "targetCell": 1,
+      "categoryId": "floats_row_0",
+      "clue": "Sun float gets the golden sun."
+    },
+    {
+      "id": "floats_02",
+      "label": "Rainbow arch",
+      "sprite": "floats_02",
+      "targetCell": 2,
+      "categoryId": "floats_row_0",
+      "clue": "Rainbow float gets the rainbow arch."
+    },
+    {
+      "id": "floats_03",
+      "label": "Flag bunting",
+      "sprite": "floats_03",
+      "targetCell": 3,
+      "categoryId": "floats_row_1",
+      "clue": "Bloom float gets the flag bunting."
+    },
+    {
+      "id": "floats_04",
+      "label": "Red ribbon",
+      "sprite": "floats_04",
+      "targetCell": 4,
+      "categoryId": "floats_row_1",
+      "clue": "Sun float gets the red ribbon."
+    },
+    {
+      "id": "floats_05",
+      "label": "Balloon bunch",
+      "sprite": "floats_05",
+      "targetCell": 5,
+      "categoryId": "floats_row_1",
+      "clue": "Rainbow float gets the balloon bunch."
+    },
+    {
+      "id": "floats_06",
+      "label": "Teddy",
+      "sprite": "floats_06",
+      "targetCell": 6,
+      "categoryId": "floats_row_2",
+      "clue": "Bloom float gets the teddy."
+    },
+    {
+      "id": "floats_07",
+      "label": "Wrapped gift",
+      "sprite": "floats_07",
+      "targetCell": 7,
+      "categoryId": "floats_row_2",
+      "clue": "Sun float gets the wrapped gift."
+    },
+    {
+      "id": "floats_08",
+      "label": "Picnic basket",
+      "sprite": "floats_08",
+      "targetCell": 8,
+      "categoryId": "floats_row_2",
+      "clue": "Rainbow float gets the picnic basket."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 21,
+  "difficulty": "hard",
+  "chapterId": 4,
+  "designSeed": 30320
+}

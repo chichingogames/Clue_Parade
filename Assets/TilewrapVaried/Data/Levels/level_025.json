@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 2,
+  "id": 25,
+  "title": "Toy gift shop",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "Pack three toy gifts for the celebration.",
+  "completionText": "The toy gifts are ready to make someone smile.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 12,
+  "minimumMoves": 4,
+  "startingCells": [
+    "gifts_00",
+    "gifts_01",
+    "gifts_08",
+    "gifts_03",
+    "gifts_07",
+    "gifts_04",
+    "gifts_06",
+    "gifts_02",
+    "gifts_05"
+  ],
+  "goalCells": [
+    "gifts_00",
+    "gifts_01",
+    "gifts_02",
+    "gifts_03",
+    "gifts_04",
+    "gifts_05",
+    "gifts_06",
+    "gifts_07",
+    "gifts_08"
+  ],
+  "subjects": [
+    {
+      "id": "gifts_0",
+      "name": "Star gift",
+      "column": 0,
+      "rigId": "gifts_0"
+    },
+    {
+      "id": "gifts_1",
+      "name": "Stripe gift",
+      "column": 1,
+      "rigId": "gifts_1"
+    },
+    {
+      "id": "gifts_2",
+      "name": "Flower gift",
+      "column": 2,
+      "rigId": "gifts_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "gifts_row_0",
+      "label": "Boxes",
+      "row": 0
+    },
+    {
+      "id": "gifts_row_1",
+      "label": "Toys",
+      "row": 1
+    },
+    {
+      "id": "gifts_row_2",
+      "label": "Bows",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "gifts_00",
+      "label": "Star box",
+      "sprite": "gifts_00",
+      "targetCell": 0,
+      "categoryId": "gifts_row_0",
+      "clue": "Star gift gets the star box."
+    },
+    {
+      "id": "gifts_01",
+      "label": "Stripe box",
+      "sprite": "gifts_01",
+      "targetCell": 1,
+      "categoryId": "gifts_row_0",
+      "clue": "Stripe gift gets the stripe box."
+    },
+    {
+      "id": "gifts_02",
+      "label": "Flower box",
+      "sprite": "gifts_02",
+      "targetCell": 2,
+      "categoryId": "gifts_row_0",
+      "clue": "Flower gift gets the flower box."
+    },
+    {
+      "id": "gifts_03",
+      "label": "Toy robot",
+      "sprite": "gifts_03",
+      "targetCell": 3,
+      "categoryId": "gifts_row_1",
+      "clue": "Star gift gets the toy robot."
+    },
+    {
+      "id": "gifts_04",
+      "label": "Teddy bear",
+      "sprite": "gifts_04",
+      "targetCell": 4,
+      "categoryId": "gifts_row_1",
+      "clue": "Stripe gift gets the teddy bear."
+    },
+    {
+      "id": "gifts_05",
+      "label": "Toy duck",
+      "sprite": "gifts_05",
+      "targetCell": 5,
+      "categoryId": "gifts_row_1",
+      "clue": "Flower gift gets the toy duck."
+    },
+    {
+      "id": "gifts_06",
+      "label": "Red bow",
+      "sprite": "gifts_06",
+      "targetCell": 6,
+      "categoryId": "gifts_row_2",
+      "clue": "Star gift gets the red bow."
+    },
+    {
+      "id": "gifts_07",
+      "label": "Blue bow",
+      "sprite": "gifts_07",
+      "targetCell": 7,
+      "categoryId": "gifts_row_2",
+      "clue": "Stripe gift gets the blue bow."
+    },
+    {
+      "id": "gifts_08",
+      "label": "Purple bow",
+      "sprite": "gifts_08",
+      "targetCell": 8,
+      "categoryId": "gifts_row_2",
+      "clue": "Flower gift gets the purple bow."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 26,
+  "difficulty": "practice",
+  "chapterId": 5,
+  "designSeed": 30325
+}

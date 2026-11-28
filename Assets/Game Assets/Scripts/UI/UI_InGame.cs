@@ -4,13 +4,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// The in-game HUD on the Tilewrap handoff's 1080x1920 layout (built by ShiftSort > Build UI, which
-// wires every field): the level pill (opens the level selector), moves (or "Practice"), the menu
-// button, title and goal line, the active category's clues (heading, progress, "All 9", two clue
-// cards that turn green while matched), the coach line, the 0-9 match meter, the control note and
-// Undo / Notebook / Hint. The customers above the board are world space (CharacterRow).
-// Pure view: reads Manager_Game / Manager_Board / Manager_Flow (and FileRef for item art); its
-// buttons call Manager_Flow and Manager_Game.
+// The in-game HUD on the content pack's 1080x1920 layout (ui_layout.json regions; built by
+// ShiftSort > Build UI, which wires every field): the level pill (opens the case map), the menu
+// button, the Hard badge, moves (or "Practice"), the case title and goal line, "CLUES" with "All
+// facts in Notebook", two clue cards for the selected category (unsatisfied facts first, green with
+// a check while satisfied), the three subjects above the board (registered rigs showing the fitted
+// parts of the current board) with their names, the category tabs beside the rows (a tap selects
+// the category), the control note, the live "x/9 matched" count and Undo / Notebook / Hint.
+// Pure view: reads Manager_Game / Manager_Board / Manager_Flow (and FileRef for art); its buttons
+// call Manager_Flow, Manager_Game and Manager_Board.SelectRow.
 public class UI_InGame : MonoBehaviour
 {
     [Serializable]
@@ -27,6 +29,7 @@ public class UI_InGame : MonoBehaviour
     [SerializeField] private Button _levelButton;
     [SerializeField] private TMP_Text _levelText;
     [SerializeField] private Button _menuButton;
+    [SerializeField] private GameObject _hardBadge;
     [SerializeField] private Image _movesPanel;
     [SerializeField] private TMP_Text _movesValue;
     [SerializeField] private TMP_Text _movesLabel;
@@ -39,25 +42,21 @@ public class UI_InGame : MonoBehaviour
 
     [Header("Title")]
     [SerializeField] private TMP_Text _title;
-    [SerializeField] private TMP_Text _subtitle;
+    [SerializeField] private TMP_Text _goal;
 
     [Header("Clues")]
-    [SerializeField] private TMP_Text _clueHeading;
-    [SerializeField] private TMP_Text _clueProgress;
-    [SerializeField] private Button _allCluesButton;
-    [Tooltip("One per clue card, left to right. BoardState.PickClues chooses which of the step's clues they show.")]
+    [SerializeField] private Button _allFactsButton;
+    [Tooltip("One per clue card, left to right. BoardState.PickClues chooses which of the row's facts they show.")]
     [SerializeField] private ClueSlot[] _clues = new ClueSlot[0];
     [SerializeField] private Sprite _cluePanel;
     [SerializeField] private Sprite _cluePanelMatched;
 
-    [Header("Coach, progress")]
-    [SerializeField] private Image _coachPanel;
-    [SerializeField] private TMP_Text _coachText;
-    [SerializeField] private Color _coachColor = new Color32(0xFF, 0xF3, 0xD8, 0xFF);
-    [SerializeField] private Color _coachSuccessColor = new Color32(0xE9, 0xF8, 0xDA, 0xFF);
+    [Header("Board surroundings")]
+    [Tooltip("One per column, left to right.")]
+    [SerializeField] private UI_SubjectCard[] _subjects = new UI_SubjectCard[0];
+    [Tooltip("One per row, top to bottom.")]
+    [SerializeField] private UI_CategoryTab[] _categories = new UI_CategoryTab[0];
     [SerializeField] private TMP_Text _progressText;
-    [Tooltip("The meter's fill; its right anchor is the matched fraction.")]
-    [SerializeField] private RectTransform _progressFill;
 
     [Header("Buttons")]
     [SerializeField] private Button _undoButton;
@@ -80,9 +79,9 @@ public class UI_InGame : MonoBehaviour
         foreach (var item in _introItems)
             if (item != null) item.localScale = Vector3.zero;
 
-        _levelButton.onClick.AddListener(() => { Tap(); Manager_Flow.Instance.ShowLevelSelect(); });
+        _levelButton.onClick.AddListener(() => { Tap(); Manager_Flow.Instance.ShowMap(); });
         _menuButton.onClick.AddListener(() => { Tap(); Manager_Flow.Instance.OpenMenu(); });
-        _allCluesButton.onClick.AddListener(() => { Tap(); Manager_Flow.Instance.OpenNotebook(); });
+        _allFactsButton.onClick.AddListener(() => { Tap(); Manager_Flow.Instance.OpenNotebook(); });
         _notebookButton.onClick.AddListener(() => { Tap(); Manager_Flow.Instance.OpenNotebook(); });
         _hintButton.onClick.AddListener(() => { Tap(); StopHintPulse(); Manager_Flow.Instance.OpenHint(); });
         _undoButton.onClick.AddListener(() => Manager_Game.Instance.Undo());
@@ -99,13 +98,12 @@ public class UI_InGame : MonoBehaviour
         game.OnLevelStarted += HandleLevelStarted;
         game.OnStateChanged += HandleStateChanged;
         game.OnMoveMade += Refresh;
-        board.OnBoardSettled += Refresh;
+        board.OnBoardSettled += HandleBoardSettled;
         board.OnLinePickedUp += Refresh;
-        flow.OnCoachChanged += HandleCoach;
+        board.OnSelectionChanged += Refresh;
         flow.OnToast += _toast.Show;
         flow.OnHintAttention += PulseHint;
-        flow.OnHintStateChanged += Refresh;
-        HandleCoach(flow.Coach, flow.CoachSuccess);
+        if (game.Level != null) ShowLevel();
         Refresh();
     }
 
@@ -121,16 +119,15 @@ public class UI_InGame : MonoBehaviour
         var board = Manager_Board.Instance;
         if (board != null)
         {
-            board.OnBoardSettled -= Refresh;
+            board.OnBoardSettled -= HandleBoardSettled;
             board.OnLinePickedUp -= Refresh;
+            board.OnSelectionChanged -= Refresh;
         }
         var flow = Manager_Flow.Instance;
         if (flow != null)
         {
-            flow.OnCoachChanged -= HandleCoach;
             flow.OnToast -= _toast.Show;
             flow.OnHintAttention -= PulseHint;
-            flow.OnHintStateChanged -= Refresh;
         }
     }
 
@@ -155,44 +152,76 @@ public class UI_InGame : MonoBehaviour
     {
         if (!_introPlayed) PlayIntro();
         StopHintPulse();
+        ShowLevel();
         Refresh();
     }
 
     private void HandleStateChanged(GameState state) => Refresh();
 
-    private void HandleCoach(string text, bool success)
+    private void HandleBoardSettled()
     {
-        _coachText.text = text;
-        _coachPanel.color = success ? _coachSuccessColor : _coachColor;
-        _coachPanel.gameObject.SetActive(!string.IsNullOrEmpty(text));
+        ApplyBoard(Manager_Board.Instance.LastSettleCelebrated);
+        Refresh();
+    }
+
+    // The case's subjects (a fresh rig each) and category tabs.
+    private void ShowLevel()
+    {
+        var level = Manager_Game.Instance.Level;
+        if (level == null) return;
+        for (int c = 0; c < _subjects.Length; c++)
+        {
+            if (c >= level.Subjects.Length) { _subjects[c].Hide(); continue; }
+            var subject = level.Subjects[c];
+            _subjects[c].Show(FileRef.Instance.Rig(subject.RigId), subject.Name);
+        }
+        for (int r = 0; r < _categories.Length; r++)
+        {
+            if (r >= level.Categories.Length) { _categories[r].gameObject.SetActive(false); continue; }
+            int row = r;
+            _categories[r].Setup(level.Categories[r], () => { Tap(); Manager_Board.Instance.SelectRow(row); });
+        }
+        ApplyBoard(animate: false);
+    }
+
+    // Every rig shows the parts its cells hold the right items for.
+    private void ApplyBoard(bool animate)
+    {
+        var level = Manager_Game.Instance.Level;
+        var state = Manager_Board.Instance.State;
+        if (level == null || state == null) return;
+        var ids = new string[state.CellCount];
+        for (int r = 0; r < state.Size; r++)
+            for (int c = 0; c < state.Size; c++)
+                ids[r * state.Size + c] = level.ItemFor(state[r, c]).Id;
+        foreach (var subject in _subjects)
+            if (subject.isActiveAndEnabled) subject.ApplyBoard(ids, animate);
     }
 
     private void Refresh()
     {
         var game = Manager_Game.Instance;
         var level = game.Level;
-        var board = Manager_Board.Instance.State;
+        var boardManager = Manager_Board.Instance;
+        var board = boardManager.State;
         if (level == null || board == null) return;
 
         bool playing = game.State == GameState.Playing;
-        int levels = Mathf.Max(1, Manager_Level.Instance.LevelCount);
-        _levelText.text = $"LEVEL {game.CurrentLevel} <size=70%>of {levels}</size>";
-        _title.text = level.Name;
-        _subtitle.text = level.Subtitle;
+        _levelText.text = $"Level {game.CurrentLevel}";
+        _title.text = level.Title;
+        _goal.text = level.Goal;
+        _hardBadge.SetActive(level.IsHard);
 
         RefreshMoves(game, level);
-        int step = Mathf.Min(board.ActiveStep, level.Steps.Length - 1);
-        RefreshClues(level.Steps[step], level, board);
+        int row = boardManager.SelectedRow;
+        RefreshClues(row, level, board);
+        for (int r = 0; r < _categories.Length; r++) _categories[r].SetActive(r == row);
 
-        int matched = board.MatchedCount;
-        _progressText.text = $"<size=130%><b>{matched}</b></size>/{board.CellCount} matched";
-        var max = _progressFill.anchorMax;
-        max.x = board.CellCount > 0 ? (float)matched / board.CellCount : 0f;
-        _progressFill.anchorMax = max;
+        _progressText.text = $"{board.MatchedCount}/{board.CellCount} matched";
 
         // A tap during a slide is refused by Manager_Game.Undo / Manager_Flow.OpenHint themselves.
         _undoButton.interactable = game.CanUndo;
-        _hintButton.interactable = playing && !Manager_Flow.Instance.HintPending;
+        _hintButton.interactable = playing;
     }
 
     private void RefreshMoves(Manager_Game game, LevelDefinition level)
@@ -201,7 +230,7 @@ public class UI_InGame : MonoBehaviour
         {
             _movesPanel.sprite = _practiceSprite;
             _movesValue.text = "Practice";
-            _movesValue.fontSize = 44f;
+            _movesValue.fontSize = 36f;
             _movesLabel.text = "no move limit";
             _movesValue.color = _movesColor;
             return;
@@ -210,43 +239,34 @@ public class UI_InGame : MonoBehaviour
         int left = Mathf.Max(0, game.MovesLeft);
         _movesPanel.sprite = _movesSprite;
         _movesValue.text = left.ToString();
-        _movesValue.fontSize = 84f;
+        _movesValue.fontSize = 50f;
         _movesLabel.text = left == 1 ? "move left" : "moves left";
         _movesValue.color = left <= _lowMovesAt ? _movesLowColor : _movesColor;
     }
 
-    // The heading names the step's category ("CLUES · HATS") and how many of its slots are matched.
-    private void RefreshClues(LevelStep step, LevelDefinition level, BoardState board)
+    // Two facts of the selected row: unsatisfied ones first. A satisfied one turns green with a check.
+    private void RefreshClues(int row, LevelDefinition level, BoardState board)
     {
-        var clues = step?.clues ?? new LevelClue[0];
-        var tiles = new int[clues.Length];
-        for (int i = 0; i < clues.Length; i++) tiles[i] = string.IsNullOrEmpty(clues[i].item) ? -1 : level.TileOf(clues[i].item);
-        var shown = board.PickClues(tiles, _clues.Length);
-
-        int matched = 0;
-        if (step != null)
-            for (int c = 0; c < board.Size; c++) if (board.IsHome(step.row, c)) matched++;
-        _clueHeading.text = step != null ? $"CLUES <color=#D3EECE>· {level.Categories[step.row].ToUpperInvariant()}</color>" : "CLUES";
-        _clueProgress.text = step != null ? $"{matched}/{board.Size} matched" : "";
-
+        var shown = row >= 0 ? board.PickClues(row, _clues.Length) : new int[0];
         for (int i = 0; i < _clues.Length; i++)
         {
             var slot = _clues[i];
             slot.Root.SetActive(i < shown.Length);
             if (i >= shown.Length) continue;
 
-            var clue = clues[shown[i]];
-            bool isMatched = tiles[shown[i]] >= 0 && board.IsTileHome(tiles[shown[i]]);
-            slot.Text.text = clue.text;
-            bool hasItem = !string.IsNullOrEmpty(clue.item) && FileRef.Instance.TryGetItem(clue.item, out var item);
-            slot.Icon.gameObject.SetActive(hasItem);
-            if (hasItem) slot.Icon.sprite = FileRef.Instance.GetItem(clue.item).Sprite;
-            slot.Panel.sprite = isMatched ? _cluePanelMatched : _cluePanel;
-            slot.Check.SetActive(isMatched);
+            int tile = row * board.Size + shown[i];
+            var item = level.Items[tile];
+            bool matched = board.IsTileHome(tile);
+            slot.Text.text = item.Clue;
+            var icon = FileRef.Instance.Sprite(item.Sprite);
+            slot.Icon.gameObject.SetActive(icon != null);
+            slot.Icon.sprite = icon;
+            slot.Panel.sprite = matched ? _cluePanelMatched : _cluePanel;
+            slot.Check.SetActive(matched);
         }
     }
 
-    // Twice, gently (handoff: hintPulseSeconds 1.3, hintPulseRepeats 2). A tap or a level change stops it.
+    // Twice, gently (hintPulseSeconds 1.3). A tap or a level change stops it.
     private void PulseHint()
     {
         StopHintPulse();

@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 2,
+  "id": 13,
+  "title": "Breakfast trays",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "Make three breakfasts for a bright start to the day.",
+  "completionText": "Three breakfast trays are ready to serve.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 12,
+  "minimumMoves": 3,
+  "startingCells": [
+    "breakfast_04",
+    "breakfast_05",
+    "breakfast_00",
+    "breakfast_03",
+    "breakfast_07",
+    "breakfast_08",
+    "breakfast_06",
+    "breakfast_01",
+    "breakfast_02"
+  ],
+  "goalCells": [
+    "breakfast_00",
+    "breakfast_01",
+    "breakfast_02",
+    "breakfast_03",
+    "breakfast_04",
+    "breakfast_05",
+    "breakfast_06",
+    "breakfast_07",
+    "breakfast_08"
+  ],
+  "subjects": [
+    {
+      "id": "breakfast_0",
+      "name": "Early bird",
+      "column": 0,
+      "rigId": "breakfast_0"
+    },
+    {
+      "id": "breakfast_1",
+      "name": "Sweet start",
+      "column": 1,
+      "rigId": "breakfast_1"
+    },
+    {
+      "id": "breakfast_2",
+      "name": "Slow morning",
+      "column": 2,
+      "rigId": "breakfast_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "breakfast_row_0",
+      "label": "Mains",
+      "row": 0
+    },
+    {
+      "id": "breakfast_row_1",
+      "label": "Drinks",
+      "row": 1
+    },
+    {
+      "id": "breakfast_row_2",
+      "label": "Fruit",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "breakfast_00",
+      "label": "Scrambled eggs",
+      "sprite": "breakfast_00",
+      "targetCell": 0,
+      "categoryId": "breakfast_row_0",
+      "clue": "Early bird gets the scrambled eggs."
+    },
+    {
+      "id": "breakfast_01",
+      "label": "Pancakes",
+      "sprite": "breakfast_01",
+      "targetCell": 1,
+      "categoryId": "breakfast_row_0",
+      "clue": "Sweet start gets the pancakes."
+    },
+    {
+      "id": "breakfast_02",
+      "label": "Croissant",
+      "sprite": "breakfast_02",
+      "targetCell": 2,
+      "categoryId": "breakfast_row_0",
+      "clue": "Slow morning gets the croissant."
+    },
+    {
+      "id": "breakfast_03",
+      "label": "Orange juice",
+      "sprite": "breakfast_03",
+      "targetCell": 3,
+      "categoryId": "breakfast_row_1",
+      "clue": "Early bird gets the orange juice."
+    },
+    {
+      "id": "breakfast_04",
+      "label": "Milk",
+      "sprite": "breakfast_04",
+      "targetCell": 4,
+      "categoryId": "breakfast_row_1",
+      "clue": "Sweet start gets the milk."
+    },
+    {
+      "id": "breakfast_05",
+      "label": "Coffee",
+      "sprite": "breakfast_05",
+      "targetCell": 5,
+      "categoryId": "breakfast_row_1",
+      "clue": "Slow morning gets the coffee."
+    },
+    {
+      "id": "breakfast_06",
+      "label": "Apple",
+      "sprite": "breakfast_06",
+      "targetCell": 6,
+      "categoryId": "breakfast_row_2",
+      "clue": "Early bird gets the apple."
+    },
+    {
+      "id": "breakfast_07",
+      "label": "Banana",
+      "sprite": "breakfast_07",
+      "targetCell": 7,
+      "categoryId": "breakfast_row_2",
+      "clue": "Sweet start gets the banana."
+    },
+    {
+      "id": "breakfast_08",
+      "label": "Grapes",
+      "sprite": "breakfast_08",
+      "targetCell": 8,
+      "categoryId": "breakfast_row_2",
+      "clue": "Slow morning gets the grapes."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 2,
+      "direction": 1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 14,
+  "difficulty": "practice",
+  "chapterId": 3,
+  "designSeed": 30313
+}

@@ -2,12 +2,13 @@ using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
 
-// Play-mode checks for the Clue Parade board, driven from the CLI while the game runs:
+// Play-mode checks for the Tilewrap case board, driven from the CLI while the game runs:
 //   unity command script run --file AgentScripts/PlayCheck.cs --entry PlayCheck.Status
 //   unity command script run --file AgentScripts/PlayCheck.cs --entry PlayCheck.Swipe --args '[1, 0, 1, 0]'
 public static class PlayCheck
 {
-    // Level, state, step, moves, and each row's items with [ok] for tiles at home.
+    // Case, state, selected row, moves, each row's items with [ok] for tiles at home, and each
+    // subject rig's fitted parts that are showing.
     public static string Status()
     {
         var game = Manager_Game.Instance;
@@ -17,23 +18,21 @@ public static class PlayCheck
         var level = game.Level;
         var state = board.State;
         var text = new System.Text.StringBuilder();
-        text.Append($"level {game.CurrentLevel} '{level.Name}' {game.State} step {Mathf.Min(state.ActiveStep + 1, state.StepCount)}/{state.StepCount} " +
-                    $"activeRow {state.ActiveRow} moves {game.MovesUsed}/{level.MoveLimit} animating {board.IsAnimating}");
+        text.Append($"case {game.CurrentLevel} '{level.Title}' {game.State} selectedRow {board.SelectedRow} " +
+                    $"moves {game.MovesUsed}/{level.MoveLimit} animating {board.IsAnimating}");
         for (int r = 0; r < state.Size; r++)
         {
-            text.Append($" | {(state.IsRowComplete(r) ? "*" : r == state.ActiveRow ? ">" : " ")}{level.Categories[r]}:");
+            text.Append($" | {(state.IsRowComplete(r) ? "*" : r == board.SelectedRow ? ">" : " ")}{level.Categories[r]}:");
             for (int c = 0; c < state.Size; c++)
-                text.Append(state.IsHome(r, c) ? " [ok]" : " [  ]").Append(FileRef.Instance.GetItem(level.ItemFor(state[r, c])).Name);
+                text.Append(state.IsHome(r, c) ? " [ok]" : " [  ]").Append(level.ItemFor(state[r, c]).Label);
         }
-        // Each customer's accessories that are switched on.
-        text.Append($" | matched {state.MatchedCount}/{state.CellCount} | wearing:");
-        for (int c = 0; c < state.Size; c++)
+        text.Append($" | matched {state.MatchedCount}/{state.CellCount} | fitted:");
+        foreach (var card in Object.FindObjectsByType<UI_SubjectCard>(FindObjectsSortMode.None))
         {
-            var customer = board.CustomerOf(c);
-            if (customer == null) continue;
-            text.Append($" {customer.Id}[");
-            foreach (string category in level.Categories)
-                if (customer.IsEquipped(category)) text.Append(category[0]);
+            if (card.Rig == null || card.transform.parent.name != "Reference") continue;
+            text.Append($" {card.name}[");
+            foreach (var binding in card.Rig.bindings)
+                if (binding.goalIndex >= 0 && binding.layer.activeSelf) text.Append(binding.goalIndex);
             text.Append("]");
         }
         return text.ToString();

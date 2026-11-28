@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 2,
+  "id": 24,
+  "title": "Pocket jungle",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "Make three tiny jungles for their little residents.",
+  "completionText": "The pocket jungles are full of life.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 9,
+  "minimumMoves": 7,
+  "startingCells": [
+    "terrariums_08",
+    "terrariums_05",
+    "terrariums_02",
+    "terrariums_07",
+    "terrariums_03",
+    "terrariums_01",
+    "terrariums_04",
+    "terrariums_00",
+    "terrariums_06"
+  ],
+  "goalCells": [
+    "terrariums_00",
+    "terrariums_01",
+    "terrariums_02",
+    "terrariums_03",
+    "terrariums_04",
+    "terrariums_05",
+    "terrariums_06",
+    "terrariums_07",
+    "terrariums_08"
+  ],
+  "subjects": [
+    {
+      "id": "terrariums_0",
+      "name": "Fern jar",
+      "column": 0,
+      "rigId": "terrariums_0"
+    },
+    {
+      "id": "terrariums_1",
+      "name": "Bamboo jar",
+      "column": 1,
+      "rigId": "terrariums_1"
+    },
+    {
+      "id": "terrariums_2",
+      "name": "Orchid jar",
+      "column": 2,
+      "rigId": "terrariums_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "terrariums_row_0",
+      "label": "Grounds",
+      "row": 0
+    },
+    {
+      "id": "terrariums_row_1",
+      "label": "Plants",
+      "row": 1
+    },
+    {
+      "id": "terrariums_row_2",
+      "label": "Animals",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "terrariums_00",
+      "label": "Pale sand",
+      "sprite": "terrariums_00",
+      "targetCell": 0,
+      "categoryId": "terrariums_row_0",
+      "clue": "Fern jar gets the pale sand."
+    },
+    {
+      "id": "terrariums_01",
+      "label": "Moss bed",
+      "sprite": "terrariums_01",
+      "targetCell": 1,
+      "categoryId": "terrariums_row_0",
+      "clue": "Bamboo jar gets the moss bed."
+    },
+    {
+      "id": "terrariums_02",
+      "label": "Dark soil",
+      "sprite": "terrariums_02",
+      "targetCell": 2,
+      "categoryId": "terrariums_row_0",
+      "clue": "Orchid jar gets the dark soil."
+    },
+    {
+      "id": "terrariums_03",
+      "label": "Fern",
+      "sprite": "terrariums_03",
+      "targetCell": 3,
+      "categoryId": "terrariums_row_1",
+      "clue": "Fern jar gets the fern."
+    },
+    {
+      "id": "terrariums_04",
+      "label": "Bamboo",
+      "sprite": "terrariums_04",
+      "targetCell": 4,
+      "categoryId": "terrariums_row_1",
+      "clue": "Bamboo jar gets the bamboo."
+    },
+    {
+      "id": "terrariums_05",
+      "label": "Orchid",
+      "sprite": "terrariums_05",
+      "targetCell": 5,
+      "categoryId": "terrariums_row_1",
+      "clue": "Orchid jar gets the orchid."
+    },
+    {
+      "id": "terrariums_06",
+      "label": "Lizard",
+      "sprite": "terrariums_06",
+      "targetCell": 6,
+      "categoryId": "terrariums_row_2",
+      "clue": "Fern jar gets the lizard."
+    },
+    {
+      "id": "terrariums_07",
+      "label": "Tree frog",
+      "sprite": "terrariums_07",
+      "targetCell": 7,
+      "categoryId": "terrariums_row_2",
+      "clue": "Bamboo jar gets the tree frog."
+    },
+    {
+      "id": "terrariums_08",
+      "label": "Ladybird",
+      "sprite": "terrariums_08",
+      "targetCell": 8,
+      "categoryId": "terrariums_row_2",
+      "clue": "Orchid jar gets the ladybird."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 2,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 1,
+      "direction": 1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": 1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 25,
+  "difficulty": "hard",
+  "chapterId": 4,
+  "designSeed": 30324
+}

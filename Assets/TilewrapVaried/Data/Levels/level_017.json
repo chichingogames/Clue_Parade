@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 2,
+  "id": 17,
+  "title": "Toast bar",
+  "goalText": "Match all 9 items using the clues.",
+  "setupText": "Finish three tasty orders at the toast bar.",
+  "completionText": "The toast orders are ready for the lunch crowd.",
+  "rows": 3,
+  "columns": 3,
+  "moveLimit": 12,
+  "minimumMoves": 3,
+  "startingCells": [
+    "toast_02",
+    "toast_06",
+    "toast_01",
+    "toast_00",
+    "toast_03",
+    "toast_04",
+    "toast_05",
+    "toast_07",
+    "toast_08"
+  ],
+  "goalCells": [
+    "toast_00",
+    "toast_01",
+    "toast_02",
+    "toast_03",
+    "toast_04",
+    "toast_05",
+    "toast_06",
+    "toast_07",
+    "toast_08"
+  ],
+  "subjects": [
+    {
+      "id": "toast_0",
+      "name": "Garden order",
+      "column": 0,
+      "rigId": "toast_0"
+    },
+    {
+      "id": "toast_1",
+      "name": "Sunrise order",
+      "column": 1,
+      "rigId": "toast_1"
+    },
+    {
+      "id": "toast_2",
+      "name": "Coast order",
+      "column": 2,
+      "rigId": "toast_2"
+    }
+  ],
+  "categories": [
+    {
+      "id": "toast_row_0",
+      "label": "Bread",
+      "row": 0
+    },
+    {
+      "id": "toast_row_1",
+      "label": "Toppings",
+      "row": 1
+    },
+    {
+      "id": "toast_row_2",
+      "label": "Sides",
+      "row": 2
+    }
+  ],
+  "items": [
+    {
+      "id": "toast_00",
+      "label": "Sourdough toast",
+      "sprite": "toast_00",
+      "targetCell": 0,
+      "categoryId": "toast_row_0",
+      "clue": "Garden order gets the sourdough toast."
+    },
+    {
+      "id": "toast_01",
+      "label": "Rye toast",
+      "sprite": "toast_01",
+      "targetCell": 1,
+      "categoryId": "toast_row_0",
+      "clue": "Sunrise order gets the rye toast."
+    },
+    {
+      "id": "toast_02",
+      "label": "Bagel half",
+      "sprite": "toast_02",
+      "targetCell": 2,
+      "categoryId": "toast_row_0",
+      "clue": "Coast order gets the bagel half."
+    },
+    {
+      "id": "toast_03",
+      "label": "Avocado slices",
+      "sprite": "toast_03",
+      "targetCell": 3,
+      "categoryId": "toast_row_1",
+      "clue": "Garden order gets the avocado slices."
+    },
+    {
+      "id": "toast_04",
+      "label": "Fried egg",
+      "sprite": "toast_04",
+      "targetCell": 4,
+      "categoryId": "toast_row_1",
+      "clue": "Sunrise order gets the fried egg."
+    },
+    {
+      "id": "toast_05",
+      "label": "Salmon",
+      "sprite": "toast_05",
+      "targetCell": 5,
+      "categoryId": "toast_row_1",
+      "clue": "Coast order gets the salmon."
+    },
+    {
+      "id": "toast_06",
+      "label": "Leaf salad",
+      "sprite": "toast_06",
+      "targetCell": 6,
+      "categoryId": "toast_row_2",
+      "clue": "Garden order gets the leaf salad."
+    },
+    {
+      "id": "toast_07",
+      "label": "Tomato soup",
+      "sprite": "toast_07",
+      "targetCell": 7,
+      "categoryId": "toast_row_2",
+      "clue": "Sunrise order gets the tomato soup."
+    },
+    {
+      "id": "toast_08",
+      "label": "Pickles",
+      "sprite": "toast_08",
+      "targetCell": 8,
+      "categoryId": "toast_row_2",
+      "clue": "Coast order gets the pickles."
+    }
+  ],
+  "solution": [
+    {
+      "axis": "row",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "column",
+      "line": 0,
+      "direction": -1
+    },
+    {
+      "axis": "row",
+      "line": 1,
+      "direction": -1
+    }
+  ],
+  "firstClearCoins": 30,
+  "nextLevelId": 18,
+  "difficulty": "practice",
+  "chapterId": 3,
+  "designSeed": 30317
+}

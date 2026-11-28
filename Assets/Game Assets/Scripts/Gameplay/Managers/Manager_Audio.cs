@@ -47,8 +47,10 @@ public class Manager_Audio : Singleton<Manager_Audio>
         if (!SoundOn || _sfx == null || !FileRef.Instance.TryGetSound(type, out var data)) return;
 
         var clips = data.Clips;
-        var clip = clips[variant < 0 ? UnityEngine.Random.Range(0, clips.Length) : Mathf.Clamp(variant, 0, clips.Length - 1)];
-        if (clip != null) _sfx.PlayOneShot(clip, data.Volume);
+        int index = variant < 0 ? UnityEngine.Random.Range(0, clips.Length) : Mathf.Clamp(variant, 0, clips.Length - 1);
+        var clip = clips[index];
+        float gain = data.ClipVolumes != null && index < data.ClipVolumes.Length ? data.ClipVolumes[index] : 1f;
+        if (clip != null) _sfx.PlayOneShot(clip, data.Volume * gain);
 #if UNITY_EDITOR
         if (DebugLogSounds) Debug.Log($"[Audio] {type} -> {(clip != null ? clip.name : "null")}");
 #endif
