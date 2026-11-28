@@ -6,24 +6,34 @@ on 2026-11-28 against `1ea9dea` plus uncommitted work.
 **This file is maintained by hand.** When you change a system, edit the matching section.
 See `ARCHITECTURE-HISTORY.md` for what changed and when.
 
-> **Branch `any-row` (2026-11-28): "Any row, two clues"** (`Tilewrap_Any_Row_5_Case_Playtest.html`). This branch
-> replaces the 30-case wrap / swap game; where the sections below describe `BoardState`, `LevelDefinition`,
-> `CaseLevelSource`, `SwapPuzzle`, category tabs, the case map or line drags, read this instead (`CLAUDE.md`'s Game
-> design section has the rules in full):
-> - **Data:** `Assets/Game Assets/Data/delivery_cases.json` → `DeliveryContent` / `DeliveryCase` (`FileRef.Cases`,
->   assigned by Build Assets) → `Manager_Level.Load(n)`. Art and rigs still come from the pack's content library.
-> - **Model:** `DeliveryRules` + `DeliveryState` (pure): swap neighbours, any-row deliveries of eligible sets, gravity,
->   refills, staged / choice order, the 729-state hint planner, `Solve` and `CheckInvariant` (the validator uses both).
+> **Branch `any-row` (2026-11-29): "Follow the Evidence", 30 deduction cases** (`Tilewrap_Deduction_30_Level_Playtest.html`
+> and `Tilewrap_Game_Scope_v5.pdf`). This branch replaces the 30-case wrap / swap game; where the sections below
+> describe `BoardState`, `LevelDefinition`, `CaseLevelSource`, `SwapPuzzle`, category tabs, line drags, rig prefabs
+> or the feedback popup, read this instead (`CLAUDE.md`'s Game design section has the rules in full):
+> - **Data:** `Assets/Game Assets/Data/delivery_cases.json` (the playtest's `DELIVERY_CONTENT` without its art,
+>   JsonUtility shape) → `DeliveryContent` (economy, chapters, cases) / `DeliveryCase` (`FileRef.Cases`) →
+>   `Manager_Level.Load(n)`. A case carries its own **rigs** (layers: sprite, rect, item, order), clues as rules
+>   (`DeliveryClue.rule`, `refs`), a shared `cluePool`, a `dossier` (profile badges), `caseResolution`, optional
+>   `deduction`, evidence and next lead. Sprites: the pack's content library plus `Sprites/Evidence` (12 props the
+>   pack lacks, `FileRef._evidenceSprites`, filled by Build Assets). The pack's rig prefabs are no longer used.
+> - **Model:** `DeliveryRules` + `DeliveryState` (pure): boards of 3 columns × 3 or 4 rows, swap neighbours,
+>   any-row deliveries (`AnyPendingSetClears`: any pending set, open requests first; false = only open requests, the
+>   HTML's rule), gravity, refills, staged / choice / hybrid order, continues (`ExtraMoves`, `ContinuesUsed`),
+>   per-height hint planners (729 or 1,728 states), `Solve` and `CheckInvariant` (the validator uses both).
 >   `Transact` returns the move as steps (`DeliveryEvent`: Swap, Deliver, Fall).
-> - **Game** (`Manager_Game`): `Model` (after the move) and `View` (the step on screen), the request in focus
->   (`FocusSet`, order tabs), tap selection, case 1's `RequiredSwap`, history of whole states for Undo. Events:
->   `OnViewChanged`, `OnSwapCommitted`, `OnSwapRejected`, `OnMoveResolved`, `OnUndone`.
-> - **Board** (`Manager_Board`): tiles by item id, empty cells, `BeginDrag(a, b)` / `PlayMove(events, onDone)` (swap,
->   then `OnDelivering` → the HUD flies the items → `OnDelivered`, then fall / refill), marks (`TileLook`, row zones,
->   muted tiles), `ShowHint`, `ShowBoard` (Undo). The board is centred (`ReferenceLayout.BoardCenter` x 0).
-> - **Flow / UI:** `Manager_Flow` owns the coach line (`OnCoach`), clue focus (`OnClueFocus`), Hint, Notebook (per set),
->   `PopUp_Cases` (LevelSelect), win / fail / feedback. `UI_InGame` and `UI_SubjectCard` (delivered parts + extra
->   layers) were rebuilt by Build UI; `PopUp_Hint`, `PopUp_Notebook`, `PopUp_Cases` by Build PopUps.
+> - **Game** (`Manager_Game`): `Model` / `View`, the request in focus, tap selection, case 1's `RequiredSwap`,
+>   history of whole states for Undo, `Continue`, and the **saved attempt** (`OfflineData.Resume`, written after every
+>   move / undo / focus change, cleared on a win; `Launch` resumes it). `OfflineData.CurrentLevel` = the case open.
+> - **Board** (`Manager_Board`): cells 290 px wide × 870 / rows tall (`CellSize`, `RowCenterPixels`), tiles by item
+>   id (icon only), dividers copied as rows need, marks with no partial-correctness tint (focus = the items a clue
+>   names, hint, selected, muted), the hinted row's zone, and the first-look **slot settle** (`OfflineData.SeenCases`).
+> - **Flow / UI:** `Manager_Flow` owns the coach (per-case teaching lines 1–5, reasoning tips 6–14), clue paging
+>   (`CurrentClues`, `VisibleClueIndices`, `NextCluePage`), clue focus, Hint (explain first, then the next swap: free
+>   through case 8, then 30 coins), Notebook (Clues / Case file tabs), the case map (chapters), the milestone
+>   **deduction** (`PopUp_Deduction`), win (answer, evidence, next lead; star after case 30) and out of moves (+5 moves
+>   once per attempt). Events: `OnCoach`, `OnClueFocus`, `OnHudChanged`, `OnCounterTeach`. The cases cycle (30 → 1).
+>   `UI_InGame` / `UI_SubjectCard` (drawn from rig layers, profile fact, found-objects badge) by Build UI; all popups by
+>   Build PopUps.
 
 ---
 

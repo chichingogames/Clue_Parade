@@ -6,9 +6,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // Builds the HUD under Canvas/Container/InGame/Reference (see UI_InGame) on the 1080x1920 reference
-// layout, following Tilewrap_Any_Row_5_Case_Playtest: case pill, menu, coins, moves; title,
-// progress and pips; the request line, order tabs and two clue cards; the subjects over the board's
-// columns; the board note and the coach line; Undo / Notebook / Hint; the delivery banner. Every
+// layout, following Tilewrap_Deduction_30_Level_Playtest: case pill, menu, coins, moves (with case
+// 4's spotlight); title, case question, progress and pips (up to 10); the request line, "SET 1 / 3" /
+// "More clues" button, order tabs and two clue cards (CONFIRMED tag); the subjects over the board's
+// columns (profile fact, found-objects badge); the board note and the coach line; Undo / Notebook /
+// Hint (these three groups move down into a tall phone's spare room, UI_SafeDock); the delivery banner. Every
 // x, y, w, h below is in top-left-origin reference pixels. The pack's UI sprites and fonts; the
 // loading screen too. The board itself is world space (SceneBuilder).
 // Re-runnable: the HUD is built only when InGame has no UI_InGame yet. To rebuild it, delete
@@ -28,7 +30,7 @@ public static class UIBuilder
     // wide over its 290 px columns, art inset [17, 5, 246, 200].
     private const float BoardLeft = 105f;
     private const float Cell = 290f;
-    private const int MaxSets = 5;
+    private const int MaxSets = 10;
 
     [MenuItem("ShiftSort/Build UI")]
     public static void Build()
@@ -101,6 +103,11 @@ public static class UIBuilder
         var coins = Label(wallet, "Coins", 84, 0, 110, 80, bold, "0", 44, Cream, TextAlignmentOptions.MidlineLeft);
         Set(so, "_coinsText", coins.GetComponent<TMP_Text>());
 
+        var spotlight = Place(root, "Moves Spotlight", 748, 13, 304, 131);
+        AddImage(spotlight, Sprite("UI/panel_clue_matched"), sliced: true).color = Gold;
+        Set(so, "_movesSpotlight", spotlight.gameObject);
+        spotlight.gameObject.SetActive(false);
+
         var moves = Place(root, "Moves Panel", 760, 25, 280, 107);
         var movesImage = AddImage(moves, Sprite("UI/panel_moves"), sliced: true);
         var value = Label(moves, "Value", 0, 6, 280, 62, bold, "12", 50, Ink, TextAlignmentOptions.Center);
@@ -121,48 +128,66 @@ public static class UIBuilder
         intro.Add(moves);
     }
 
-    // title (40, 150, 1000, 74); progress (40, 232, 600, 48) with a pip per set on the right (69 x 17, 12 apart).
+    // title (40, 142, 1000, 70); the case question (60, 214, 960, 40); progress (40, 262, 560, 44) with
+    // a pip per set on the right (the pips row 600, 276, 440, 17; UI_InGame sizes them by count).
     private static void BuildTitle(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
                                    List<RectTransform> intro)
     {
-        var title = Label(root, "Title", 40, 150, 1000, 74, bold, "Parade prep", 60, Cream, TextAlignmentOptions.Center);
+        var title = Label(root, "Title", 40, 142, 1000, 70, bold, "Parade prep", 58, Cream, TextAlignmentOptions.Center);
         var titleText = title.GetComponent<TMP_Text>();
         titleText.enableAutoSizing = true;
         titleText.fontSizeMin = 40f;
-        titleText.fontSizeMax = 60f;
-        var progress = Label(root, "Progress", 40, 232, 600, 48, regular, "0 of 3 sets delivered", 32, PaleCream, TextAlignmentOptions.MidlineLeft);
+        titleText.fontSizeMax = 58f;
+        var question = Label(root, "Question", 60, 214, 960, 40, bold, "Which bag was paired with the blue shirt?", 29,
+                             new Color32(0xFF, 0xF0, 0xBD, 0xFF), TextAlignmentOptions.Center);
+        var questionText = question.GetComponent<TMP_Text>();
+        questionText.enableAutoSizing = true;
+        questionText.fontSizeMin = 20f;
+        questionText.fontSizeMax = 29f;
+        var progress = Label(root, "Progress", 40, 262, 560, 44, regular, "0 of 3 sets delivered", 31, PaleCream, TextAlignmentOptions.MidlineLeft);
         Set(so, "_title", titleText);
+        Set(so, "_question", questionText);
         Set(so, "_progressText", progress.GetComponent<TMP_Text>());
 
-        var pipsRect = Place(root, "Pips", 1040 - (MaxSets * 69 + (MaxSets - 1) * 12), 247, MaxSets * 69 + (MaxSets - 1) * 12, 17);
+        var pipsRect = Place(root, "Pips", 600, 276, 440, 17);
         var pips = so.FindProperty("_pips");
         pips.arraySize = MaxSets;
         for (int i = 0; i < MaxSets; i++)
         {
-            var pip = AddImage(Place(pipsRect, $"Pip {i + 1}", i * 81, 0, 69, 17), Sprite("UI/capsule_white"), sliced: true);
+            var pip = AddImage(Place(pipsRect, $"Pip {i + 1}", i * 44, 0, 34, 17), Sprite("UI/capsule_white"), sliced: true);
             pip.pixelsPerUnitMultiplier = 6f;
             pips.GetArrayElementAtIndex(i).objectReferenceValue = pip;
         }
         intro.Add(title);
+        intro.Add(question);
         intro.Add(progress);
         intro.Add(pipsRect);
     }
 
-    // request (40, 290, 560, 46) and "SET 1 / 3" (640, 290, 400, 46), or two order tabs
-    // (600 / 825, 284, 215, 58); two clue cards (40 / 550, 345, 490, 150): icon [14, 20, 100, 110],
-    // text [126, 12, 350, 126], the "SCENE CLUE" tag bottom right.
+    // request (40, 318, 560, 46) and "SET 1 / 3" / "More clues" (640, 318, 400, 46), or two order
+    // tabs (600 / 825, 312, 215, 58); two clue cards (40 / 550, 372, 490, 150): icon [14, 20, 100,
+    // 110], text [126, 12, 350, 126], the "CONFIRMED" tag bottom right.
     private static void BuildRequest(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
                                      List<RectTransform> intro)
     {
-        var request = Label(root, "Request", 40, 290, 560, 46, bold, "CLUES · HATS", 36, Cream, TextAlignmentOptions.MidlineLeft);
+        var request = Label(root, "Request", 40, 318, 560, 46, bold, "BUILD · HATS", 36, Cream, TextAlignmentOptions.MidlineLeft);
         var requestText = request.GetComponent<TMP_Text>();
         requestText.enableAutoSizing = true;
         requestText.fontSizeMin = 26f;
         requestText.fontSizeMax = 36f;
-        var position = Label(root, "Set Position", 640, 290, 400, 46, regular, "SET 1 / 3", 26, Cream, TextAlignmentOptions.MidlineRight);
-        position.GetComponent<TMP_Text>().characterSpacing = 6f;
+        var position = Place(root, "Set Position", 640, 318, 400, 46);
+        var positionHit = AddImage(position, null);
+        positionHit.color = new Color(1f, 1f, 1f, 0f);       // the label alone; the rect catches taps
+        var positionText = Label(position, "Label", 0, 0, 400, 46, regular, "SET 1 / 3", 26, Cream, TextAlignmentOptions.MidlineRight)
+                               .GetComponent<TMP_Text>();
+        positionText.characterSpacing = 4f;
+        var positionButton = MakeButton(position, positionHit);
+        var colors = positionButton.colors;
+        colors.disabledColor = Color.white;                    // "SET 1 / 3" is not a button but must not look greyed
+        positionButton.colors = colors;
         Set(so, "_requestText", requestText);
-        Set(so, "_setPosition", position.GetComponent<TMP_Text>());
+        Set(so, "_setPosition", positionText);
+        Set(so, "_setPositionButton", positionButton);
         intro.Add(request);
         intro.Add(position);
 
@@ -170,7 +195,7 @@ public static class UIBuilder
         tabs.arraySize = 2;
         for (int i = 0; i < 2; i++)
         {
-            var tab = Place(root, $"Order Tab {i + 1}", 600 + i * 225, 284, 215, 58);
+            var tab = Place(root, $"Order Tab {i + 1}", 600 + i * 225, 312, 215, 58);
             var surface = AddImage(tab, Sprite("UI/capsule_white"), sliced: true);
             var text = Label(tab, "Label", 10, 0, 195, 58, bold, "Mains", 30, Cream, TextAlignmentOptions.Center).GetComponent<TMP_Text>();
             text.enableAutoSizing = true;
@@ -185,7 +210,7 @@ public static class UIBuilder
         clues.arraySize = xs.Length;
         for (int i = 0; i < xs.Length; i++)
         {
-            var card = Place(root, $"Clue {i + 1}", xs[i], 345, 490, 150);
+            var card = Place(root, $"Clue {i + 1}", xs[i], 372, 490, 150);
             var panel = AddImage(card, Sprite("UI/panel_clue"), sliced: true);
             var icon = AddImage(Place(card, "Icon", 14, 20, 100, 110), Sprite("Items/crew_00"));
             icon.preserveAspect = true;
@@ -195,20 +220,24 @@ public static class UIBuilder
             text.enableAutoSizing = true;          // longer facts shrink to stay inside the card
             text.fontSizeMin = 22f;
             text.fontSizeMax = 32f;
-            var tag = Label(card, "Scene Tag", 280, 120, 196, 26, bold, "SCENE CLUE", 18, Teal, TextAlignmentOptions.MidlineRight);
-            tag.GetComponent<TMP_Text>().characterSpacing = 4f;
+            var tag = Place(card, "Confirmed Tag", 290, 116, 186, 30);
+            AddImage(Place(tag, "Check", 0, 1, 28, 28), Sprite("UI/check_badge")).preserveAspect = true;
+            Label(tag, "Text", 34, 0, 152, 30, bold, "CONFIRMED", 18, Teal, TextAlignmentOptions.MidlineLeft)
+                .GetComponent<TMP_Text>().characterSpacing = 4f;
+            tag.gameObject.SetActive(false);
 
             var slot = clues.GetArrayElementAtIndex(i);
             slot.FindPropertyRelative("Button").objectReferenceValue = MakeButton(card, panel);
             slot.FindPropertyRelative("Icon").objectReferenceValue = icon;
             slot.FindPropertyRelative("Text").objectReferenceValue = text;
-            slot.FindPropertyRelative("SceneTag").objectReferenceValue = tag.gameObject;
+            slot.FindPropertyRelative("ConfirmedTag").objectReferenceValue = tag.gameObject;
             intro.Add(card);
         }
     }
 
-    // subjects (105, 515, 870, 267): one white card per column (280 wide, centred on its 290 px
-    // column) holding the subject's rig in the art inset, and its name tab under it.
+    // subjects (105, 532, 870, 250): one white card per column (280 wide, centred on its 290 px
+    // column) holding the subject's rig in the art inset, the profile fact and found-objects badges,
+    // and its name tab under it.
     private static void BuildSubjects(RectTransform root, SerializedObject so, TMP_FontAsset bold, List<RectTransform> intro)
     {
         var subjects = so.FindProperty("_subjects");
@@ -216,8 +245,8 @@ public static class UIBuilder
         for (int c = 0; c < 3; c++)
         {
             float x = BoardLeft + c * Cell + 5f;
-            var subject = Place(root, $"Subject {c + 1}", x, 515, 280, 267);
-            var card = SubjectCard(subject, bold, 280, 213, 54, new[] { 17f, 5f, 246f, 200f }, Color.white, 32);
+            var subject = Place(root, $"Subject {c + 1}", x, 532, 280, 250);
+            var card = SubjectCard(subject, bold, 280, 198, 52, new[] { 17f, 4f, 246f, 190f }, Color.white, 32, withBadges: true);
             subjects.GetArrayElementAtIndex(c).objectReferenceValue = card;
             intro.Add(subject);
         }
@@ -225,8 +254,9 @@ public static class UIBuilder
 
     // A UI_SubjectCard on `parent`: the card (capsule_white in `surface`, the pop scales it) with the
     // rig's frame at `inset` (x, y, w, h inside the card), and a name tab of tabHeight under it.
+    // withBadges: the profile fact (top left) and the found-objects badge (bottom right) on the card.
     public static UI_SubjectCard SubjectCard(RectTransform parent, TMP_FontAsset bold, float width, float cardHeight,
-                                             float tabHeight, float[] inset, Color surface, float nameSize)
+                                             float tabHeight, float[] inset, Color surface, float nameSize, bool withBadges = false)
     {
         var body = Place(parent, "Card", 0, 0, width, cardHeight);
         var image = AddImage(body, Sprite("UI/capsule_white"), sliced: true);
@@ -247,6 +277,33 @@ public static class UIBuilder
         cardSo.FindProperty("_frame").objectReferenceValue = frame;
         cardSo.FindProperty("_name").objectReferenceValue = name;
         cardSo.FindProperty("_body").objectReferenceValue = body;
+        if (withBadges)
+        {
+            var fact = Place(body, "Fact", 8, 8, 140, 38);
+            AddImage(fact, Sprite("UI/capsule_white"), sliced: true).color = new Color32(0x17, 0x6F, 0x70, 0xF0);
+            var factText = Label(fact, "Text", 8, 0, 124, 38, bold, "40 km/h", 24, Cream, TextAlignmentOptions.Center).GetComponent<TMP_Text>();
+            factText.enableAutoSizing = true;
+            factText.fontSizeMin = 16f;
+            factText.fontSizeMax = 24f;
+            cardSo.FindProperty("_fact").objectReferenceValue = factText;
+            fact.gameObject.SetActive(false);
+
+            var packed = Place(body, "Packed", width - 150, cardHeight - 62, 144, 56);
+            AddImage(packed, Sprite("UI/capsule_white"), sliced: true).color = new Color32(0xF8, 0xED, 0xCF, 0xF0);
+            var icons = new Image[2];
+            for (int i = 0; i < icons.Length; i++)
+            {
+                icons[i] = AddImage(Place(packed, $"Icon {i + 1}", 6 + i * 44, 6, 44, 44), Sprite("Items/crew_00"));
+                icons[i].preserveAspect = true;
+            }
+            var count = Label(packed, "Count", 94, 0, 46, 56, bold, "+2", 24, Ink, TextAlignmentOptions.Center).GetComponent<TMP_Text>();
+            var iconsProperty = cardSo.FindProperty("_packedIcons");
+            iconsProperty.arraySize = icons.Length;
+            for (int i = 0; i < icons.Length; i++) iconsProperty.GetArrayElementAtIndex(i).objectReferenceValue = icons[i];
+            cardSo.FindProperty("_packed").objectReferenceValue = packed.gameObject;
+            cardSo.FindProperty("_packedCount").objectReferenceValue = count;
+            packed.gameObject.SetActive(false);
+        }
         cardSo.ApplyModifiedPropertiesWithoutUndo();
         return card;
     }
@@ -266,6 +323,8 @@ public static class UIBuilder
         coachText.fontSizeMax = 30f;
         Set(so, "_coachText", coachText);
         Set(so, "_coach", coach);
+        Dock(note, 0.3f);
+        Dock(coach, 0.65f);
         intro.Add(note);
         intro.Add(coach);
     }
@@ -279,6 +338,7 @@ public static class UIBuilder
         Set(so, "_undoButton", undo);
         Set(so, "_notebookButton", notebook);
         Set(so, "_hintButton", hint);
+        foreach (var button in new[] { undo, notebook, hint }) Dock((RectTransform)button.transform, 1f);
         intro.Add((RectTransform)undo.transform);
         intro.Add((RectTransform)notebook.transform);
         intro.Add((RectTransform)hint.transform);
@@ -415,6 +475,18 @@ public static class UIBuilder
 
         EditorSceneManager.MarkSceneDirty(rootGo.scene);
         Debug.Log("[UIBuilder] Loading screen built.");
+    }
+
+    // A tall phone's spare room below the reference: the buttons move all the way down (share 1),
+    // the coach and the board note part of the way (UI_SafeDock). Public: also used to add the dock
+    // to an existing HUD.
+    public static void Dock(RectTransform rect, float share)
+    {
+        var dock = rect.GetComponent<UI_SafeDock>();
+        if (dock == null) dock = Undo.AddComponent<UI_SafeDock>(rect.gameObject);
+        var so = new SerializedObject(dock);
+        so.FindProperty("_share").floatValue = share;
+        so.ApplyModifiedPropertiesWithoutUndo();
     }
 
     // ---------- Pieces (shared with PopUpBuilder) ----------

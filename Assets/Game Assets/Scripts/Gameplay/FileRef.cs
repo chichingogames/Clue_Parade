@@ -6,10 +6,11 @@ using UnityEngine;
 // The one place assets are assigned. Managers ask FileRef.Instance instead of holding prefab fields.
 // Filled by ShiftSort > Build Assets (AssetBuilder).
 //
-// The cases are the any-row delivery cases (_cases: Assets/Game Assets/Data/delivery_cases.json,
-// DeliveryContent). Their item and UI sprites and the registered subject rigs come from the content
-// pack's TilewrapContentLibrary, made by Tools > Chichingo > Tilewrap > Build 30-level content
-// (Assets/TilewrapVaried/Generated).
+// The cases are the 30 deduction cases (_cases: Assets/Game Assets/Data/delivery_cases.json,
+// DeliveryContent). Their item, rig-part and UI sprites come from the content pack's
+// TilewrapContentLibrary, made by Tools > Chichingo > Tilewrap > Build 30-level content
+// (Assets/TilewrapVaried/Generated), plus the evidence props (_evidenceSprites:
+// Sprites/Evidence, keyed by file name). Subjects are drawn from each case's rig layers.
 [AssetPath("FileRef")]
 [CreateAssetMenu(fileName = "FileRef", menuName = "ScriptableObjects/FileRef")]
 public class FileRef : ScriptableSingleton<FileRef>
@@ -32,8 +33,10 @@ public class FileRef : ScriptableSingleton<FileRef>
     [Header("Content")]
     [Tooltip("Assets/TilewrapVaried/Generated/TilewrapContentLibrary.asset")]
     [SerializeField] private TilewrapContentLibrary _content;
-    [Tooltip("Assets/Game Assets/Data/delivery_cases.json: the any-row cases (DeliveryContent).")]
+    [Tooltip("Assets/Game Assets/Data/delivery_cases.json: the 30 cases (DeliveryContent).")]
     [SerializeField] private TextAsset _cases;
+    [Tooltip("Assets/Game Assets/Sprites/Evidence: art the pack lacks (key = sprite name).")]
+    [SerializeField] private Sprite[] _evidenceSprites = new Sprite[0];
 
     [Header("Audio")]
     [SerializeField] private AudioClip _music;
@@ -45,10 +48,9 @@ public class FileRef : ScriptableSingleton<FileRef>
     public AudioClip Music => _music;
 
     private Dictionary<string, Sprite> _spriteMap;
-    private Dictionary<string, TilewrapRigView> _rigMap;
     private DeliveryContent _caseContent;
 
-    // A content sprite by its key ("luggage_00", "fx_star", "map_node_open"), or null.
+    // A content sprite by its key ("luggage_00", "mia_base", "fx_star", "wax_seal"), or null.
     public Sprite Sprite(string key)
     {
         if (_spriteMap == null)
@@ -56,20 +58,9 @@ public class FileRef : ScriptableSingleton<FileRef>
             _spriteMap = new Dictionary<string, Sprite>(StringComparer.Ordinal);
             if (_content != null && _content.sprites != null)
                 foreach (var entry in _content.sprites) _spriteMap[entry.id] = entry.sprite;
+            foreach (var sprite in _evidenceSprites) if (sprite != null) _spriteMap[sprite.name] = sprite;
         }
-        return key != null && _spriteMap.TryGetValue(key, out var sprite) ? sprite : null;
-    }
-
-    // A subject's registered rig prefab ("luggage_0"), or null.
-    public TilewrapRigView Rig(string id)
-    {
-        if (_rigMap == null)
-        {
-            _rigMap = new Dictionary<string, TilewrapRigView>(StringComparer.Ordinal);
-            if (_content != null && _content.rigs != null)
-                foreach (var entry in _content.rigs) _rigMap[entry.id] = entry.prefab;
-        }
-        return id != null && _rigMap.TryGetValue(id, out var rig) ? rig : null;
+        return key != null && _spriteMap.TryGetValue(key, out var found) ? found : null;
     }
 
     // The any-row cases, parsed once (null, logged, when the file is missing or broken).
@@ -100,7 +91,6 @@ public class FileRef : ScriptableSingleton<FileRef>
     private void OnValidate()
     {
         _spriteMap = null;
-        _rigMap = null;
         _caseContent = null;
     }
 
@@ -116,6 +106,6 @@ public class FileRef : ScriptableSingleton<FileRef>
         foreach (SoundType type in Enum.GetValues(typeof(SoundType)))
             if (type != SoundType.LineComplete && !TryGetSound(type, out _)) Debug.LogWarning($"[FileRef] No clip for sound {type}.", this);
 
-        if (problems == 0) Debug.Log($"[FileRef] OK. {Cases.cases.Length} cases, {_content.rigs.Length} rigs, {_content.sprites.Length} sprites.", this);
+        if (problems == 0) Debug.Log($"[FileRef] OK. {Cases.cases.Length} cases, {_content.sprites.Length} sprites, {_evidenceSprites.Length} evidence sprites.", this);
     }
 }

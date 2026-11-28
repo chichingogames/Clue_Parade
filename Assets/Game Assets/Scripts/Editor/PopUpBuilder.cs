@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 // same 1080x1920 reference pixels as the HUD. Each popup: a full-screen Dim (blocks taps, fades) and a
 // Holder (the panel, scales) whose VerticalLayoutGroup + ContentSizeFitter stack kicker, title, body,
 // the popup's own widgets and its buttons; long content scrolls inside a fixed-height ScrollRect.
-// The case map (PopupName.LevelSelect) is full screen instead. PopupName.Lesson and Confirm are retired (no popup).
+// PopupName.Lesson, Confirm and Feedback are retired (no popup).
 // Re-runnable: a popup whose object (PopUp_{Name}) exists is left as is; delete it to rebuild.
 public static class PopUpBuilder
 {
@@ -45,7 +45,7 @@ public static class PopUpBuilder
         BuildIfMissing(parent, PopupName.Notebook, BuildNotebook);
         BuildIfMissing(parent, PopupName.LevelSelect, BuildCases);
         BuildIfMissing(parent, PopupName.Menu, BuildMenu);
-        BuildIfMissing(parent, PopupName.Feedback, BuildFeedback);
+        BuildIfMissing(parent, PopupName.Deduction, BuildDeduction);
 
         var manager = Object.FindFirstObjectByType<Manager_PopUp>();
         if (manager != null)
@@ -69,162 +69,268 @@ public static class PopUpBuilder
 
     // ---------- Popups ----------
 
-    // "Case complete!": completion line, the subjects finished on a white panel, the reward pill and
-    // its note, the "UP NEXT" card, Next case and Choose a case.
+    // "Case complete!": the case question answered (icon + answer) on a card, the completion line
+    // (body, when there is no evidence card), the subjects finished on a white panel (or the festival
+    // star), the story card (case 5), the evidence card, the reward pill and the stats line, the
+    // "UP NEXT" card with the next lead, Next case and Choose a case.
     private static void BuildWin(Transform parent)
     {
         var (popup, holder, so) = Shell<PopUp_Win>(parent, PopupName.Win);
-        holder.Find("Body").GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Top;   // the completion line, centred
-        var scene = Fixed(holder, "Scene", 330);
-        UIBuilder.AddImage(scene, UIBuilder.Sprite("UI/capsule_white"), sliced: true).pixelsPerUnitMultiplier = 1.2f;
-        var subjects = SubjectRow(scene, out var cards);
+        var body = holder.Find("Body").GetComponent<TMP_Text>();
+        body.alignment = TextAlignmentOptions.Top;
+        body.fontSize = 30;
 
-        var reward = Fixed(holder, "Reward", 92);
-        var pill = UIBuilder.Rect(reward, "Pill", UIBuilder.Center, UIBuilder.Center, UIBuilder.Center, Vector2.zero, new Vector2(400f, 92f));
+        var resolution = Card(holder, "Resolution");
+        var question = Text(resolution, "Question", _regular, 28, MutedText, "Which bag was paired with the blue shirt?");
+        var answerRow = IconRow(resolution, "Answer", 72f, out var answerIcon, out var answer, _bold, 36);
+        _ = answerRow;
+        body.transform.SetSiblingIndex(resolution.GetSiblingIndex() + 1);
+
+        var scene = Fixed(holder, "Scene", 300);
+        UIBuilder.AddImage(scene, UIBuilder.Sprite("UI/capsule_white"), sliced: true).pixelsPerUnitMultiplier = 1.2f;
+        SubjectRow(scene, out var cards);
+        var star = UIBuilder.AddImage(Anchored(scene, "Star", UIBuilder.Center, Vector2.zero, new Vector2(260f, 260f)), null);
+        star.preserveAspect = true;
+        star.gameObject.SetActive(false);
+
+        var story = Card(holder, "Story");
+        var storyTitle = Text(story, "Title", _bold, 32, UIBuilder.Ink, "Something is missing…");
+        var storyText = Text(story, "Text", _regular, 27, UIBuilder.Ink, "The festival star has not arrived.");
+
+        var evidence = Card(holder, "Evidence");
+        Text(evidence, "Heading", _bold, 26, UIBuilder.Teal, "EVIDENCE ADDED TO YOUR CASE FILE").characterSpacing = 3f;
+        IconRow(evidence, "Fact", 72f, out var evidenceIcon, out var evidenceText, _regular, 27);
+
+        var reward = Fixed(holder, "Reward", 88);
+        var pill = UIBuilder.Rect(reward, "Pill", UIBuilder.Center, UIBuilder.Center, UIBuilder.Center, Vector2.zero, new Vector2(400f, 88f));
         UIBuilder.AddImage(pill, UIBuilder.Sprite("UI/button_gold"), sliced: true);
-        UIBuilder.AddImage(UIBuilder.Place(pill, "Coin", 34, 20, 52, 52), UIBuilder.Sprite("UI/icon_coin")).preserveAspect = true;
-        var rewardText = UIBuilder.Label(pill, "Text", 96, 0, 280, 92, _bold, "+30 coins", 42, UIBuilder.Ink, TextAlignmentOptions.Center);
+        UIBuilder.AddImage(UIBuilder.Place(pill, "Coin", 34, 18, 52, 52), UIBuilder.Sprite("UI/icon_coin")).preserveAspect = true;
+        var rewardText = UIBuilder.Label(pill, "Text", 96, 0, 280, 88, _bold, "+30 coins", 42, UIBuilder.Ink, TextAlignmentOptions.Center);
         var rewardTmp = rewardText.GetComponent<TMP_Text>();
         rewardTmp.enableAutoSizing = true;          // "Already collected" shrinks to stay clear of the coin
         rewardTmp.fontSizeMin = 24f;
         rewardTmp.fontSizeMax = 42f;
         rewardTmp.overflowMode = TextOverflowModes.Ellipsis;
-        var note = Text(holder, "Reward Note", _regular, 28, MutedText, "First completion reward");
+        var note = Text(holder, "Reward Note", _regular, 26, MutedText, "3 / 3 sets delivered");
 
-        var upNext = Fixed(holder, "Up Next", 172);
-        UIBuilder.AddImage(upNext, UIBuilder.Sprite("UI/panel_clue"), sliced: true);
-        var kicker = UIBuilder.Label(upNext, "Kicker", 36, 24, 700, 36, _bold, "UP NEXT", 26, UIBuilder.Teal, TextAlignmentOptions.MidlineLeft);
-        kicker.GetComponent<TMP_Text>().characterSpacing = 6f;
-        var nextTitle = UIBuilder.Label(upNext, "Title", 36, 62, 760, 50, _bold, "Cosy pet corner", 40, UIBuilder.Ink, TextAlignmentOptions.MidlineLeft);
-        UIBuilder.Label(upNext, "Line", 36, 114, 760, 34, _regular, "A new scene. The same swipe rules.", 26, MutedText, TextAlignmentOptions.MidlineLeft);
+        var upNext = Card(holder, "Up Next");
+        Text(upNext, "Kicker", _bold, 24, UIBuilder.Teal, "UP NEXT").characterSpacing = 6f;
+        var nextTitle = Text(upNext, "Title", _bold, 36, UIBuilder.Ink, "Welcome home");
+        var nextLine = Text(upNext, "Line", _regular, 25, MutedText, "Next lead: …");
+        foreach (var t in new[] { nextTitle, nextLine }) t.alignment = TextAlignmentOptions.TopLeft;
 
         var next = ActionButton(holder, "Next Button", ButtonStyle.Primary, "Next case", out var nextLabel);
         var map = ActionButton(holder, "Map Button", ButtonStyle.Text, "Choose a case", out _);
 
+        Set(so, "_question", question);
+        Set(so, "_answerIcon", answerIcon);
+        Set(so, "_answer", answer);
+        Set(so, "_sceneRoot", scene.gameObject);
         SetArray(so, "_subjects", cards);
-        Set(so, "_reward", rewardText.GetComponent<TMP_Text>());
+        Set(so, "_star", star);
+        Set(so, "_story", story.gameObject);
+        Set(so, "_storyTitle", storyTitle);
+        Set(so, "_storyText", storyText);
+        Set(so, "_evidence", evidence.gameObject);
+        Set(so, "_evidenceIcon", evidenceIcon);
+        Set(so, "_evidenceText", evidenceText);
+        Set(so, "_reward", rewardTmp);
         Set(so, "_rewardNote", note);
         Set(so, "_upNext", upNext.gameObject);
-        Set(so, "_upNextTitle", nextTitle.GetComponent<TMP_Text>());
+        Set(so, "_upNextTitle", nextTitle);
+        Set(so, "_upNextLine", nextLine);
         Set(so, "_nextButton", next);
         Set(so, "_nextLabel", nextLabel);
         Set(so, "_mapButton", map);
         Finish(popup, so);
-        _ = subjects;
     }
 
+    // "Out of moves": body, the +5 moves continue and its caption, Retry, Undo, Choose a case.
     private static void BuildFailed(Transform parent)
     {
         var (popup, holder, so) = Shell<PopUp_Failed>(parent, PopupName.Failed);
-        Set(so, "_retryButton", ActionButton(holder, "Retry Button", ButtonStyle.Primary, "Retry", out _));
-        Set(so, "_undoButton", ActionButton(holder, "Undo Button", ButtonStyle.Secondary, "Undo", out _));
+        holder.Find("Body").GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Top;
+        Set(so, "_continueButton", ActionButton(holder, "Continue Button", ButtonStyle.Primary, "+5 moves · free", out var continueLabel));
+        Set(so, "_continueLabel", continueLabel);
+        Set(so, "_caption", Text(holder, "Caption", _regular, 26, MutedText, "One continue per attempt."));
+        Set(so, "_retryButton", ActionButton(holder, "Retry Button", ButtonStyle.Secondary, "Retry this case · free", out _));
+        Set(so, "_undoButton", ActionButton(holder, "Undo Button", ButtonStyle.Secondary, "Undo last swap · free", out _));
         Set(so, "_levelsButton", ActionButton(holder, "Levels Button", ButtonStyle.Text, "Choose a case", out _));
         Finish(popup, so);
     }
 
-    // "A helpful next swap": the two tiles on a pale panel (item -> neighbour, or "Empty space"),
-    // the instruction, the body (why it helps), "Show me on the board", "I'll try it".
+    // "Need a little help?": the "Read it another way" card, the body, Show next swap, Open free
+    // notebook, the balance caption and Back to the board.
     private static void BuildHint(Transform parent)
     {
         var (popup, holder, so) = Shell<PopUp_Hint>(parent, PopupName.Hint);
-        var pair = Fixed(holder, "Pair", 170);
-        UIBuilder.AddImage(pair, UIBuilder.Sprite("UI/panel_clue"), sliced: true).color = new Color32(0xFF, 0xF3, 0xCE, 0xFF);
-        var item = UIBuilder.AddImage(Anchored(pair, "Item", UIBuilder.Center, new Vector2(-150f, 0f), new Vector2(150f, 140f)),
-                                      UIBuilder.Sprite("Items/crew_00"));
-        item.preserveAspect = true;
-        var arrow = UIBuilder.AddImage(Anchored(pair, "Arrow", UIBuilder.Center, Vector2.zero, new Vector2(90f, 60f)),
-                                       UIBuilder.Sprite("Tutorial/tutorial_arrow"));
-        arrow.preserveAspect = true;
-        var other = UIBuilder.AddImage(Anchored(pair, "Other", UIBuilder.Center, new Vector2(150f, 0f), new Vector2(150f, 140f)),
-                                       UIBuilder.Sprite("Items/crew_01"));
-        other.preserveAspect = true;
-        var empty = UIBuilder.AddText(Anchored(pair, "Empty", UIBuilder.Center, new Vector2(150f, 0f), new Vector2(180f, 120f)), _bold,
-                                      "Empty\nspace", 32, new Color32(0xA3, 0x78, 0x33, 0xFF));
-        empty.alignment = TextAlignmentOptions.Center;
-        empty.textWrappingMode = TextWrappingModes.Normal;
-
-        var instruction = Text(holder, "Instruction", _bold, 42, UIBuilder.Ink, "Swipe the purple cap right.");
+        var card = Card(holder, "Explanation");
+        Text(card, "Heading", _bold, 30, UIBuilder.Ink, "Read it another way").alignment = TextAlignmentOptions.TopLeft;
+        var explanation = Text(card, "Text", _regular, 29, UIBuilder.Ink, "Leo has the blue cap. Match that item to the named column.");
+        explanation.alignment = TextAlignmentOptions.TopLeft;
         MoveBodyToEnd(holder);
         var body = holder.Find("Body").GetComponent<TMP_Text>();
-        body.fontSize = 32;
+        body.fontSize = 29;
         body.color = new Color32(0x76, 0x52, 0x3D, 0xFF);
 
-        Set(so, "_itemIcon", item);
-        Set(so, "_otherIcon", other);
-        Set(so, "_emptyLabel", empty.gameObject);
-        Set(so, "_instruction", instruction);
-        Set(so, "_showButton", ActionButton(holder, "Show Button", ButtonStyle.Primary, "Show me on the board", out _));
-        Set(so, "_tryButton", ActionButton(holder, "Try Button", ButtonStyle.Text, "I’ll try it", out _));
-        empty.gameObject.SetActive(false);
+        Set(so, "_explanation", explanation);
+        Set(so, "_showButton", ActionButton(holder, "Show Button", ButtonStyle.Primary, "Show next swap · free", out var showLabel));
+        Set(so, "_showLabel", showLabel);
+        Set(so, "_notebookButton", ActionButton(holder, "Notebook Button", ButtonStyle.Secondary, "Open free notebook", out _));
+        Set(so, "_caption", Text(holder, "Caption", _regular, 25, MutedText, "Balance: 60 coins."));
+        Set(so, "_backButton", ActionButton(holder, "Back Button", ButtonStyle.Text, "Back to the board", out _));
         Finish(popup, so);
     }
 
-    // "Your notebook": in a scrolling list, one section per set (up to 5): a cream card with the set's
-    // name, its status on the right, and three facts (icon + sentence). Then the rules line (body)
-    // and Back to the board.
+    // "Detective notebook": the Clues / Case file tabs, the intro (body), a scrolling list of
+    // sections (a cream card: title and status, then lines of icon + text; both from inactive
+    // templates) and Back to the board.
     private static void BuildNotebook(Transform parent)
     {
         var (popup, holder, so) = Shell<PopUp_Notebook>(parent, PopupName.Notebook);
-        MoveBodyToEnd(holder);
-        var body = holder.Find("Body").GetComponent<TMP_Text>();
-        body.fontSize = 28;
-        body.color = new Color32(0x76, 0x52, 0x3D, 0xFF);
-        holder.Find("Body").SetSiblingIndex(holder.Find("Title").GetSiblingIndex() + 1);
-        ScrollArea(holder, "Sets", 980, out var content);
-
-        var sections = so.FindProperty("_sections");
-        sections.arraySize = 5;
-        for (int i = 0; i < 5; i++)
+        var tabsRow = Fixed(holder, "Tabs", 78);
+        var tabs = new Button[2];
+        string[] names = { "Clues", "Case file" };
+        for (int i = 0; i < tabs.Length; i++)
         {
-            var section = Fixed(content, $"Set {i + 1}", 300);
-            var surface = UIBuilder.AddImage(section, UIBuilder.Sprite("UI/panel_clue"), sliced: true);
-            var label = UIBuilder.AddText(Anchored(section, "Label", new Vector2(0f, 1f), new Vector2(210f, -40f), new Vector2(360f, 50f)),
-                                          _bold, "Hats", 34, UIBuilder.Ink);
-            label.alignment = TextAlignmentOptions.MidlineLeft;
-            var status = UIBuilder.AddText(Anchored(section, "Status", new Vector2(1f, 1f), new Vector2(-130f, -40f), new Vector2(220f, 40f)),
-                                           _bold, "ACTIVE", 22, UIBuilder.Teal);
-            status.alignment = TextAlignmentOptions.MidlineRight;
-            status.characterSpacing = 4f;
-            var icons = new Image[3];
-            var texts = new TMP_Text[3];
-            for (int f = 0; f < 3; f++)
-            {
-                var fact = Anchored(section, $"Fact {f + 1}", new Vector2(0.5f, 1f), new Vector2(0f, -100f - f * 72f), new Vector2(820f, 68f));
-                icons[f] = UIBuilder.AddImage(Anchored(fact, "Icon", new Vector2(0f, 0.5f), new Vector2(46f, 0f), new Vector2(76f, 64f)),
-                                              UIBuilder.Sprite("Items/crew_00"));
-                icons[f].preserveAspect = true;
-                texts[f] = UIBuilder.AddText(UIBuilder.Rect(fact, "Text", Vector2.zero, Vector2.one, UIBuilder.Center, new Vector2(52f, 0f), new Vector2(-104f, 0f)),
-                                             _regular, "Mia gets the red cap.", 28, UIBuilder.Ink);
-                texts[f].alignment = TextAlignmentOptions.MidlineLeft;
-                texts[f].textWrappingMode = TextWrappingModes.Normal;
-                texts[f].enableAutoSizing = true;
-                texts[f].fontSizeMin = 20f;
-                texts[f].fontSizeMax = 28f;
-            }
-            var view = sections.GetArrayElementAtIndex(i);
-            view.FindPropertyRelative("Root").objectReferenceValue = section.gameObject;
-            view.FindPropertyRelative("Surface").objectReferenceValue = surface;
-            view.FindPropertyRelative("Label").objectReferenceValue = label;
-            view.FindPropertyRelative("Status").objectReferenceValue = status;
-            SetArray(view.FindPropertyRelative("Icons"), icons);
-            SetArray(view.FindPropertyRelative("Texts"), texts);
+            var tab = UIBuilder.Rect(tabsRow, $"Tab {names[i]}", new Vector2(i * 0.5f, 0f), new Vector2((i + 1) * 0.5f, 1f), UIBuilder.Center,
+                                     new Vector2(i == 0 ? -8f : 8f, 0f), new Vector2(-16f, 0f));
+            var surface = UIBuilder.AddImage(tab, UIBuilder.Sprite("UI/capsule_white"), sliced: true);
+            UIBuilder.AddText(UIBuilder.Rect(tab, "Label", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero),
+                              _bold, names[i], 32, UIBuilder.Ink);
+            tabs[i] = UIBuilder.MakeButton(tab, surface);
         }
+        var body = holder.Find("Body").GetComponent<TMP_Text>();
+        body.fontSize = 27;
+        body.color = new Color32(0x76, 0x52, 0x3D, 0xFF);
+        body.transform.SetSiblingIndex(tabsRow.GetSiblingIndex() + 1);
+        var scroll = ScrollArea(holder, "Sections", 960, out var content);
+
+        // Section template: a card stacking its header and lines.
+        var section = UIBuilder.Rect(content, "Section Template", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero);
+        UIBuilder.AddImage(section, UIBuilder.Sprite("UI/panel_clue"), sliced: true);
+        var sectionLayout = Undo.AddComponent<VerticalLayoutGroup>(section.gameObject);
+        sectionLayout.padding = new RectOffset(30, 30, 20, 24);
+        sectionLayout.spacing = 8f;
+        sectionLayout.childControlWidth = sectionLayout.childControlHeight = true;
+        sectionLayout.childForceExpandWidth = true;
+        sectionLayout.childForceExpandHeight = false;
+        var header = Fixed(section, "Header", 48);
+        var title = UIBuilder.AddText(UIBuilder.Rect(header, "Title", Vector2.zero, Vector2.one, UIBuilder.Center, new Vector2(-90f, 0f), new Vector2(-180f, 0f)),
+                                      _bold, "Hats", 32, UIBuilder.Ink);
+        title.alignment = TextAlignmentOptions.MidlineLeft;
+        var status = UIBuilder.AddText(UIBuilder.Rect(header, "Status", new Vector2(1f, 0f), Vector2.one, new Vector2(1f, 0.5f), Vector2.zero, new Vector2(200f, 0f)),
+                                       _bold, "ACTIVE", 22, UIBuilder.Teal);
+        status.alignment = TextAlignmentOptions.MidlineRight;
+        status.characterSpacing = 4f;
+        var line = UIBuilder.Rect(section, "Line Template", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero);
+        var lineLayout = Undo.AddComponent<HorizontalLayoutGroup>(line.gameObject);
+        lineLayout.spacing = 16f;
+        lineLayout.childAlignment = TextAnchor.MiddleLeft;
+        lineLayout.childControlWidth = lineLayout.childControlHeight = true;
+        lineLayout.childForceExpandWidth = lineLayout.childForceExpandHeight = false;
+        var icon = UIBuilder.AddImage(UIBuilder.Rect(line, "Icon", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero),
+                                      UIBuilder.Sprite("Items/crew_00"));
+        icon.preserveAspect = true;
+        var iconElement = Undo.AddComponent<LayoutElement>(icon.gameObject);
+        iconElement.minWidth = iconElement.preferredWidth = 64f;
+        iconElement.minHeight = iconElement.preferredHeight = 64f;
+        var text = UIBuilder.AddText(UIBuilder.Rect(line, "Text", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero),
+                                     _regular, "Leo has the blue cap.", 28, UIBuilder.Ink);
+        text.alignment = TextAlignmentOptions.MidlineLeft;
+        text.textWrappingMode = TextWrappingModes.Normal;
+        text.overflowMode = TextOverflowModes.Overflow;
+        Undo.AddComponent<LayoutElement>(text.gameObject).flexibleWidth = 1f;
+        line.gameObject.SetActive(false);
+        section.gameObject.SetActive(false);
+
+        SetArray(so, "_tabs", tabs);
+        Set(so, "_sectionTemplate", section);
+        Set(so, "_lineTemplate", line);
+        Set(so, "_scroll", scroll);
         Set(so, "_backButton", ActionButton(holder, "Back Button", ButtonStyle.Primary, "Back to the board", out _));
         Finish(popup, so);
     }
 
-    // "Choose a case": progress line (body), a scrolling list of case rows (number or check, title,
-    // what the case introduces) and Back. Registered as LevelSelect.
+    // The case map: the story line (body), a scrolling list of chapter headings and case rows (number
+    // or check, title with EXPERT, rows / items / sets / moves) and Back. Registered as LevelSelect.
     private static void BuildCases(Transform parent)
     {
         var (popup, holder, so) = Shell<PopUp_Cases>(parent, PopupName.LevelSelect);
         var body = holder.Find("Body").GetComponent<TMP_Text>();
-        body.fontSize = 30;
+        body.fontSize = 28;
         body.alignment = TextAlignmentOptions.Top;
-        ScrollArea(holder, "Cases", 760, out var content);
-        Set(so, "_rowTemplate", ChoiceRow(content, "Case Template", 130f, withSubtitle: true));
+        var scroll = ScrollArea(holder, "Cases", 1060, out var content);
+        var heading = UIBuilder.AddText(Fixed(content, "Heading Template", 64), _bold, "1. Festival preparations", 32, UIBuilder.Teal);
+        heading.alignment = TextAlignmentOptions.BottomLeft;
+        heading.margin = new Vector4(8f, 0f, 0f, 6f);
+        heading.gameObject.SetActive(false);
+        Set(so, "_headingTemplate", heading);
+        Set(so, "_rowTemplate", ChoiceRow(content, "Case Template", 124f, withSubtitle: true));
+        Set(so, "_scroll", scroll);
         Set(so, "_backButton", ActionButton(holder, "Back Button", ButtonStyle.Secondary, "Back to the board", out _));
         Finish(popup, so);
+    }
+
+    // "Final deduction": the question (title), the evidence, the feedback line and three answers.
+    private static void BuildDeduction(Transform parent)
+    {
+        var (popup, holder, so) = Shell<PopUp_Deduction>(parent, PopupName.Deduction, withBody: false);
+        var card = Card(holder, "Evidence");
+        var evidence = Text(card, "Text", _regular, 29, UIBuilder.Ink, "The repair log says KEEP THE CRATE DRY.");
+        evidence.alignment = TextAlignmentOptions.TopLeft;
+        var feedback = Text(holder, "Feedback", _regular, 28, new Color32(0x76, 0x52, 0x3D, 0xFF), "Use both facts to close this part of the case.");
+        var options = new Button[3];
+        var labels = new TMP_Text[3];
+        for (int i = 0; i < options.Length; i++)
+        {
+            options[i] = ActionButton(holder, $"Option {i + 1}", ButtonStyle.Secondary, "To protect it from the rain", out labels[i]);
+            labels[i].fontSizeMax = 32f;
+        }
+        Set(so, "_evidence", evidence);
+        Set(so, "_feedback", feedback);
+        SetArray(so, "_options", options);
+        SetArray(so, "_optionLabels", labels);
+        Finish(popup, so);
+    }
+
+    // A cream card in a popup's layout that grows with its children (stacked, padded).
+    private static RectTransform Card(RectTransform parent, string name)
+    {
+        var card = UIBuilder.Rect(parent, name, Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero);
+        UIBuilder.AddImage(card, UIBuilder.Sprite("UI/panel_clue"), sliced: true);
+        var layout = Undo.AddComponent<VerticalLayoutGroup>(card.gameObject);
+        layout.padding = new RectOffset(30, 30, 20, 22);
+        layout.spacing = 8f;
+        layout.childControlWidth = layout.childControlHeight = true;
+        layout.childForceExpandWidth = true;
+        layout.childForceExpandHeight = false;
+        return card;
+    }
+
+    // An icon (size x size) and a wrapping text beside it, in a card's layout.
+    private static RectTransform IconRow(RectTransform parent, string name, float size, out Image icon, out TMP_Text text,
+                                         TMP_FontAsset font, float fontSize)
+    {
+        var row = UIBuilder.Rect(parent, name, Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero);
+        var layout = Undo.AddComponent<HorizontalLayoutGroup>(row.gameObject);
+        layout.spacing = 18f;
+        layout.childAlignment = TextAnchor.MiddleLeft;
+        layout.childControlWidth = layout.childControlHeight = true;
+        layout.childForceExpandWidth = layout.childForceExpandHeight = false;
+        icon = UIBuilder.AddImage(UIBuilder.Rect(row, "Icon", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero),
+                                  UIBuilder.Sprite("Items/crew_00"));
+        icon.preserveAspect = true;
+        var element = Undo.AddComponent<LayoutElement>(icon.gameObject);
+        element.minWidth = element.preferredWidth = size;
+        element.minHeight = element.preferredHeight = size;
+        text = UIBuilder.AddText(UIBuilder.Rect(row, "Text", Vector2.zero, Vector2.one, UIBuilder.Center, Vector2.zero, Vector2.zero),
+                                 font, "Purple bag", fontSize, UIBuilder.Ink);
+        text.alignment = TextAlignmentOptions.MidlineLeft;
+        text.textWrappingMode = TextWrappingModes.Normal;
+        text.overflowMode = TextOverflowModes.Overflow;
+        Undo.AddComponent<LayoutElement>(text.gameObject).flexibleWidth = 1f;
+        return row;
     }
 
     private static void BuildMenu(Transform parent)
@@ -236,19 +342,6 @@ public static class PopUpBuilder
         Set(so, "_restartButton", ActionButton(holder, "Restart Button", ButtonStyle.Secondary, "Restart this case", out _));
         Set(so, "_levelsButton", ActionButton(holder, "Levels Button", ButtonStyle.Secondary, "Choose a case", out _));
         Set(so, "_backButton", ActionButton(holder, "Back Button", ButtonStyle.Primary, "Back to the game", out _));
-        Finish(popup, so);
-    }
-
-    private static void BuildFeedback(Transform parent)
-    {
-        var (popup, holder, so) = Shell<PopUp_Feedback>(parent, PopupName.Feedback);
-        ScrollArea(holder, "Questions", 700, out var content);
-        var question = Text(content, "Question Template", _bold, 34, UIBuilder.Ink, "Was the goal clear?");
-        var option = ChoiceRow(content, "Option Template", 86f, withSubtitle: false);
-        Set(so, "_questionTemplate", question);
-        Set(so, "_optionTemplate", option);
-        Set(so, "_saveButton", ActionButton(holder, "Save Button", ButtonStyle.Primary, "Save feedback and results", out _));
-        Set(so, "_backButton", ActionButton(holder, "Back Button", ButtonStyle.Secondary, "Back to the map", out _));
         Finish(popup, so);
     }
 

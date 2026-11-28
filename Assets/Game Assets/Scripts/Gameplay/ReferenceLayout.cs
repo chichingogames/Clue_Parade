@@ -19,14 +19,10 @@ public static class ReferenceLayout
     public static readonly Vector2 FramePadding = new Vector2(0.15f, 0.10f);
     public const float DividerWidth = 0.026f;
 
-    // Inside a cell (geometry, px from the cell's top-left): item art [25, 15, 240, 205], the name
-    // from y 221, the check [238, 14, 44, 44]. Offsets are from the cell's centre.
-    public static readonly Vector2 ItemArtOffset = new Vector2(0f, 0.275f);
-    public static readonly Vector2 ItemArtBox = new Vector2(2.40f, 2.05f);
-    public static readonly Vector2 ItemLabelOffset = new Vector2(0f, -1.03f);
-    public static readonly Vector2 ItemLabelSize = new Vector2(2.70f, 0.46f);
-    public const float ItemLabelFont = 3.1f;          // textSizes.item 31 px; world TMP size 10 ~ 1 unit
-    public const float ItemLabelMinFont = 2.2f;
+    // Inside a cell (px from the cell's top-left): the item art centred in a 250 x 240 box (tiles show
+    // no name), the check [238, 14, 44, 44]. Offsets are from the cell's centre.
+    public static readonly Vector2 ItemArtOffset = Vector2.zero;
+    public static readonly Vector2 ItemArtBox = new Vector2(2.50f, 2.40f);
     public static readonly Vector2 CheckOffset = new Vector2(1.15f, 1.09f);
     public const float CheckSize = 0.44f;
 }

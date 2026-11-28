@@ -4,6 +4,23 @@ Append-only. Newest first. One entry per documentation run.
 
 ---
 
+## 2026-11-29 — branch `any-row` on `136a9e8`
+
+**"Follow the Evidence": 30 deduction cases** (sources: `Tilewrap_Deduction_30_Level_Playtest.html`,
+`Tilewrap_Game_Scope_v5.pdf`). `delivery_cases.json` regenerated (rigs per case, clue rules and pools, dossiers,
+resolutions, deductions, economy, chapters); 12 evidence sprites in `Sprites/Evidence`. `DeliveryRules`: 3 or 4
+rows, hybrid order, continues, per-height planners, `AnyPendingSetClears`. `Manager_Game`: save / resume of the
+attempt, `Continue`. `Manager_Board`: variable rows, no partial tints, slot settle. `Manager_Flow`: per-case coach,
+clue paging, explain-first Hint with coin cost, Notebook tabs, chapters map, deduction, +5 moves continue, win with
+answer / evidence / lead. New `PopUp_Deduction` (`PopupName.Deduction = 9`); rebuilt HUD and every popup but the
+menu. Earlier on this branch: tile names removed, the feedback screen removed, cases cycle. **Verified** in the
+Editor: compile clean; Validate Levels 30 OK (case 17 parks its third set complete at the start, which the
+any-pending rule clears on the first swap); Play mode: case 1 hint route to the win, case 9 clue paging / notebook /
+paid hint, case 13 (4 rows), case 15 deduction (wrong then right, +90), case 4 counter spotlight / out of moves /
+continue once / undo, resume after leaving Play mode, case 30 finale and the cycle to case 1, map scroll.
+
+---
+
 ## 2026-11-28 — branch `any-row` on `7de3f53`
 
 **"Any row, two clues" replaces the 30-case game** (source: `Tilewrap_Any_Row_5_Case_Playtest.html`). Five cases in

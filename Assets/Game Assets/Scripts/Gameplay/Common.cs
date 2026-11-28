@@ -2,8 +2,9 @@
 public enum GameState { Loading = 0, Playing = 1, Won = 2, Failed = 3 }
 
 // One per popup (Manager_PopUp registry). Serialized on each popup by ordinal: append only.
-// Lesson and Confirm are retired (no popup); LevelSelect is the case list (PopUp_Cases).
-public enum PopupName { Lesson = 0, Win = 1, Failed = 2, Hint = 3, Notebook = 4, LevelSelect = 5, Menu = 6, Confirm = 7, Feedback = 8 }
+// Lesson, Confirm and Feedback are retired (no popup); LevelSelect is the case map (PopUp_Cases);
+// Deduction is the milestone cases' final question (PopUp_Deduction).
+public enum PopupName { Lesson = 0, Win = 1, Failed = 2, Hint = 3, Notebook = 4, LevelSelect = 5, Menu = 6, Confirm = 7, Feedback = 8, Deduction = 9 }
 
 // Strength of a vibration pulse (Haptics.Play). Not serialized.
 public enum HapticType { Light = 0, Medium = 1, Heavy = 2 }
@@ -23,7 +24,6 @@ public static class SortOrder
     public const int ActiveRow = 2;     // row zones (a row two thirds / fully done, the hinted row)
     public const int TileFlash = 3;     // a tile's tint (aligned, focus, hint, selected) and flashes
     public const int TileItem = 5;      // ItemTile item art
-    public const int TileLabel = 6;     // ItemTile item name
     public const int TileCheck = 9;     // check badge on a cell (unused by the any-row rules)
     public const int Guide = 20;        // guided / hinted swap: band, arrow, hand
     public const int Particles = 25;    // delivery ring and stars

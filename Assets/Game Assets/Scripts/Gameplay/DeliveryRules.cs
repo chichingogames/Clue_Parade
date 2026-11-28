@@ -2,14 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-// Pure rules of the any-row board (no Unity objects): a 3x3 board of item ids (null = empty).
-// A move swaps two orthogonal neighbours (at least one holding an item). After it, any row whose
-// three cells hold an eligible set's items under their owners (item c in column c) is delivered:
-// the items leave the board for the subjects, the items above fall down their columns, and the
-// next refill triple (if any) drops into the top empty cell of each column. Deliveries repeat
-// until no row is ready. All sets delivered = won; reaching a move limit first = lost.
+// Pure rules of the any-row board (no Unity objects), a port of the playtest's DeliveryCore: a board
+// of 3 columns x level.rows (3 or 4) item ids (null = empty), cell i = row * 3 + col. A move swaps two
+// orthogonal neighbours (at least one holding an item). After it, any row whose three cells hold a
+// pending set's items under their owners (item c in column c) is delivered, whether or not that set
+// is the request on screen: the items leave the board for the subjects, the items above fall down
+// their columns, and the next refill triple (if any) drops into the top empty cell of each column.
+// Deliveries repeat until no row is ready. All sets delivered = won (a win on the last move beats
+// running out); reaching the move limit (plus any continue moves) first = lost.
 public enum DeliveryStatus { Playing = 0, Won = 1, Lost = 2 }
 
+[Serializable]
 public class DeliveryState
 {
     public string[] Board = new string[9];
@@ -17,6 +20,8 @@ public class DeliveryState
     public List<string> Delivered = new List<string>();
     public int SpawnIndex;
     public int Moves;
+    public int ExtraMoves;                 // moves added by a continue
+    public int ContinuesUsed;
     public DeliveryStatus Status;
 
     public int Stage => CompletedSets.Count;
@@ -28,6 +33,8 @@ public class DeliveryState
         Delivered = new List<string>(Delivered),
         SpawnIndex = SpawnIndex,
         Moves = Moves,
+        ExtraMoves = ExtraMoves,
+        ContinuesUsed = ContinuesUsed,
         Status = Status,
     };
 }
@@ -56,31 +63,33 @@ public class DeliveryHint
 
 public static class DeliveryRules
 {
-    public const int Size = 3;
-    public const int Cells = 9;
+    public const int Columns = 3;
 
-    // The 12 neighbour pairs (a < b): horizontal, then vertical.
-    public static readonly (int a, int b)[] Edges = BuildEdges();
+    public static int RowsOf(string[] board) => board.Length / Columns;
 
-    private static (int, int)[] BuildEdges()
+    // The neighbour pairs (a < b) of a board with `rows` rows: horizontal, then vertical.
+    public static (int a, int b)[] Edges(int rows)
     {
         var edges = new List<(int, int)>();
-        for (int r = 0; r < Size; r++) for (int c = 0; c + 1 < Size; c++) edges.Add((r * Size + c, r * Size + c + 1));
-        for (int r = 0; r + 1 < Size; r++) for (int c = 0; c < Size; c++) edges.Add((r * Size + c, (r + 1) * Size + c));
+        for (int r = 0; r < rows; r++) for (int c = 0; c + 1 < Columns; c++) edges.Add((r * Columns + c, r * Columns + c + 1));
+        for (int r = 0; r + 1 < rows; r++) for (int c = 0; c < Columns; c++) edges.Add((r * Columns + c, (r + 1) * Columns + c));
         return edges.ToArray();
     }
 
-    public static bool Adjacent(int a, int b) =>
-        a >= 0 && a < Cells && b >= 0 && b < Cells && Math.Abs(a % Size - b % Size) + Math.Abs(a / Size - b / Size) == 1;
+    public static bool Adjacent(int a, int b, int cells) =>
+        a >= 0 && a < cells && b >= 0 && b < cells && Math.Abs(a % Columns - b % Columns) + Math.Abs(a / Columns - b / Columns) == 1;
 
     public static DeliveryState Create(DeliveryCase level) => new DeliveryState { Board = (string[])level.start.Clone() };
 
+    public static int MoveBudget(DeliveryState state, DeliveryCase level) => level.HasMoveLimit ? level.moveLimit + state.ExtraMoves : 0;
+
     // The sets that can be delivered now: staged = the next one; choice = up to two pending sets
-    // whose items are all on the board.
+    // whose items are all on the board; hybrid = staged while one of the first three is pending.
     public static List<int> Eligible(DeliveryState state, DeliveryCase level)
     {
         var pending = Enumerable.Range(0, level.sets.Length).Where(i => !state.CompletedSets.Contains(i)).ToList();
-        if (!level.IsChoice) return pending.Take(1).ToList();
+        if (level.orderMode == "hybrid" && pending.Any(i => i < 3)) return pending.Where(i => i < 3).Take(1).ToList();
+        if (level.orderMode != "choice" && level.orderMode != "hybrid") return pending.Take(1).ToList();
         return pending.Where(i => level.sets[i].items.All(id => Array.IndexOf(state.Board, id) >= 0)).Take(2).ToList();
     }
 
@@ -91,28 +100,29 @@ public static class DeliveryRules
         return active.Contains(preferred) ? preferred : active.Count > 0 ? active[0] : -1;
     }
 
-    // A row holding an eligible set under its owners, or null.
+    // True (the game's rule): any pending set clears from any row, even when its clues are not on
+    // screen. False: only the open requests clear (the playtest HTML's rule; case 17 parks its third
+    // set complete in a row at the start, which this rule delivers on the first swap).
+    public static bool AnyPendingSetClears = true;
+
+    // A row holding a set that can clear under its owners, or null: the open requests are checked
+    // first, then (AnyPendingSetClears) every other pending set.
     public static (int row, int index)? Ready(DeliveryState state, DeliveryCase level)
     {
         var eligible = Eligible(state, level);
-        for (int row = 0; row < Size; row++)
-            foreach (int index in eligible)
+        var order = !AnyPendingSetClears ? eligible : eligible.Concat(Enumerable.Range(0, level.sets.Length)
+                                              .Where(i => !state.CompletedSets.Contains(i) && !eligible.Contains(i)));
+        int rows = RowsOf(state.Board);
+        foreach (int index in order)
+            for (int row = 0; row < rows; row++)
                 if (RowHolds(state.Board, row, level.sets[index])) return (row, index);
         return null;
     }
 
     public static bool RowHolds(string[] board, int row, DeliverySet set)
     {
-        for (int c = 0; c < Size; c++) if (board[row * Size + c] != set.items[c]) return false;
+        for (int c = 0; c < Columns; c++) if (board[row * Columns + c] != set.items[c]) return false;
         return true;
-    }
-
-    // How many of a set's items are under their owner in this row.
-    public static int AlignedInRow(string[] board, int row, DeliverySet set)
-    {
-        int n = 0;
-        for (int c = 0; c < Size; c++) if (board[row * Size + c] == set.items[c]) n++;
-        return n;
     }
 
     // Swaps a and b and resolves deliveries, falls and refills. Not accepted (state unchanged):
@@ -122,7 +132,8 @@ public static class DeliveryRules
     {
         events = new List<DeliveryEvent>();
         result = state.Clone();
-        if (state.Status != DeliveryStatus.Playing || !Adjacent(a, b) || (state.Board[a] == null && state.Board[b] == null)) return false;
+        int cells = state.Board.Length, rows = RowsOf(state.Board);
+        if (state.Status != DeliveryStatus.Playing || !Adjacent(a, b, cells) || (state.Board[a] == null && state.Board[b] == null)) return false;
 
         var s = result;
         (s.Board[a], s.Board[b]) = (s.Board[b], s.Board[a]);
@@ -135,7 +146,7 @@ public static class DeliveryRules
             var items = (string[])level.sets[index].items.Clone();
             s.Delivered.AddRange(items);
             s.CompletedSets.Add(index);
-            for (int c = 0; c < Size; c++) s.Board[row * Size + c] = null;
+            for (int c = 0; c < Columns; c++) s.Board[row * Columns + c] = null;
             events.Add(new DeliveryEvent { Type = DeliveryEventType.Deliver, SetIndex = index, Row = row, Items = items, Board = Copy(s.Board), View = s.Clone() });
             if (s.Stage == level.sets.Length)
             {
@@ -145,21 +156,21 @@ public static class DeliveryRules
             }
 
             var before = Copy(s.Board);
-            for (int c = 0; c < Size; c++)
+            for (int c = 0; c < Columns; c++)
             {
                 var survivors = new List<string>();
-                for (int r = 0; r < Size; r++) if (s.Board[r * Size + c] != null) survivors.Add(s.Board[r * Size + c]);
-                for (int r = 0; r < Size; r++) s.Board[r * Size + c] = null;
-                for (int k = 0; k < survivors.Count; k++) s.Board[(Size - survivors.Count + k) * Size + c] = survivors[k];
+                for (int r = 0; r < rows; r++) if (s.Board[r * Columns + c] != null) survivors.Add(s.Board[r * Columns + c]);
+                for (int r = 0; r < rows; r++) s.Board[r * Columns + c] = null;
+                for (int k = 0; k < survivors.Count; k++) s.Board[(rows - survivors.Count + k) * Columns + c] = survivors[k];
             }
             var spawned = new List<string>();
             if (s.SpawnIndex < level.refills.Length)
             {
                 var refill = level.refills[s.SpawnIndex++].items;
-                for (int c = 0; c < Size; c++)
+                for (int c = 0; c < Columns; c++)
                 {
                     int target = -1;
-                    for (int r = 0; r < Size; r++) if (s.Board[r * Size + c] == null) { target = r * Size + c; break; }
+                    for (int r = 0; r < rows; r++) if (s.Board[r * Columns + c] == null) { target = r * Columns + c; break; }
                     if (target < 0) throw new InvalidOperationException("No room for refill");
                     s.Board[target] = refill[c];
                     spawned.Add(refill[c]);
@@ -167,49 +178,66 @@ public static class DeliveryRules
             }
             events.Add(new DeliveryEvent { Type = DeliveryEventType.Fall, Before = before, Board = Copy(s.Board), Spawned = spawned.ToArray(), View = s.Clone() });
         }
-        if (s.Status != DeliveryStatus.Won && level.HasMoveLimit && s.Moves >= level.moveLimit) s.Status = DeliveryStatus.Lost;
+        if (s.Status != DeliveryStatus.Won && level.HasMoveLimit && s.Moves >= MoveBudget(s, level)) s.Status = DeliveryStatus.Lost;
+        return true;
+    }
+
+    // A continue after running out: +moves to this attempt, once (economy.maxContinues). Back to Playing.
+    public static bool Continue(DeliveryState state, int moves, int maxContinues)
+    {
+        if (state.Status != DeliveryStatus.Lost || state.ContinuesUsed >= maxContinues) return false;
+        state.ExtraMoves += moves;
+        state.ContinuesUsed++;
+        state.Status = DeliveryStatus.Playing;
         return true;
     }
 
     // ---------- Hint: an exact planner for three items into any row ----------
-    // States are the three requested items' cells (9^3 = 729 codes); BFS from every finished row
-    // gives each arrangement's distance and the row it is nearest to.
+    // States are the three requested items' cells (n^3 codes, n = cells); BFS from every finished row
+    // gives each arrangement's distance and the row it is nearest to. One table per board height.
 
-    private static short[] _distance;
-    private static sbyte[] _row;
-
-    private static int Code(int p0, int p1, int p2) => p0 + 9 * p1 + 81 * p2;
-
-    private static void BuildTable()
+    private class Planner
     {
-        if (_distance != null) return;
-        var distance = new short[729];
-        var targetRow = new sbyte[729];
-        for (int i = 0; i < 729; i++) { distance[i] = -1; targetRow[i] = -1; }
+        public int N;
+        public short[] Distance;
+        public sbyte[] Row;
+        public (int a, int b)[] Edges;
+        public int Code(int p0, int p1, int p2) => p0 + N * p1 + N * N * p2;
+    }
+
+    private static readonly Dictionary<int, Planner> Planners = new Dictionary<int, Planner>();
+
+    private static Planner PlannerFor(int rows)
+    {
+        if (Planners.TryGetValue(rows, out var cached)) return cached;
+        int n = rows * Columns;
+        var p = new Planner { N = n, Distance = new short[n * n * n], Row = new sbyte[n * n * n], Edges = Edges(rows) };
+        for (int i = 0; i < p.Distance.Length; i++) { p.Distance[i] = -1; p.Row[i] = -1; }
         var queue = new List<int[]>();
-        for (int row = 0; row < Size; row++)
+        for (int row = 0; row < rows; row++)
         {
-            var p = new[] { row * 3, row * 3 + 1, row * 3 + 2 };
-            queue.Add(p);
-            distance[Code(p[0], p[1], p[2])] = 0;
-            targetRow[Code(p[0], p[1], p[2])] = (sbyte)row;
+            var start = new[] { row * Columns, row * Columns + 1, row * Columns + 2 };
+            queue.Add(start);
+            int k = p.Code(start[0], start[1], start[2]);
+            p.Distance[k] = 0;
+            p.Row[k] = (sbyte)row;
         }
         for (int q = 0; q < queue.Count; q++)
         {
             var cur = queue[q];
-            int prev = Code(cur[0], cur[1], cur[2]);
-            foreach (var (a, b) in Edges)
+            int prev = p.Code(cur[0], cur[1], cur[2]);
+            foreach (var (a, b) in p.Edges)
             {
-                var p = SwapPositions(cur, a, b);
-                int k = Code(p[0], p[1], p[2]);
-                if (distance[k] >= 0) continue;
-                distance[k] = (short)(distance[prev] + 1);
-                targetRow[k] = targetRow[prev];
-                queue.Add(p);
+                var next = SwapPositions(cur, a, b);
+                int k = p.Code(next[0], next[1], next[2]);
+                if (p.Distance[k] >= 0) continue;
+                p.Distance[k] = (short)(p.Distance[prev] + 1);
+                p.Row[k] = p.Row[prev];
+                queue.Add(next);
             }
         }
-        _distance = distance;
-        _row = targetRow;
+        Planners[rows] = p;
+        return p;
     }
 
     private static int[] SwapPositions(int[] p, int a, int b) => p.Select(x => x == a ? b : x == b ? a : x).ToArray();
@@ -219,7 +247,7 @@ public static class DeliveryRules
     public static DeliveryHint Hint(DeliveryState state, DeliveryCase level, int preferred)
     {
         if (state.Status != DeliveryStatus.Playing) return null;
-        BuildTable();
+        var planner = PlannerFor(RowsOf(state.Board));
         var candidates = Eligible(state, level);
         if (candidates.Contains(preferred)) candidates = new List<int> { preferred };
         DeliveryHint best = null;
@@ -228,17 +256,17 @@ public static class DeliveryRules
             var set = level.sets[setIndex];
             var pos = set.items.Select(id => Array.IndexOf(state.Board, id)).ToArray();
             if (pos.Any(x => x < 0)) throw new InvalidOperationException("A requested item is missing from the board");
-            int k = Code(pos[0], pos[1], pos[2]), d = _distance[k];
+            int k = planner.Code(pos[0], pos[1], pos[2]), d = planner.Distance[k];
             if (d == 0) return null;
-            foreach (var (a, b) in Edges)
+            foreach (var (a, b) in planner.Edges)
             {
                 var n = SwapPositions(pos, a, b);
-                int nk = Code(n[0], n[1], n[2]);
-                if (_distance[nk] != d - 1 || _row[nk] != _row[k]) continue;
+                int nk = planner.Code(n[0], n[1], n[2]);
+                if (planner.Distance[nk] != d - 1 || planner.Row[nk] != planner.Row[k]) continue;
                 if (best == null || d < best.Distance)
                 {
                     bool aIsItem = Array.IndexOf(set.items, state.Board[a]) >= 0;
-                    best = new DeliveryHint { From = aIsItem ? a : b, To = aIsItem ? b : a, SetIndex = setIndex, TargetRow = _row[k], Distance = d };
+                    best = new DeliveryHint { From = aIsItem ? a : b, To = aIsItem ? b : a, SetIndex = setIndex, TargetRow = planner.Row[k], Distance = d };
                 }
                 break;
             }
@@ -258,7 +286,7 @@ public static class DeliveryRules
         try
         {
             var route = new List<(int, int)>();
-            for (int n = 0; n < 150 && s.Status != DeliveryStatus.Won; n++)
+            for (int n = 0; n < 500 && s.Status != DeliveryStatus.Won; n++)
             {
                 var h = Hint(s, level, -1) ?? throw new InvalidOperationException("Unresolved level has no hint");
                 Transact(s, level, h.From, h.To, out s, out _);
@@ -273,13 +301,16 @@ public static class DeliveryRules
     // Every item is on the board, delivered or still to come, exactly once.
     public static void CheckInvariant(DeliveryState state, DeliveryCase level)
     {
-        if (state.Board.Length != Cells || state.Delivered.Count != state.Stage * 3 || state.CompletedSets.Distinct().Count() != state.Stage)
+        if (state.Board.Length != level.Cells || state.Delivered.Count != state.Stage * 3 || state.CompletedSets.Distinct().Count() != state.Stage)
             throw new InvalidOperationException("Invalid progress state");
         var all = state.Board.Where(x => x != null).Concat(state.Delivered)
                        .Concat(level.refills.Skip(state.SpawnIndex).SelectMany(r => r.items)).ToList();
         var expected = level.items.Select(i => i.id).ToList();
         if (all.Count != expected.Count || all.Distinct().Count() != expected.Count || expected.Any(x => !all.Contains(x)))
             throw new InvalidOperationException("Item inventory mismatch");
+        foreach (int i in state.CompletedSets)
+            if (i < 0 || i >= level.sets.Length || level.sets[i].items.Any(id => !state.Delivered.Contains(id)))
+                throw new InvalidOperationException("Delivered set mismatch");
         if (state.Status == DeliveryStatus.Playing)
         {
             var active = Eligible(state, level);

@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 // Local playtest events (the handoff's report: level starts, moves, undo, hints, failures,
-// completions, active time, exports). Kept apart from OfflineData under its own PlayerPrefs key,
+// completions, active time). Kept apart from OfflineData under its own PlayerPrefs key,
 // capped at MaxEvents (oldest dropped), saved on every event. Writer: Manager_Flow.
 public static class PlaytestLog
 {
@@ -60,46 +59,5 @@ public static class PlaytestLog
         _store = new Store { sessionId = Guid.NewGuid().ToString() };
         PlayerPrefs.SetString(Key, JsonUtility.ToJson(_store));
         PlayerPrefs.Save();
-    }
-
-    [Serializable]
-    private class Report
-    {
-        public string prototype = "Tilewrap Clues Unity";
-        public string version;
-        public string exportedAt;
-        public string sessionId;
-        public int screenWidth;
-        public int screenHeight;
-        public List<int> completedLevels;
-        public int coins;
-        public string feedbackGoal;
-        public string feedbackWrap;
-        public string feedbackDifficulty;
-        public List<Entry> events;
-    }
-
-    // Writes the report JSON to persistentDataPath and returns its path.
-    public static string Export()
-    {
-        var save = OfflineData.Instance;
-        var report = new Report
-        {
-            version = Application.version,
-            exportedAt = DateTime.UtcNow.ToString("o"),
-            sessionId = SessionId,
-            screenWidth = Screen.width,
-            screenHeight = Screen.height,
-            completedLevels = save.CompletedLevels,
-            coins = save.Coins,
-            feedbackGoal = save.FeedbackGoal,
-            feedbackWrap = save.FeedbackWrap,
-            feedbackDifficulty = save.FeedbackDifficulty,
-            events = Data.events,
-        };
-        string path = Path.Combine(Application.persistentDataPath,
-                                   $"Tilewrap_Clues_Onboarding_Playtest_{DateTime.Now:yyyy-MM-dd}.json");
-        File.WriteAllText(path, JsonUtility.ToJson(report, true));
-        return path;
     }
 }

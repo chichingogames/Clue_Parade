@@ -7,13 +7,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // The in-game HUD on the 1080x1920 reference layout (built by ShiftSort > Build UI, which wires every
-// field), following Tilewrap_Any_Row_5_Case_Playtest: the case pill ("Case 1 / 5", opens the case
-// list), the menu, the coin wallet, moves (or "Practice"); the case title, "0 of 3 sets delivered"
-// with a pip per set; the request line ("CLUES · HATS") with "SET 1 / 3", or the order tabs when two
-// requests are open; the two clue cards (tap: highlight the item and its owner; a scene clue is
-// tagged); the three subjects above the columns (their delivered parts); the board note, the coach
-// line, Undo / Notebook / Hint; the "Hats delivered!" banner over the delivered row, and the items
-// flying from the board to their owners.
+// field), following Tilewrap_Deduction_30_Level_Playtest: the case pill ("Case 1 / 30", opens the
+// case map), the menu, the coin wallet, moves (or "Practice"; case 4 spotlights it); the case title
+// and its question, "0 of 3 sets delivered" with a pip per set; the request line ("BUILD · HATS")
+// with "SET 1 / 3" or "More clues · 1/3" (pages a shared clue pool), or the order tabs when two
+// requests are open; two clue cards (tap: highlight the items they name; CONFIRMED once those are
+// delivered); the three subjects above the columns (delivered parts, found objects, profile facts);
+// the board note, the coach line, Undo / Notebook / Hint; the "Hats delivered!" banner over the
+// delivered row, and the items flying from the board to their owners.
 // Pure view: reads Manager_Game / Manager_Flow (and FileRef for art); its buttons call Manager_Flow
 // and Manager_Game.
 public class UI_InGame : MonoBehaviour
@@ -24,7 +25,7 @@ public class UI_InGame : MonoBehaviour
         public Button Button;
         public Image Icon;
         public TMP_Text Text;
-        public GameObject SceneTag;
+        public GameObject ConfirmedTag;
     }
 
     [Header("Top bar")]
@@ -39,11 +40,14 @@ public class UI_InGame : MonoBehaviour
     [SerializeField] private Sprite _practiceSprite;
     [SerializeField] private Color _movesColor = new Color32(0x40, 0x28, 0x1F, 0xFF);
     [SerializeField] private Color _movesLowColor = new Color32(0xB2, 0x53, 0x36, 0xFF);
+    [Tooltip("Gold ring around the moves panel: case 4 teaches the counter with it.")]
+    [SerializeField] private GameObject _movesSpotlight;
     [Tooltip("The moves panel turns to the low color at this many moves left or fewer.")]
     [SerializeField, Min(0)] private int _lowMovesAt = 5;
 
     [Header("Title and progress")]
     [SerializeField] private TMP_Text _title;
+    [SerializeField] private TMP_Text _question;
     [SerializeField] private TMP_Text _progressText;
     [Tooltip("One per set, left to right; unused ones hide.")]
     [SerializeField] private Image[] _pips = new Image[0];
@@ -54,6 +58,8 @@ public class UI_InGame : MonoBehaviour
     [Header("Request")]
     [SerializeField] private TMP_Text _requestText;
     [SerializeField] private TMP_Text _setPosition;
+    [Tooltip("The set position doubles as \"More clues\" when the shared pool has more than two clues.")]
+    [SerializeField] private Button _setPositionButton;
     [Tooltip("Order tabs (choice cases): one per open request.")]
     [SerializeField] private Button[] _orderTabs = new Button[0];
     [SerializeField] private Color _tabSelected = new Color32(0xFF, 0xDC, 0x61, 0xFF);
@@ -92,6 +98,7 @@ public class UI_InGame : MonoBehaviour
 
     private bool _introPlayed;
     private Tween _hintPulse;
+    private Tween _spotlight;
     private Tween _bannerTween;
     private readonly List<string> _shownDelivered = new List<string>();
 
@@ -107,6 +114,8 @@ public class UI_InGame : MonoBehaviour
         _notebookButton.onClick.AddListener(() => { Tap(); Manager_Flow.Instance.OpenNotebook(); });
         _hintButton.onClick.AddListener(() => { Tap(); StopHintPulse(); Manager_Flow.Instance.OpenHint(); });
         _undoButton.onClick.AddListener(() => Manager_Game.Instance.Undo());
+        if (_setPositionButton != null) _setPositionButton.onClick.AddListener(() => { Tap(); Manager_Flow.Instance.NextCluePage(); });
+        if (_movesSpotlight != null) _movesSpotlight.SetActive(false);
         for (int i = 0; i < _clues.Length; i++)
         {
             int index = i;
@@ -128,10 +137,13 @@ public class UI_InGame : MonoBehaviour
         game.OnUndone += HandleUndone;
         board.OnDelivering += HandleDelivering;
         board.OnDelivered += HandleDelivered;
+        board.OnBoardSettled += Refresh;
         flow.OnToast += _toast.Show;
         flow.OnCoach += ShowCoach;
         flow.OnHintAttention += PulseHint;
         flow.OnClueFocus += HandleClueFocus;
+        flow.OnHudChanged += Refresh;
+        flow.OnCounterTeach += ShowCounterTeach;
         if (game.Level != null) ShowLevel();
         Refresh();
     }
@@ -151,6 +163,7 @@ public class UI_InGame : MonoBehaviour
         {
             board.OnDelivering -= HandleDelivering;
             board.OnDelivered -= HandleDelivered;
+            board.OnBoardSettled -= Refresh;
         }
         var flow = Manager_Flow.Instance;
         if (flow != null)
@@ -159,6 +172,8 @@ public class UI_InGame : MonoBehaviour
             flow.OnCoach -= ShowCoach;
             flow.OnHintAttention -= PulseHint;
             flow.OnClueFocus -= HandleClueFocus;
+            flow.OnHudChanged -= Refresh;
+            flow.OnCounterTeach -= ShowCounterTeach;
         }
     }
 
@@ -197,9 +212,8 @@ public class UI_InGame : MonoBehaviour
         if (level == null) return;
         for (int c = 0; c < _subjects.Length; c++)
         {
-            var subject = level.subjects.FirstOrDefault(s => s.column == c);
-            if (subject == null) { _subjects[c].Hide(); continue; }
-            _subjects[c].Show(FileRef.Instance.Rig(subject.rigId), subject.name, UI_SubjectCard.ExtrasFor(level, c));
+            if (!level.subjects.Any(s => s.column == c)) { _subjects[c].Hide(); continue; }
+            _subjects[c].Show(UI_SubjectCard.For(level, c));
         }
         ApplyDelivered(Manager_Game.Instance.View.Delivered, animate: false);
     }
@@ -228,6 +242,7 @@ public class UI_InGame : MonoBehaviour
         int count = Mathf.Max(1, Manager_Level.Instance.LevelCount);
         _levelText.text = $"Case {game.CurrentLevel} <size=70%><alpha=#A0>/ {count}</size>";
         _title.text = level.title;
+        if (_question != null) _question.text = level.question ?? "";
         _coinsText.text = OfflineData.Instance.Coins.ToString();
         RefreshMoves(game, level);
         RefreshProgress(level, view);
@@ -258,28 +273,45 @@ public class UI_InGame : MonoBehaviour
         _movesValue.color = left <= _lowMovesAt ? _movesLowColor : _movesColor;
     }
 
+    // The pips share their row: as many as the case has sets (up to 10), equal widths.
     private void RefreshProgress(DeliveryCase level, DeliveryState view)
     {
         _progressText.text = $"{view.Stage} of {level.sets.Length} sets delivered";
         var active = DeliveryRules.Eligible(view, level);
+        int count = Mathf.Min(level.sets.Length, _pips.Length);
+        float width = _pips.Length > 0 ? ((RectTransform)_pips[0].transform.parent).rect.width : 0f;
+        const float gap = 10f;
+        float pip = count > 0 ? Mathf.Min(69f, (width - gap * (count - 1)) / count) : 0f;
         for (int i = 0; i < _pips.Length; i++)
         {
-            _pips[i].gameObject.SetActive(i < level.sets.Length);
+            _pips[i].gameObject.SetActive(i < count);
+            if (i >= count) continue;
+            var rect = (RectTransform)_pips[i].transform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1f, 0.5f);
+            rect.sizeDelta = new Vector2(pip, rect.sizeDelta.y);
+            rect.anchoredPosition = new Vector2(-(count - 1 - i) * (pip + gap), 0f);
             _pips[i].color = view.CompletedSets.Contains(i) ? _pipDone : active.Contains(i) ? _pipActive : _pipWaiting;
         }
     }
 
-    // "CLUES · HATS" with "SET 1 / 3", or "Choose a set" with a tab per open request; the two clues.
+    // "BUILD · HATS" with "SET 1 / 3" (or "More clues · 1/3"), or "Choose a set" with a tab per open
+    // request; the two clue cards on show.
     private void RefreshRequest(Manager_Game game, DeliveryCase level, DeliveryState view)
     {
+        var flow = Manager_Flow.Instance;
         int focus = game.FocusSet;
         var set = focus >= 0 ? level.sets[focus] : null;
         var active = DeliveryRules.Eligible(view, level);
-        bool choice = level.IsChoice && active.Count > 1;
+        bool choice = active.Count > 1;
+        int pages = flow.CluePages;
 
-        _requestText.text = set == null ? "Every request delivered!" : choice ? "Choose a set" : $"CLUES · {set.label.ToUpperInvariant()}";
-        _setPosition.gameObject.SetActive(!choice);
-        _setPosition.text = set != null ? $"SET {view.Stage + 1} / {level.sets.Length}" : "COMPLETE";
+        _requestText.text = set == null ? "Every request delivered!" : choice ? "Choose a set" : $"BUILD · {set.label.ToUpperInvariant()}";
+        var positionRoot = _setPositionButton != null ? _setPositionButton.gameObject : _setPosition.gameObject;
+        positionRoot.SetActive(!choice);
+        _setPosition.text = set == null ? "COMPLETE"
+                          : pages > 1 ? $"<u>More clues · {flow.CluePage + 1}/{pages}</u>"
+                          : $"SET {view.Stage + 1} / {level.sets.Length}";
+        if (_setPositionButton != null) _setPositionButton.interactable = set != null && pages > 1;
         for (int i = 0; i < _orderTabs.Length; i++)
         {
             var tab = _orderTabs[i];
@@ -295,24 +327,42 @@ public class UI_InGame : MonoBehaviour
             tab.onClick.AddListener(() => { Tap(); Manager_Flow.Instance.SelectSet(index); });
         }
 
+        var clues = flow.CurrentClues;
+        var onShow = flow.VisibleClueIndices;
         for (int i = 0; i < _clues.Length; i++)
         {
             var slot = _clues[i];
-            bool has = set != null && i < set.visibleClues.Length;
+            bool has = set != null && i < onShow.Length;
             slot.Button.gameObject.SetActive(has);
             if (!has) continue;
-            var clue = set.visibleClues[i];
+            var clue = clues[onShow[i]];
             slot.Text.text = clue.text;
-            var icon = FileRef.Instance.Sprite(level.Item(clue.icon)?.sprite);
+            var icon = FileRef.Instance.Sprite(level.SpriteKey(clue.icon));
             slot.Icon.sprite = icon;
             slot.Icon.gameObject.SetActive(icon != null);
-            slot.SceneTag.SetActive(clue.IsSceneClue);
+            bool confirmed = Manager_Flow.IsConfirmed(clue, view);
+            slot.ConfirmedTag.SetActive(confirmed);
+            slot.Text.margin = new Vector4(0f, 0f, 0f, confirmed ? 26f : 0f);    // clear of the tag
         }
     }
 
-    private void HandleClueFocus(int column, string propItem)
+    // A tapped clue: its profile's card glows (column clues) and the delivered parts it names pulse.
+    private void HandleClueFocus(int column, ICollection<string> items)
     {
-        for (int c = 0; c < _subjects.Length; c++) _subjects[c].SetFocus(c == column, c == column ? propItem : null);
+        for (int c = 0; c < _subjects.Length; c++) _subjects[c].SetFocus(c == column, items);
+    }
+
+    // Case 4: a gold ring pulses around the moves panel until the first swap.
+    private void ShowCounterTeach(bool on)
+    {
+        if (_movesSpotlight == null) return;
+        _spotlight?.Kill();
+        _movesSpotlight.SetActive(on);
+        if (!on) return;
+        var t = _movesSpotlight.transform;
+        t.localScale = Vector3.one;
+        _spotlight = t.DOScale(1.06f, 0.6f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo).SetLink(_movesSpotlight)
+                      .OnKill(() => t.localScale = Vector3.one);
     }
 
     // ---------- Coach ----------
@@ -375,13 +425,13 @@ public class UI_InGame : MonoBehaviour
         _bannerTween = DOVirtual.DelayedCall(0.24f, HideBanner).SetLink(gameObject);
     }
 
-    // Over the delivered row: rows are 290 px tall from y 800 of the reference layout.
+    // Over the delivered row: the board starts at y 800 of the reference layout.
     private void ShowBanner(string text, int row)
     {
         if (_banner == null) return;
         _bannerTween?.Kill();
         _bannerText.text = text;
-        _banner.anchoredPosition = new Vector2(_banner.anchoredPosition.x, -(800f + 290f * (row + 0.5f)));
+        _banner.anchoredPosition = new Vector2(_banner.anchoredPosition.x, -(800f + Manager_Board.Instance.RowCenterPixels(row)));
         _banner.gameObject.SetActive(true);
         _banner.DOKill();
         _banner.localScale = Vector3.one * 0.85f;

@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-// Owns the board's views for the any-row rules (DeliveryRules): builds the 3x3 board from Cell /
-// ItemTile prefabs, drags a pair of neighbours, and plays a move's steps in order: the swap, then
-// each delivery (the row's tiles leave for the subjects: the HUD flies them, OnDelivering), the
-// fall and the refill (new tiles drop in from above the top row). Board-local space: centered on
-// _boardRoot, row 0 at the top, cells CellSize wide and high (2.9 units = the pack's 290 px cells).
-// Cell index i = row * 3 + col. An empty cell has no tile.
+// Owns the board's views for the any-row rules (DeliveryRules): builds the 3-column board (3 or 4
+// rows) from Cell / ItemTile prefabs, drags a pair of neighbours, and plays a move's steps in order:
+// the swap, then each delivery (the row's tiles leave for the subjects: the HUD flies them,
+// OnDelivering), the fall and the refill (new tiles drop in from above the top row). Board-local
+// space: centered on _boardRoot, row 0 at the top. The board keeps its 870 x 870 px area: cells are
+// 290 px wide and 870 / rows tall. Cell index i = row * 3 + col. An empty cell has no tile.
 //
-// Marks (all derived; RefreshMarks): tiles of the current set that stand under their owner are
-// tinted (Aligned), the focused clue's item (Focus), a hinted pair (Hint), the tap-selected tile
-// (Selected); case 1's first swap mutes every other tile. Three row zones (copies of _activeRow)
-// show a row two thirds done (gold), complete (green) or hinted (strong gold). The guide
-// (Board/Guide) shows a swap to make.
+// Marks (all derived; RefreshMarks): the items a tapped clue names (Focus), a hinted pair (Hint),
+// the tap-selected tile (Selected); case 1's first swap mutes every other tile. Nothing tints an
+// item for standing under its right owner (no partial-correctness feedback). One row zone per row
+// (copies of _activeRow) lights the hinted row. The guide (Board/Guide) shows a swap to make. The
+// first time a case is seen its tiles settle in like slot reels (cosmetic: the start is authored).
 public class Manager_Board : Singleton<Manager_Board>
 {
     [SerializeField] private Transform _boardRoot;
@@ -37,8 +37,6 @@ public class Manager_Board : Singleton<Manager_Board>
     private const float FallSeconds = 0.31f;
     private const float RefillSeconds = 0.46f;
 
-    private static readonly Color ZoneNearly = new Color32(0xEA, 0xC4, 0x60, 0x70);
-    private static readonly Color ZoneReady = new Color32(0x9C, 0xC7, 0x5A, 0xC0);
     private static readonly Color ZoneHint = new Color32(0xFF, 0xCA, 0x35, 0xE0);
     private static readonly Color RefillFlash = new Color32(0x9E, 0xD8, 0xCF, 0xB0);
 
@@ -59,12 +57,13 @@ public class Manager_Board : Singleton<Manager_Board>
     public bool HasBoard => Board != null;
     public bool IsDragging => _held && _animation == null;
     // True while a move plays or the launch intro scales the board in; presses are refused meanwhile.
-    public bool IsAnimating => _animation != null || _intro != null || _playing;
+    public bool IsAnimating => _animation != null || _intro != null || _playing || _settling != null;
     public float DragOffset => _offset;
 
     private Cell[] _cells;
-    private readonly ItemTile[] _tiles = new ItemTile[9];
+    private ItemTile[] _tiles = new ItemTile[9];
     private SpriteRenderer[] _zones = new SpriteRenderer[0];
+    private readonly List<SpriteRenderer> _extraDividers = new List<SpriteRenderer>();
 
     // Held pair: _heldA started in cell _a, _heldB in _b (either may be null: an empty cell).
     private bool _held;
@@ -75,27 +74,33 @@ public class Manager_Board : Singleton<Manager_Board>
     private bool _playing;
 
     // Marks set by the flow.
-    private DeliverySet _alignSet;
     private int _selected = -1;
-    private string _focusItem;
+    private readonly HashSet<string> _focusItems = new HashSet<string>();
     private int _hintA = -1, _hintB = -1, _hintRow = -1;
     private int _keepA = -1, _keepB = -1;     // case 1: every other tile is muted
 
     // Launch intro: the whole board scales up once, on the first Build.
     private Tween _intro;
     private bool _introPlayed;
+    // First look at a case: the slot-style settle.
+    private Tween _settling;
 
-    private const int Size = 3;
+    private const int Size = 3;                 // columns
+    private int _rows = 3;
 
-    // One cell = one tile, no gap.
-    public Vector2 CellSize => FileRef.Instance.ItemTilePrefab.Size;
-    private Vector2 GridSize => CellSize * Size;
+    // The board area stays 3 x 3 tiles of the prefab's size; 4 rows make the cells shorter.
+    private Vector2 GridSize => FileRef.Instance.ItemTilePrefab.Size * Size;
+    public Vector2 CellSize => new Vector2(GridSize.x / Size, GridSize.y / _rows);
+    public int Rows => _rows;
 
-    public void Build(DeliveryCase level, string[] board)
+    // caseNumber / resumed: the slot settle plays the first time a case is opened fresh.
+    public void Build(DeliveryCase level, string[] board, int caseNumber = 0, bool resumed = false)
     {
         Clear();
         Level = level;
         Board = (string[])board.Clone();
+        _rows = level.rows;
+        _tiles = new ItemTile[board.Length];
         var fileRef = FileRef.Instance;
         _boardRoot.localPosition = ReferenceLayout.BoardCenter;
 
@@ -108,7 +113,7 @@ public class Manager_Board : Singleton<Manager_Board>
         BuildZones();
         PlaceDividers();
 
-        _cells = new Cell[Size * Size];
+        _cells = new Cell[board.Length];
         for (int i = 0; i < _cells.Length; i++)
         {
             var cell = Instantiate(fileRef.CellPrefab, _cellsRoot);
@@ -120,7 +125,14 @@ public class Manager_Board : Singleton<Manager_Board>
 
         FitCamera();
         if (!_introPlayed) PlayIntro();
-        AnimateTileSpawn();
+        var seen = OfflineData.Instance.SeenCases;
+        if (!resumed && caseNumber > 0 && !seen.Contains(caseNumber))
+        {
+            seen.Add(caseNumber);
+            OfflineData.Instance.Save();
+            PlaySettle();
+        }
+        else AnimateTileSpawn();
         RefreshMarks();
     }
 
@@ -151,20 +163,20 @@ public class Manager_Board : Singleton<Manager_Board>
 
     // ---------- Marks ----------
 
-    // The set whose items are tinted when under their owner (the current request), the
-    // tap-selected cell, and case 1's two cells to swap (others muted; -1 = none).
-    public void SetMarks(DeliverySet alignSet, int selected, int keepA = -1, int keepB = -1)
+    // The tap-selected cell, and case 1's two cells to swap (others muted; -1 = none).
+    public void SetMarks(int selected, int keepA = -1, int keepB = -1)
     {
-        _alignSet = alignSet;
         _selected = selected;
         _keepA = keepA;
         _keepB = keepB;
         RefreshMarks();
     }
 
-    public void FocusItem(string itemId)
+    // The items a tapped clue names (empty = none).
+    public void FocusItems(IEnumerable<string> itemIds)
     {
-        _focusItem = itemId;
+        _focusItems.Clear();
+        if (itemIds != null) foreach (var id in itemIds) _focusItems.Add(id);
         RefreshMarks();
     }
 
@@ -181,7 +193,7 @@ public class Manager_Board : Singleton<Manager_Board>
     public void ClearHint()
     {
         _hintA = _hintB = _hintRow = -1;
-        _focusItem = null;
+        _focusItems.Clear();
         HideGuide();
         RefreshMarks();
     }
@@ -194,8 +206,7 @@ public class Manager_Board : Singleton<Manager_Board>
             var tile = _tiles[i];
             if (tile == null) continue;
             var look = TileLook.None;
-            if (_alignSet != null && _alignSet.items[i % Size] == tile.Id) look = TileLook.Aligned;
-            if (_focusItem != null && tile.Id == _focusItem) look = TileLook.Focus;
+            if (_focusItems.Contains(tile.Id)) look = TileLook.Focus;
             if (i == _hintA || i == _hintB) look = TileLook.Hint;
             if (i == _selected) look = TileLook.Selected;
             tile.SetLook(look);
@@ -203,10 +214,8 @@ public class Manager_Board : Singleton<Manager_Board>
         }
         for (int r = 0; r < _zones.Length; r++)
         {
-            int aligned = _alignSet != null ? DeliveryRules.AlignedInRow(Board, r, _alignSet) : 0;
-            var color = r == _hintRow ? ZoneHint : aligned == 3 ? ZoneReady : aligned == 2 ? ZoneNearly : Color.clear;
-            _zones[r].color = color;
-            _zones[r].gameObject.SetActive(color.a > 0f);
+            _zones[r].color = ZoneHint;
+            _zones[r].gameObject.SetActive(r == _hintRow);
         }
     }
 
@@ -431,7 +440,7 @@ public class Manager_Board : Singleton<Manager_Board>
         Vector2 half = GridSize * 0.5f;
         int col = Mathf.FloorToInt((local.x + half.x) / CellSize.x);
         int row = Mathf.FloorToInt((half.y - local.y) / CellSize.y);
-        return row >= 0 && row < Size && col >= 0 && col < Size ? row * Size + col : -1;
+        return row >= 0 && row < _rows && col >= 0 && col < Size ? row * Size + col : -1;
     }
 
     // Screen-space drag converted to board cells (x right, y up).
@@ -455,11 +464,11 @@ public class Manager_Board : Singleton<Manager_Board>
     public Transform BoardRoot => _boardRoot;
 
     // Accepts fractional and out-of-board indices (used while tiles move). Board-local.
-    public Vector3 CellPosition(float row, float col)
-    {
-        float offset = (Size - 1) * 0.5f;
-        return new Vector3((col - offset) * CellSize.x, (offset - row) * CellSize.y, 0f);
-    }
+    public Vector3 CellPosition(float row, float col) =>
+        new Vector3((col - (Size - 1) * 0.5f) * CellSize.x, ((_rows - 1) * 0.5f - row) * CellSize.y, 0f);
+
+    // A row's centre in reference pixels below the top of the board (the HUD's banner).
+    public float RowCenterPixels(int row) => (row + 0.5f) * CellSize.y * 100f;
 
     // ---------- Views ----------
 
@@ -469,6 +478,7 @@ public class Manager_Board : Singleton<Manager_Board>
         tile.transform.localPosition = localPosition;
         var item = Level.Item(id);
         tile.Setup(id, FileRef.Instance.Sprite(item?.sprite), item?.label ?? id);
+        tile.SetCellSize(CellSize);
         return tile;
     }
 
@@ -477,8 +487,8 @@ public class Manager_Board : Singleton<Manager_Board>
         foreach (var zone in _zones) if (zone != null && zone != _activeRow) Destroy(zone.gameObject);
         _activeRow.drawMode = SpriteDrawMode.Sliced;
         _activeRow.size = new Vector2(GridSize.x, CellSize.y) - Vector2.one * 0.08f;
-        _zones = new SpriteRenderer[Size];
-        for (int r = 0; r < Size; r++)
+        _zones = new SpriteRenderer[_rows];
+        for (int r = 0; r < _rows; r++)
         {
             var zone = r == 0 ? _activeRow : Instantiate(_activeRow, _activeRow.transform.parent);
             zone.name = r == 0 ? _activeRow.name : $"Row Zone {r + 1}";
@@ -506,18 +516,32 @@ public class Manager_Board : Singleton<Manager_Board>
         if (_guide != null) _guide.Hide();
     }
 
+    // Columns - 1 vertical lines and rows - 1 horizontal ones; the scene's dividers are reused and
+    // copied when a 4-row board needs more.
     private void PlaceDividers()
     {
-        int perAxis = Size - 1;
-        for (int i = 0; i < _dividers.Length; i++)
+        foreach (var extra in _extraDividers) if (extra != null) Destroy(extra.gameObject);
+        _extraDividers.Clear();
+        if (_dividers.Length == 0) return;
+        var lines = new List<(bool vertical, int k)>();
+        for (int k = 0; k < Size - 1; k++) lines.Add((true, k));
+        for (int k = 0; k < _rows - 1; k++) lines.Add((false, k));
+        for (int i = 0; i < Mathf.Max(lines.Count, _dividers.Length); i++)
         {
-            var divider = _dividers[i];
-            bool vertical = i < _dividers.Length / 2;
-            int k = vertical ? i : i - _dividers.Length / 2;
-            divider.gameObject.SetActive(k < perAxis);
-            if (k >= perAxis) continue;
-            float along = (k + 1) - Size * 0.5f;    // cell edges, in cells from the centre
-            divider.transform.localPosition = vertical ? new Vector3(along * CellSize.x, 0f, 0f) : new Vector3(0f, -along * CellSize.y, 0f);
+            SpriteRenderer divider;
+            if (i < _dividers.Length) divider = _dividers[i];
+            else
+            {
+                divider = Instantiate(_dividers[0], _dividers[0].transform.parent);
+                divider.name = $"Divider {i + 1}";
+                _extraDividers.Add(divider);
+            }
+            divider.gameObject.SetActive(i < lines.Count);
+            if (i >= lines.Count) continue;
+            var (vertical, k) = lines[i];
+            divider.transform.localPosition = vertical
+                ? new Vector3((k + 1 - Size * 0.5f) * CellSize.x, 0f, 0f)
+                : new Vector3(0f, (_rows * 0.5f - (k + 1)) * CellSize.y, 0f);
             divider.transform.localScale = vertical
                 ? new Vector3(ReferenceLayout.DividerWidth, GridSize.y, 1f)
                 : new Vector3(GridSize.x, ReferenceLayout.DividerWidth, 1f);
@@ -537,7 +561,26 @@ public class Manager_Board : Singleton<Manager_Board>
             .SetDelay(Tuning.BoardIntroDelay)
             .SetEase(Ease.OutBack)
             .SetLink(gameObject)
-            .OnComplete(() => _intro = null);
+            .OnComplete(() => { _intro = null; OnBoardSettled(); });
+    }
+
+    // First look at a case: every tile drops in from above the board like a slot reel settling,
+    // column by column, overshooting a little. Cosmetic: the start board is authored, no move is
+    // used. Presses wait until it has settled.
+    private void PlaySettle()
+    {
+        float start = _intro != null ? Tuning.BoardIntroDelay + Tuning.BoardIntroDuration * 0.5f : 0f;
+        var sequence = DOTween.Sequence().SetLink(gameObject);
+        for (int i = 0; i < _tiles.Length; i++)
+        {
+            if (_tiles[i] == null) continue;
+            var tile = _tiles[i].transform;
+            int row = i / Size, col = i % Size;
+            Vector3 target = CellPosition(row, col);
+            tile.localPosition = CellPosition(row - _rows - 0.4f, col);
+            sequence.Insert(start + col * 0.12f + i * 0.008f, tile.DOLocalMove(target, 0.68f).SetEase(Ease.OutBack, 1.1f));
+        }
+        _settling = sequence.OnComplete(() => { _settling = null; OnBoardSettled(); }).OnKill(() => _settling = null);
     }
 
     // Every Build: the tiles scale up from 0 in a diagonal wave from the top-left (row + col steps of
@@ -597,9 +640,10 @@ public class Manager_Board : Singleton<Manager_Board>
         _intro?.Complete();     // a level change mid-intro jumps to full size
         ReleaseHeld();
         _playing = false;
-        _alignSet = null;
+        _settling?.Kill();
+        _settling = null;
         _selected = _hintA = _hintB = _hintRow = _keepA = _keepB = -1;
-        _focusItem = null;
+        _focusItems.Clear();
         HideGuide();
         for (int i = 0; i < _tiles.Length; i++) _tiles[i] = null;
         DestroyChildren(_cellsRoot);

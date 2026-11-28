@@ -16,6 +16,19 @@ MonoBehaviour:
   _itemTilePrefab: {fileID: 8973855979378694257, guid: b494cab78972f0d4baa1031fdba98741, type: 3}
   _content: {fileID: 11400000, guid: 5ff56c179794caa4da818823c856961f, type: 2}
   _cases: {fileID: 4900000, guid: 335818ff912f92e4180f891bf0184fa1, type: 3}
+  _evidenceSprites:
+  - {fileID: 21300000, guid: 12b343e6531559743b409accd71128ef, type: 3}
+  - {fileID: 21300000, guid: e826dc34e6f933f4ca440b15d0531b43, type: 3}
+  - {fileID: 21300000, guid: 76b4d01c8597b14458b5aeab9b33a81e, type: 3}
+  - {fileID: 21300000, guid: 43e1790d1e9483b43bece16e088634ce, type: 3}
+  - {fileID: 21300000, guid: 308d64127482a384aaf9ccf0294864ff, type: 3}
+  - {fileID: 21300000, guid: f9329d65ee5455945813b35098530151, type: 3}
+  - {fileID: 21300000, guid: d45310da3526e67438d40d077933f852, type: 3}
+  - {fileID: 21300000, guid: c5cfac4b554efa64c8f36e94d98cdc4d, type: 3}
+  - {fileID: 21300000, guid: 04f9e19f62bb2494ba16f7a974be5afa, type: 3}
+  - {fileID: 21300000, guid: 96a7572fc70c47c4ca577000096a1e8d, type: 3}
+  - {fileID: 21300000, guid: 050a0b25a13c878449a69239fd9190b4, type: 3}
+  - {fileID: 21300000, guid: 7defd40bde035324aa4cdd07a3191e9c, type: 3}
   _music: {fileID: 8300000, guid: d9b939ba5a2f03e49841571aa0847a79, type: 3}
   _sounds:
   - Type: 0

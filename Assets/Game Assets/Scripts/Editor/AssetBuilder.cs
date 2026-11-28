@@ -19,6 +19,7 @@ using UnityEngine;
 public static class AssetBuilder
 {
     public const string CasesPath = "Assets/Game Assets/Data/delivery_cases.json";
+    public const string EvidenceFolder = "Assets/Game Assets/Sprites/Evidence";
 
     private const string SpriteFolder = "Assets/Game Assets/Sprites/Placeholder";
     private const string PrefabFolder = "Assets/Game Assets/Prefabs/Gameobjects";
@@ -119,31 +120,9 @@ public static class AssetBuilder
         return SavePrefab<Cell>(root, path);
     }
 
-    // World TextMeshPro in ink, the handoff's ExtraBold, auto-sized down to 65% so long words fit.
-    public static TextMeshPro AddLabel(Transform parent, string text, Vector2 position, Vector2 size, float fontSize, int order)
-    {
-        var go = new GameObject("Label", typeof(RectTransform));
-        go.transform.SetParent(parent, false);
-        var rect = (RectTransform)go.transform;
-        rect.anchoredPosition = position;
-        rect.sizeDelta = size;
-        var label = go.AddComponent<TextMeshPro>();
-        label.font = HandoffBuilder.BoldFont();
-        label.text = text;
-        label.fontSize = fontSize;
-        label.color = InkColor;
-        label.alignment = TextAlignmentOptions.Center;
-        label.textWrappingMode = TextWrappingModes.NoWrap;
-        label.enableAutoSizing = true;
-        label.fontSizeMin = fontSize * 0.65f;
-        label.fontSizeMax = fontSize;
-        label.sortingOrder = order;
-        return label;
-    }
-
-    // ItemTile: one cell (CellSize), pivot at its centre: the item icon in the pack's art rect, its
-    // name under it and a rounded flash behind both. All masked by the board, so a wrapping tile is
-    // clipped (the name through the masked font material).
+    // ItemTile: one cell (CellSize), pivot at its centre: the item icon (no name) centred in the
+    // cell, and a rounded flash behind it. Masked by the board, so a tile dropping in from above is
+    // clipped at the edge.
     private static ItemTile BuildItemTilePrefab()
     {
         string path = $"{PrefabFolder}/ItemTile.prefab";
@@ -159,15 +138,9 @@ public static class AssetBuilder
         var item = AddRenderer(root.transform, "Item", HandoffBuilder.LoadSprite("Items/crew_00"), Color.white, 1f,
             ReferenceLayout.ItemArtOffset, SortOrder.TileItem, masked: true);
 
-        var label = AddLabel(root.transform, "Red cap", ReferenceLayout.ItemLabelOffset, ReferenceLayout.ItemLabelSize,
-                             ReferenceLayout.ItemLabelFont, SortOrder.TileLabel);
-        label.fontSizeMin = ReferenceLayout.ItemLabelMinFont;
-        label.fontSharedMaterial = HandoffBuilder.MaskedBoldMaterial();
-
         var tile = root.AddComponent<ItemTile>();
         var so = new SerializedObject(tile);
         so.FindProperty("_item").objectReferenceValue = item;
-        so.FindProperty("_label").objectReferenceValue = label;
         so.FindProperty("_flash").objectReferenceValue = flash;
         so.FindProperty("_size").vector2Value = CellSize;
         so.FindProperty("_itemBox").vector2Value = ReferenceLayout.ItemArtBox;
@@ -221,8 +194,9 @@ public static class AssetBuilder
         if (library == null) Debug.LogWarning($"[AssetBuilder] {HandoffBuilder.LibraryPath} is missing: run Tools > Chichingo > Tilewrap > Build 30-level content.");
         SetIfEmpty(so.FindProperty("_content"), library);
         var cases = AssetDatabase.LoadAssetAtPath<TextAsset>(CasesPath);
-        if (cases == null) Debug.LogWarning($"[AssetBuilder] {CasesPath} is missing: the any-row cases.");
+        if (cases == null) Debug.LogWarning($"[AssetBuilder] {CasesPath} is missing: the 30 cases.");
         SetIfEmpty(so.FindProperty("_cases"), cases);
+        FillEvidence(so.FindProperty("_evidenceSprites"));
 
         if (so.FindProperty("_music").objectReferenceValue == null)
         {
@@ -292,6 +266,31 @@ public static class AssetBuilder
     {
         array.arraySize++;
         return array.GetArrayElementAtIndex(array.arraySize - 1);
+    }
+
+    // The evidence props (art the pack lacks): imported as single sprites (100 px per unit, no
+    // mipmaps), listed in FileRef when its list is empty.
+    private static void FillEvidence(SerializedProperty property)
+    {
+        if (property.arraySize > 0) return;
+        var sprites = new List<Sprite>();
+        foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { EvidenceFolder }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+            if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single || importer.mipmapEnabled)
+            {
+                importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Single;
+                importer.mipmapEnabled = false;
+                importer.alphaIsTransparency = true;
+                importer.SaveAndReimport();
+            }
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (sprite != null) sprites.Add(sprite);
+        }
+        property.arraySize = sprites.Count;
+        for (int i = 0; i < sprites.Count; i++) property.GetArrayElementAtIndex(i).objectReferenceValue = sprites[i];
     }
 
     private static void SetIfEmpty(SerializedProperty property, UnityEngine.Object value)

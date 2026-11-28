@@ -4,25 +4,31 @@ using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 
-// The flow around the board (Tilewrap_Any_Row_5_Case_Playtest): the coach line under the board,
-// toasts, case 1's guided swap (and its hint after every move), Hint (the next swap towards the
-// request in focus, DeliveryRules.Hint), tapping a clue (its item and owner light up; a scene clue
-// lights the delivered prop it names), the Notebook (every set's facts), the case list, the menu,
-// the win / out-of-moves popups, the first-clear reward, the closing feedback and the local
-// playtest log. It decides; popups and the HUD display (they get callbacks and listen to the
-// events below). Board rules stay in Manager_Game / DeliveryRules.
+// The flow around the board (Tilewrap_Deduction_30_Level_Playtest, scope v5): the coach line under
+// the board (a teaching line per opening case, then each case's reasoning tip), toasts, case 1's
+// guided first swap, the clue cards (two at a time; More clues pages a shared pool; tapping one
+// highlights only the items it names, and its profile for a column clue), Hint (an explanation first,
+// then the next swap, DeliveryRules.Hint: free through the teaching cases, then coins), the
+// Notebook (Clues / Case file), the case map, the menu, the milestone deduction question, the win
+// (the case answered, evidence, the next lead) and out-of-moves popups (one +5 moves continue per
+// attempt), the first-clear reward and the local playtest log. The cases cycle: after the last one,
+// Next case opens case 1 again. It decides; popups and the HUD display (they get callbacks and listen
+// to the events below). Board rules stay in Manager_Game / DeliveryRules.
 public class Manager_Flow : Singleton<Manager_Flow>
 {
     public event Action<string> OnToast = delegate { };
     public event Action<string, bool> OnCoach = delegate { };          // text, flash
     public event Action OnHintAttention = delegate { };                 // pulse the Hint button
     public event Action OnWinCelebration = delegate { };                // confetti
-    public event Action<int, string> OnClueFocus = delegate { };       // owner column (-1 = clear), scene-clue item or null
+    public event Action<int, ICollection<string>> OnClueFocus = delegate { };   // profile column (-1 = none), items named (null = clear)
+    public event Action OnHudChanged = delegate { };                    // the clue page or the coins changed
+    public event Action<bool> OnCounterTeach = delegate { };            // case 4: spotlight the move counter
 
     private static Manager_Game Game => Manager_Game.Instance;
     private static Manager_Board Board => Manager_Board.Instance;
     private static Manager_PopUp PopUps => Manager_PopUp.Instance;
     private static OfflineData Save => OfflineData.Instance;
+    private static DeliveryEconomy Economy => FileRef.Instance.Cases?.economy ?? new DeliveryEconomy();
     private int LevelCount => Mathf.Max(1, Manager_Level.Instance.LevelCount);
 
     private const float ClueFocusSeconds = 5.5f;
@@ -32,12 +38,15 @@ public class Manager_Flow : Singleton<Manager_Flow>
     private Tween _outcomeDelay;
     private Tween _focusTimer;
     private bool _lastWinWasFirstClear;
+    private bool _deductionPending;
     private int _celebratedSession = -1;   // so the win popup says the same when it comes back
     private bool _firstAction;
     private float _levelStartTime;
     private float _activeSeconds;
     private bool _refilledThisMove;
     private int _lastSelected = -1;
+    private int _cluePage;
+    private string _clueContext = "";
 
     public override void Awake2()
     {
@@ -59,6 +68,9 @@ public class Manager_Flow : Singleton<Manager_Flow>
             _activeSeconds += Time.unscaledDeltaTime;
     }
 
+    // Help is free through the teaching cases (economy.freeHelpThroughLevel), then costs coins.
+    private bool FreeHelp => Game.CurrentLevel <= Economy.freeHelpThroughLevel;
+
     // ---------- Case start ----------
 
     private void HandleLevelStarted(int levelNumber)
@@ -69,35 +81,50 @@ public class Manager_Flow : Singleton<Manager_Flow>
         _activeSeconds = 0f;
         _levelStartTime = Time.unscaledTime;
         _lastSelected = -1;
+        _deductionPending = false;
         _outcomeDelay?.Kill();
         _focusTimer?.Kill();
         OnClueFocus(-1, null);
+        SyncCluePage();
 
-        Log("case_start", $"case={level.title}; items={level.items.Length}; sets={level.sets.Length}; budget={level.moveLimit}; order={level.orderMode}");
+        Log("case_start", $"case={level.title}; items={level.items.Length}; sets={level.sets.Length}; rows={level.rows}; budget={level.moveLimit}; order={level.orderMode}; resumed={Game.Resumed}");
         DefaultCoach(false);
         StartAttentionTimer();
     }
 
     // ---------- Coach ----------
 
-    // The line under the board for the current situation. Case 1 also shows its next swap.
+    // The line under the board for the current situation (the playtest's defaultCoach). The first
+    // five cases teach one idea each; 6-14 show their reasoning tip.
     private void DefaultCoach(bool flash)
     {
         var level = Game.Level;
         if (Game.State != GameState.Playing || level == null) return;
+        int id = Game.CurrentLevel, focus = Game.FocusSet, moves = Game.MovesUsed;
+        OnCounterTeach(id == 4 && moves == 0 && level.HasMoveLimit);
+        var label = Game.FocusedSet?.label.ToLowerInvariant() ?? "the next set";
+        string text;
         if (level.hasTutorial)
         {
-            var h = HintInfo();
-            if (h == null) return;
-            Board.ShowHint(h.From, h.To, h.TargetRow);
-            Coach(Game.MovesUsed == 0 ? level.tutorial.text : $"{h.Text} Every row works; owners stay in their columns.", flash);
+            if (Game.RequiredSwap != null)
+            {
+                var t = level.tutorial;
+                Board.ShowHint(t.from, t.to, t.from / DeliveryRules.Columns);
+                text = t.text;
+            }
+            else text = $"Now {label}. Read the names; match each item to its profile.";
         }
-        else if (Game.FocusedSet != null && Game.FocusedSet.visibleClues.Any(c => c.IsSceneClue))
-            Coach("Look at the scene you have built. Tap a clue to highlight its object.", flash);
-        else if (level.IsChoice && DeliveryRules.Eligible(Game.View, level).Count > 1)
-            Coach("Choose either request. Both can clear in any row.", flash);
-        else
-            Coach("Line up the requested items under their owners in any row.", flash);
+        else if (id == 2) text = focus == 2 ? "“Goes with” means the same pet. Look for the teal scarf above." : "Use the names above. Each pet gets one item from this set.";
+        else if (id == 3) text = focus == 2 ? "“Does not” rules out a pairing. Find the sugar star first."
+                               : focus == 1 ? "Match the frosting to the cake bases already confirmed above."
+                               : "Use the two names to find where the cake bases belong.";
+        else if (id == 4) text = moves == 0 ? $"{level.moveLimit} moves left. Every swap uses 1. Undo is free." : "Each swap uses 1 move. Use the confirmed scene to link the next items.";
+        else if (id == 5) text = Game.View.SpawnIndex > 0 ? "New supplies arrived; your completed sets stay earned." : "Use familiar clues. Finish the first set to make room.";
+        else if (id <= 14 && !string.IsNullOrEmpty(level.reasoningTip)) text = level.reasoningTip;
+        else if (focus >= 0 && focus < 3 && level.cluePool.Length > 0) text = "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.";
+        else if (DeliveryRules.Eligible(Game.View, level).Count > 1) text = "Choose either request. Use confirmed scene details as evidence.";
+        else text = "Use confirmed items above to identify the next three owners.";
+        Coach(text, flash);
     }
 
     private void Coach(string text, bool flash = true) => OnCoach(text, flash);
@@ -116,6 +143,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
         _refilledThisMove = false;
         Board.ClearHint();
         OnClueFocus(-1, null);
+        OnCounterTeach(false);
         Log("swap", $"a={a}; b={b}");
     }
 
@@ -126,7 +154,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
             case Manager_Game.Rejection.Tutorial:
                 var t = Game.Level.tutorial;
                 Coach(t.text);
-                Board.ShowHint(t.from, t.to, t.from / 3);
+                Board.ShowHint(t.from, t.to, t.from / DeliveryRules.Columns);
                 Log("tutorial_redirect");
                 break;
             case Manager_Game.Rejection.Edge:
@@ -145,6 +173,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
         int selected = Game.Selected;
         if (selected >= 0 && _lastSelected < 0 && Game.State == GameState.Playing) Coach("Swipe, or tap a neighbouring tile to swap.", false);
         _lastSelected = selected;
+        SyncCluePage();
     }
 
     private void HandleDelivering(DeliveryEvent e, Sprite[] sprites, Vector3[] positions)
@@ -167,7 +196,8 @@ public class Manager_Flow : Singleton<Manager_Flow>
     {
         if (Game.Model.Status != DeliveryStatus.Playing) return;
         if (_refilledThisMove && !Game.Level.hasTutorial)
-            Coach($"New items arrived. Next: {Game.FocusedSet?.label.ToLowerInvariant() ?? "the next set"}.");
+            Coach(Game.CurrentLevel == 5 ? "New supplies arrive at the top. Your completed sets stay earned."
+                                         : $"New items arrived. Next: {Game.FocusedSet?.label.ToLowerInvariant() ?? "the next set"}.");
         else DefaultCoach(false);
         StartAttentionTimer();
     }
@@ -196,34 +226,77 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
     // ---------- Clues ----------
 
-    // A clue card: its item on the board and its owner light up (a scene clue also lights the
-    // delivered prop it names) for a few seconds.
-    public void FocusClue(int index)
+    // The clues of the request in focus (the shared pool for the first three sets of a pooled case).
+    public DeliveryClue[] CurrentClues => Game.Level == null ? new DeliveryClue[0] : Game.Level.CluesFor(Game.FocusSet);
+    public int CluePages => Mathf.Max(1, (CurrentClues.Length + 1) / 2);
+    public int CluePage => _cluePage;
+
+    // The two cards on show: indices into CurrentClues (wrapping on an odd last page).
+    public int[] VisibleClueIndices
     {
-        var set = Game.FocusedSet;
-        if (Game.State != GameState.Playing || Game.Busy || set == null || index < 0 || index >= set.visibleClues.Length) return;
-        var clue = set.visibleClues[index];
+        get
+        {
+            int n = CurrentClues.Length;
+            if (n == 0) return new int[0];
+            return n == 1 ? new[] { 0 } : new[] { _cluePage * 2 % n, (_cluePage * 2 + 1) % n };
+        }
+    }
+
+    // A clue whose named items have all been delivered is confirmed.
+    public static bool IsConfirmed(DeliveryClue clue, DeliveryState view) =>
+        clue.refs != null && clue.refs.Length > 0 && clue.refs.All(view.Delivered.Contains);
+
+    // The page resets when the case or the request in focus changes.
+    private void SyncCluePage()
+    {
+        var context = $"{Game.CurrentLevel}:{Game.FocusSet}";
+        if (context == _clueContext) return;
+        _clueContext = context;
+        _cluePage = 0;
+        OnHudChanged();
+    }
+
+    // "More clues": the next two cards of the shared pool.
+    public void NextCluePage()
+    {
+        if (Game.Busy || CluePages < 2) return;
+        _cluePage = (_cluePage + 1) % CluePages;
         Board.ClearHint();
-        Board.FocusItem(set.items[clue.column]);
-        OnClueFocus(clue.column, clue.IsSceneClue ? clue.referenceItem : null);
-        Coach(clue.IsSceneClue ? "Look at the highlighted scene. Use it to identify the owner."
-                               : $"{clue.text} Complete a whole row to deliver the set.");
+        OnClueFocus(-1, null);
+        OnHudChanged();
+        Coach("Combine the case clues. Two cards stay visible at a time.");
+        Log("clue_page", $"page={_cluePage}");
+    }
+
+    // A clue card (slot 0 / 1): the items it names light up on the board and in the scene, and its
+    // profile for a column clue, for a few seconds.
+    public void FocusClue(int slot)
+    {
+        var indices = VisibleClueIndices;
+        if (Game.State != GameState.Playing || Game.Busy || slot < 0 || slot >= indices.Length) return;
+        var clue = CurrentClues[indices[slot]];
+        var refs = clue.refs ?? new string[0];
+        Board.ClearHint();
+        Board.FocusItems(refs);
+        int column = clue.rule != null && clue.rule.kind == "at" ? clue.rule.column : -1;
+        OnClueFocus(column, refs);
+        Coach(clue.text);
         _focusTimer?.Kill();
         _focusTimer = DOVirtual.DelayedCall(ClueFocusSeconds, () =>
         {
             Board.ClearHint();
             OnClueFocus(-1, null);
-            if (Game.Level != null && Game.Level.hasTutorial) DefaultCoach(false);
+            if (Game.Level != null && Game.RequiredSwap != null) DefaultCoach(false);
         }).SetLink(gameObject);
-        Log("clue_focus", $"setIndex={Game.FocusSet}; column={clue.column}; reference={(clue.IsSceneClue ? clue.referenceItem : "none")}");
+        Log("clue_focus", $"setIndex={Game.FocusSet}; index={indices[slot]}");
     }
 
     // ---------- Hint ----------
 
     private class HintText
     {
-        public int From, To, TargetRow, Column;
-        public string Id, Other, Text;
+        public int From, To, TargetRow;
+        public string Text;
     }
 
     private static HintText HintInfo()
@@ -234,39 +307,87 @@ public class Manager_Flow : Singleton<Manager_Flow>
         try { h = DeliveryRules.Hint(view, level, Game.FocusSet); }
         catch (Exception e) { Debug.LogError($"[Flow] Hint: {e.Message}"); return null; }
         if (h == null) return null;
-        string id = view.Board[h.From];
-        int to = h.To, from = h.From;
+        int from = h.From, to = h.To;
+        var required = Game.RequiredSwap;
+        if (required != null) { from = required.from; to = required.to; }
+        string id = view.Board[from];
         string dir = to == from + 1 ? "right" : to == from - 1 ? "left" : to > from ? "down" : "up";
         return new HintText
         {
-            From = from, To = to, TargetRow = h.TargetRow, Id = id, Other = view.Board[to],
-            Column = Array.IndexOf(level.sets[h.SetIndex].items, id),
-            Text = $"Swipe the {level.Item(id).label.ToLowerInvariant()} {dir}.",
+            From = from, To = to, TargetRow = h.TargetRow,
+            Text = id != null ? $"Swipe the {level.Item(id).label.ToLowerInvariant()} {dir}." : "Swap into the empty space.",
         };
     }
 
+    // An explanation first (free); the next-swap aid after it (free through the teaching cases).
     public void OpenHint()
     {
         if (Game.State != GameState.Playing || Game.Busy) return;
         var h = HintInfo();
         if (h == null) return;
-        var level = Game.Level;
         Log("hint_open", $"a={h.From}; b={h.To}");
-        string owner = h.Column >= 0 ? level.subjects[h.Column].name : "its owner";
+        if (Game.RequiredSwap != null) { ShowHint(h); return; }
+
+        int cost = FreeHelp ? 0 : Economy.hintCoins;
         PopUps.GetPopup<PopUp_Hint>(PopupName.Hint).Setup(
-            FileRef.Instance.Sprite(level.Item(h.Id)?.sprite),
-            h.Other != null ? FileRef.Instance.Sprite(level.Item(h.Other)?.sprite) : null,
-            h.Text,
-            $"This brings {owner}’s {level.Item(h.Id).label.ToLowerInvariant()} closer to a complete row. Top, middle and bottom rows all work; each item must be under its owner.",
+            Explain(),
+            $"Show next swap · {(cost > 0 ? $"{cost} coins" : "free")}",
+            Save.Coins >= cost,
+            $"Balance: {Save.Coins} coins.",
             () =>
             {
+                if (Save.Coins < cost) return;
+                if (cost > 0)
+                {
+                    Save.Coins -= cost;
+                    Save.Save();
+                    Log("hint_coins", $"cost={cost}");
+                }
                 PopUps.ClosePopup(PopupName.Hint);
-                Board.ShowHint(h.From, h.To, h.TargetRow);
-                Coach(h.Text);
-                Log("hint_shown", $"a={h.From}; b={h.To}");
+                ShowHint(h);
             },
+            () => OpenNotebook(0),
             () => PopUps.ClosePopup(PopupName.Hint));
         PopUps.ShowPopup(PopupName.Hint);
+    }
+
+    private void ShowHint(HintText h)
+    {
+        Board.ShowHint(h.From, h.To, h.TargetRow);
+        Coach(h.Text);
+        Log("hint_shown", $"a={h.From}; b={h.To}");
+        OnHudChanged();         // the coins may have changed
+    }
+
+    // "Read it another way" (the playtest's explainSet): the current clues in plain words.
+    private static string Explain()
+    {
+        var level = Game.Level;
+        var facts = Manager_Flow.Instance.CurrentClues;
+        if (facts.Length == 0) return "Each profile receives one item from the set.";
+        DeliveryClue Find(params string[] kinds) => facts.FirstOrDefault(f => f.rule != null && kinds.Contains(f.rule.kind));
+        if (Game.CurrentLevel <= 5)
+        {
+            var exclusion = Find("different");
+            if (exclusion != null) return $"{exclusion.text} That pairing is ruled out. Place the sugar star using the other clue, then use the remaining two choices.";
+            var same = Find("same");
+            if (same != null) return $"{same.text} Find the confirmed item above. Both items belong to that same profile. Each profile receives one item from the set.";
+            return $"{facts[0].text} Match that item to the named column, then use the second clue. The last item belongs to the remaining profile.";
+        }
+        var anchor = Find("lowest", "highest");
+        if (anchor != null && level.hasDossier && level.dossier.values.Length == 3)
+        {
+            var values = level.dossier.values;
+            float value = anchor.rule.kind == "lowest" ? values.Min() : values.Max();
+            int c = Array.IndexOf(values, value);
+            return $"{anchor.text} Compare the {level.dossier.label.ToLowerInvariant()} badges: {level.subjects[c].name} has {level.dossier.labels[c]}. " +
+                   $"That anchors the {level.Item(anchor.rule.a)?.label.ToLowerInvariant() ?? "item"}. Now follow the clues that connect it to another item.";
+        }
+        var link = Find("same");
+        if (link != null) return $"{link.text} These two items share one profile, even when they belong to different sets. Use another clue to identify that profile. Keep confirmed items in the scene as evidence.";
+        var spatial = Find("left", "next", "notNext");
+        if (spatial != null) return $"{spatial.text} These positions refer to the fixed profiles above. First and last are not neighbours. Combine this with the other case clues.";
+        return "Use all available clues together. An exclusion removes one possibility; each profile must receive one item from the set.";
     }
 
     private void StartAttentionTimer()
@@ -280,61 +401,114 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
     // ---------- Notebook ----------
 
-    public void OpenNotebook()
+    public void OpenNotebook() => OpenNotebook(0);
+
+    // tab 0: the clues; tab 1: the case file.
+    public void OpenNotebook(int tab)
     {
         var level = Game.Level;
         if (level == null || Game.Busy) return;
-        Log("notebook_open");
-        var active = DeliveryRules.Eligible(Game.View, level);
-        var sections = new PopUp_Notebook.Section[level.sets.Length];
-        for (int i = 0; i < sections.Length; i++)
+        Log("notebook_open", $"tab={(tab == 0 ? "clues" : "case")}");
+        var view = Game.View;
+        var sections = new List<PopUp_Notebook.Section>();
+        string intro;
+        PopUp_Notebook.Line Fact(DeliveryClue clue) => new PopUp_Notebook.Line
         {
-            var set = level.sets[i];
-            // The two shown clues first (as on the cards), then the third fact.
-            var shown = new HashSet<int>(set.visibleClues.Select(c => c.column));
-            var facts = set.visibleClues.Select(c => (FileRef.Instance.Sprite(level.Item(c.icon)?.sprite), c.text))
-                .Concat(Enumerable.Range(0, 3).Where(c => !shown.Contains(c))
-                    .Select(c => (FileRef.Instance.Sprite(level.Item(set.items[c])?.sprite), set.clues[c])))
-                .ToArray();
-            sections[i] = new PopUp_Notebook.Section
+            Icon = FileRef.Instance.Sprite(level.SpriteKey(clue.icon)), Text = clue.text, Confirmed = IsConfirmed(clue, view),
+        };
+        PopUp_Notebook.Line Text(string text, Sprite icon = null) => new PopUp_Notebook.Line { Text = text, Icon = icon };
+
+        if (tab == 1)
+        {
+            intro = level.question;
+            var res = level.caseResolution;
+            var lines = res.evidence.Select(x => Text(x)).ToList();
+            if (res.statements.Length > 0)
             {
-                Label = set.label,
-                Status = Game.View.CompletedSets.Contains(i) ? "Delivered" : active.Contains(i) ? "Active" : "Upcoming",
-                Current = i == Game.FocusSet,
-                Facts = facts,
-            };
+                sections.Add(new PopUp_Notebook.Section { Title = "Case evidence", Lines = lines });
+                sections.Add(new PopUp_Notebook.Section { Title = "Witness statements", Lines = res.statements.Select(x => Text(x)).ToList() });
+            }
+            else sections.Add(new PopUp_Notebook.Section { Title = "Case evidence", Lines = lines });
+            if (level.hasDeduction)
+                sections.Add(new PopUp_Notebook.Section { Title = "Festival investigation", Lines = level.deduction.evidence.Select(x => Text(x)).ToList() });
+            for (int n = 1; n <= LevelCount; n++)
+            {
+                var earlier = Manager_Level.Instance.Load(n);
+                if (string.IsNullOrEmpty(earlier.evidenceReveal) || !Save.CompletedLevels.Contains(n)) continue;
+                sections.Add(new PopUp_Notebook.Section
+                {
+                    Title = $"Case {n} · {earlier.title}",
+                    Lines = new List<PopUp_Notebook.Line> { Text(earlier.evidenceReveal, FileRef.Instance.Sprite(earlier.SpriteKey(earlier.evidenceIcon))) },
+                });
+            }
         }
-        PopUps.GetPopup<PopUp_Notebook>(PopupName.Notebook).Setup(
-            "Each subject keeps their column. Complete a requested set in any row. The third owner can be found by elimination, or checked here.",
-            sections, ReturnToLevel);
+        else
+        {
+            intro = "One item per profile in each set. Different sets can describe the same owner. Read all available clues; only two cards are pinned on the board.";
+            if (level.hasDossier)
+                sections.Add(new PopUp_Notebook.Section
+                {
+                    Title = $"Known {level.dossier.label.ToLowerInvariant()} facts",
+                    Lines = level.subjects.OrderBy(s => s.column).Select(s => Text($"<b>{s.name}</b> · {level.dossier.labels[s.column]}")).ToList(),
+                });
+            var active = DeliveryRules.Eligible(view, level);
+            if (level.cluePool.Length > 0)
+                sections.Add(new PopUp_Notebook.Section
+                {
+                    Title = "Linked case clues · read together",
+                    Current = Game.FocusSet >= 0 && Game.FocusSet < 3,
+                    Lines = level.cluePool.Select(Fact).ToList(),
+                });
+            for (int i = 0; i < level.sets.Length; i++)
+            {
+                if (i < 3 && level.cluePool.Length > 0) continue;
+                sections.Add(new PopUp_Notebook.Section
+                {
+                    Title = level.sets[i].label,
+                    Status = view.CompletedSets.Contains(i) ? "Delivered" : active.Contains(i) ? "Active" : "Upcoming",
+                    Current = i == Game.FocusSet,
+                    Lines = level.sets[i].visibleClues.Select(Fact).ToList(),
+                });
+            }
+            if (view.Delivered.Count > 0)
+                sections.Add(new PopUp_Notebook.Section
+                {
+                    Title = "Confirmed scene facts",
+                    Lines = level.subjects.OrderBy(s => s.column).Select(s => Text($"<b>{s.name}</b>: " + string.Join(", ",
+                        level.sets.Select(g => g.items[s.column]).Where(view.Delivered.Contains).Select(id => level.Item(id).label)))).ToList(),
+                });
+        }
+        PopUps.GetPopup<PopUp_Notebook>(PopupName.Notebook).Setup(tab, intro, sections, OpenNotebook, ReturnToLevel);
         PopUps.ShowPopup(PopupName.Notebook);
     }
 
-    // ---------- Cases, menu ----------
+    // ---------- Case map, menu ----------
 
     public void ShowCases()
     {
         Log("level_selector_open");
+        var content = FileRef.Instance.Cases;
         var rows = new List<PopUp_Cases.Row>();
+        var chapters = content?.chapters ?? new DeliveryChapter[0];
         for (int n = 1; n <= LevelCount; n++)
         {
+            var chapter = chapters.FirstOrDefault(c => c.firstLevel == n);
+            if (chapter != null) rows.Add(new PopUp_Cases.Row { Heading = $"{chapter.id}. {chapter.title}" });
             var level = Manager_Level.Instance.Load(n);
-            var notes = new List<string> { $"{level.items.Length} items", $"{level.sets.Length} delivery sets" };
-            if (level.hasTutorial) notes.Add("guided first swap");
-            if (level.refills.Length > 0) notes.Add("refills");
-            if (level.sets.Any(s => s.visibleClues.Any(c => c.IsSceneClue))) notes.Add("scene clues");
-            if (level.IsChoice) notes.Add("choose an order");
             rows.Add(new PopUp_Cases.Row
             {
                 Level = n,
-                Title = level.title,
-                Subtitle = string.Join(" · ", notes),
+                Title = level.IsExpert ? $"{level.title} · <color=#B25336>EXPERT</color>" : level.title,
+                Subtitle = $"{level.rows} rows · {level.items.Length} items · {level.sets.Length} sets · " +
+                           (level.HasMoveLimit ? $"{level.moveLimit} moves" : "untimed practice"),
                 Done = Save.CompletedLevels.Contains(n),
                 Current = n == Game.CurrentLevel,
             });
         }
+        int done = Save.CompletedLevels.Count(n => n <= LevelCount);
         PopUps.GetPopup<PopUp_Cases>(PopupName.LevelSelect).Setup(
-            $"{Save.CompletedLevels.Count(n => n <= LevelCount)}/{LevelCount} cases complete · {Save.Coins} coins",
+            $"{LevelCount}-CASE PLAYTEST", "The missing festival star",
+            $"Prepare the town, follow the evidence and return the missing star. {done}/{LevelCount} cases closed · {Save.Coins} coins.",
             rows, StartLevel, ReturnToLevel);
         PopUps.ShowPopup(PopupName.LevelSelect);
     }
@@ -356,7 +530,11 @@ public class Manager_Flow : Singleton<Manager_Flow>
     private void ReturnToLevel()
     {
         PopUps.CloseAll();
-        if (Game.State == GameState.Won) ShowWin(_lastWinWasFirstClear);
+        if (Game.State == GameState.Won)
+        {
+            if (_deductionPending) ShowDeduction();
+            else ShowWin(_lastWinWasFirstClear);
+        }
         else if (Game.State == GameState.Failed) ShowFailed();
     }
 
@@ -373,10 +551,13 @@ public class Manager_Flow : Singleton<Manager_Flow>
         _outcomeDelay?.Kill();
         if (state == GameState.Won)
         {
-            int coins = RecordClear(Game.CurrentLevel, Game.Level.firstClearCoins);
-            _lastWinWasFirstClear = coins > 0;
-            Log("case_won", $"firstClear={coins > 0}; seconds={_activeSeconds:0}; swaps={Game.MovesUsed}");
-            _outcomeDelay = DOVirtual.DelayedCall(Tuning.WinPopupDelay, () => ShowWin(_lastWinWasFirstClear)).SetLink(gameObject);
+            // A milestone case asks its question first (once: a replay goes straight to the win).
+            _deductionPending = Game.Level.hasDeduction && !Save.CompletedLevels.Contains(Game.CurrentLevel);
+            _outcomeDelay = DOVirtual.DelayedCall(Tuning.WinPopupDelay, () =>
+            {
+                if (_deductionPending) ShowDeduction();
+                else AwardWin();
+            }).SetLink(gameObject);
         }
         else if (state == GameState.Failed)
         {
@@ -387,7 +568,39 @@ public class Manager_Flow : Singleton<Manager_Flow>
         {
             _attention?.Kill();
             Board.ClearHint();
+            OnCounterTeach(false);
         }
+    }
+
+    private void ShowDeduction()
+    {
+        if (Game.State != GameState.Won) return;
+        var d = Game.Level.deduction;
+        var popup = PopUps.GetPopup<PopUp_Deduction>(PopupName.Deduction);
+        popup.Setup(d.question, string.Join("\n\n", d.evidence), d.options, answer =>
+        {
+            bool right = answer == d.answer;
+            Log("deduction_answer", $"answer={answer}; correct={right}");
+            if (!right)
+            {
+                popup.SetFeedback("That does not fit both pieces of evidence. Read them together and try again. No penalty.");
+                popup.Disable(answer);
+                return;
+            }
+            _deductionPending = false;
+            PopUps.ClosePopup(PopupName.Deduction);
+            AwardWin();
+        });
+        PopUps.ShowPopup(PopupName.Deduction);
+    }
+
+    private void AwardWin()
+    {
+        int coins = RecordClear(Game.CurrentLevel, Game.Level.firstClearCoins);
+        _lastWinWasFirstClear = coins > 0;
+        OnHudChanged();
+        Log("case_won", $"firstClear={coins > 0}; seconds={_activeSeconds:0}; swaps={Game.MovesUsed}");
+        ShowWin(_lastWinWasFirstClear);
     }
 
     // Saves the clear and its reward together, once per case, before the popup shows. Replays give 0.
@@ -406,16 +619,31 @@ public class Manager_Flow : Singleton<Manager_Flow>
     {
         if (Game.State != GameState.Won) return;
         var level = Game.Level;
-        bool last = Game.CurrentLevel >= LevelCount;
-        int sets = level.sets.Length;
-        var popup = PopUps.GetPopup<PopUp_Win>(PopupName.Win);
-        popup.Setup("Case complete!", level.completionText, Subjects(level),
-                    firstClear ? $"+{level.firstClearCoins} coins" : "Already collected",
-                    $"{sets} / {sets} sets delivered · {Game.MovesUsed} swaps used",
-                    last ? null : Manager_Level.Instance.Load(Game.CurrentLevel + 1).title,
-                    last ? "Finish playtest" : "Next case",
-                    last ? (Action)Finish : () => StartLevel(Game.CurrentLevel + 1),
-                    ShowCases);
+        int id = Game.CurrentLevel, next = NextCase(id);
+        bool last = id >= LevelCount;
+        var nextCase = Manager_Level.Instance.Load(next);
+        var res = level.caseResolution;
+        var content = new PopUp_Win.Content
+        {
+            Kicker = level.IsExpert ? "EXPERT CASE SOLVED" : "EVERY REQUEST DELIVERED",
+            Title = last ? "The festival is saved!" : "Case complete!",
+            Completion = level.completionText,
+            Question = res.question,
+            AnswerIcon = string.IsNullOrEmpty(res.icon) ? null : FileRef.Instance.Sprite(level.SpriteKey(res.icon)),
+            Answer = res.answer,
+            Subjects = last ? null : Enumerable.Range(0, 3).Select(c => UI_SubjectCard.For(level, c)).ToArray(),
+            Star = FileRef.Instance.Sprite("festival_star"),
+            StoryTitle = id == 5 ? "Something is missing…" : null,
+            StoryText = id == 5 ? "The festival star has not arrived. Its delivery tag has been changed. Follow the parcels to bring it home." : null,
+            EvidenceIcon = string.IsNullOrEmpty(level.evidenceIcon) ? null : FileRef.Instance.Sprite(level.SpriteKey(level.evidenceIcon)),
+            Evidence = level.evidenceReveal,
+            Reward = firstClear ? $"+{level.firstClearCoins} coins" : "Already collected",
+            Stats = $"{level.sets.Length} / {level.sets.Length} sets delivered · {Game.MovesUsed} swaps used",
+            UpNext = nextCase.title,
+            UpNextLine = !last && !string.IsNullOrEmpty(level.nextLead) ? $"Next lead: {level.nextLead}" : nextCase.subtitle,
+            NextLabel = "Next case",
+        };
+        PopUps.GetPopup<PopUp_Win>(PopupName.Win).Setup(content, () => StartLevel(next), ShowCases);
         PopUps.ShowPopup(PopupName.Win);
         if (_celebratedSession != _session)     // not again when the popup comes back from the list
         {
@@ -427,74 +655,49 @@ public class Manager_Flow : Singleton<Manager_Flow>
     private void ShowFailed()
     {
         if (Game.State != GameState.Failed) return;
+        var level = Game.Level;
+        var economy = Economy;
+        bool canContinue = Game.Model.ContinuesUsed < economy.maxContinues;
+        int cost = FreeHelp ? 0 : economy.continueCoins;
+        string body = $"You have delivered {Game.Model.Stage} of {level.sets.Length} sets. Retry and Undo are free." +
+                      (canContinue ? "" : " This attempt has used its extra moves.");
         PopUps.GetPopup<PopUp_Failed>(PopupName.Failed).Setup(
-            "Your next try is free. You can also undo your last swap and keep going.",
+            body,
+            $"+{economy.continueMoves} moves · {(cost > 0 ? $"{cost} coins" : "free")}",
+            Save.Coins >= cost,
+            canContinue ? $"One continue per attempt. Balance: {Save.Coins} coins." : null,
+            canContinue ? () => Continue(cost) : (Action)null,
+            Game.CanUndo,
             () => { PopUps.ClosePopup(PopupName.Failed); Game.Undo(); },
             () => StartLevel(Game.CurrentLevel),
             ShowCases);
         PopUps.ShowPopup(PopupName.Failed);
     }
 
-    // ---------- End of the playtest ----------
-
-    private void Finish()
+    private void Continue(int cost)
     {
-        Log("playtest_finished");
-        var save = Save;
-        var scenes = Enumerable.Range(1, LevelCount).Select(n => (n.ToString(), Manager_Level.Instance.Load(n).title)).ToArray();
-        var questions = new[]
+        if (Save.Coins < cost) return;
+        var economy = Economy;
+        if (!Game.Continue(economy.continueMoves, economy.maxContinues)) return;
+        if (cost > 0)
         {
-            new PopUp_Feedback.Question { Key = "goal", Title = "Was the any-row rule clear?", Selected = save.FeedbackGoal,
-                Options = new[] { ("clear", "Yes, any row works"), ("unclear", "I wasn’t sure which row counted") } },
-            new PopUp_Feedback.Question { Key = "wrap", Title = "Did the two clues help you find the third owner?", Selected = save.FeedbackWrap,
-                Options = new[] { ("clear", "Yes, by elimination"), ("unclear", "I needed the Notebook") } },
-            new PopUp_Feedback.Question { Key = "difficulty", Title = "Which scene would you play again?", Selected = save.FeedbackDifficulty,
-                Options = scenes },
-        };
-        PopUps.GetPopup<PopUp_Feedback>(PopupName.Feedback).Setup("PLAYTEST COMPLETE", questions, answers =>
-        {
-            save.FeedbackGoal = answers.TryGetValue("goal", out var goal) ? goal : "";
-            save.FeedbackWrap = answers.TryGetValue("wrap", out var clues) ? clues : "";
-            save.FeedbackDifficulty = answers.TryGetValue("difficulty", out var scene) ? scene : "";
-            save.Save();
-            Log("feedback_saved", $"anyRow={save.FeedbackGoal}; clues={save.FeedbackWrap}; replay={save.FeedbackDifficulty}");
-            ExportReport();
-            ShowCases();
-        }, ShowCases);
-        PopUps.ShowPopup(PopupName.Feedback);
-    }
-
-    private void ExportReport()
-    {
-        Log("report_export");
-        try
-        {
-            string path = PlaytestLog.Export();
-            Debug.Log($"[Flow] Playtest report saved to {path}");
-            Toast("Results saved on this device.");
+            Save.Coins -= cost;
+            Save.Save();
         }
-        catch (Exception e)
-        {
-            Debug.LogError($"[Flow] Report export failed: {e.Message}");
-            Toast("The results could not be saved.");
-        }
+        PopUps.ClosePopup(PopupName.Failed);
+        OnHudChanged();
+        Log("continue_granted", $"cost={cost}");
+        DefaultCoach(false);
+        Coach($"+{economy.continueMoves} moves. Your deliveries stay earned.");
+        StartAttentionTimer();
     }
 
     // ---------- Helpers ----------
 
+    // The case after `level`; after the last one the cases start again from case 1.
+    private int NextCase(int level) => level >= LevelCount ? 1 : level + 1;
+
     private void Toast(string text) => OnToast(text);
 
     private void Log(string type, string data = "") => PlaytestLog.Log(type, Game != null ? Game.CurrentLevel : 0, data);
-
-    // Every subject with all its parts and delivered extras (the win popup's finished scene).
-    private static PopUp_Win.Subject[] Subjects(DeliveryCase level)
-    {
-        var subjects = new PopUp_Win.Subject[level.subjects.Length];
-        for (int i = 0; i < subjects.Length; i++)
-        {
-            var subject = level.subjects.First(s => s.column == i);
-            subjects[i] = new PopUp_Win.Subject { Rig = FileRef.Instance.Rig(subject.rigId), Name = subject.name, Extras = UI_SubjectCard.ExtrasFor(level, i) };
-        }
-        return subjects;
-    }
 }

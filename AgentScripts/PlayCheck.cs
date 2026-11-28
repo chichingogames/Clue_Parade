@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -17,7 +18,7 @@ public static class PlayCheck
         var text = new System.Text.StringBuilder();
         text.Append($"case {game.CurrentLevel} '{level.title}' {game.State} moves {game.MovesUsed}/{level.moveLimit} " +
                     $"focus {game.FocusedSet?.label ?? "-"} delivered {model.Stage}/{level.sets.Length} busy {game.Busy} selected {game.Selected}");
-        for (int r = 0; r < 3; r++)
+        for (int r = 0; r < level.rows; r++)
         {
             text.Append(" |");
             for (int c = 0; c < 3; c++) text.Append(' ').Append(level.Item(model.Board[r * 3 + c])?.label ?? "-");
@@ -25,9 +26,9 @@ public static class PlayCheck
         text.Append(" | shown parts:");
         foreach (var card in Object.FindObjectsByType<UI_SubjectCard>(FindObjectsSortMode.None))
         {
-            if (card.Rig == null || card.transform.parent.name != "Reference") continue;
-            int on = 0;
-            foreach (var image in card.Rig.GetComponentsInChildren<UnityEngine.UI.Image>()) on++;
+            if (card.transform.parent.name != "Reference") continue;
+            var rig = card.GetComponentsInChildren<RectTransform>(true).FirstOrDefault(t => t.name == "Rig");
+            int on = rig == null ? 0 : rig.GetComponentsInChildren<UnityEngine.UI.Image>(false).Length;
             text.Append($" {card.name}={on}");
         }
         return text.ToString();
@@ -53,6 +54,41 @@ public static class PlayCheck
         Invoke("HandleRelease", start, start, 0.1f);
         await Settle();
         return $"tap ({row},{col}) -> " + Status();
+    }
+
+    // Opens case n fresh (Tester-style), waiting for the board to settle.
+    public static async Task<string> Load(int n)
+    {
+        Manager_Flow.Instance.StartLevel(n);
+        await Settle();
+        await Task.Delay(1500);
+        return Status();
+    }
+
+    // Follows the hint for up to `count` swaps (or until the case ends).
+    public static async Task<string> Hint(int count)
+    {
+        for (int i = 0; i < count && Manager_Game.Instance.State == GameState.Playing; i++)
+        {
+            var game = Manager_Game.Instance;
+            var h = DeliveryRules.Hint(game.Model, game.Level, game.FocusSet);
+            if (h == null) break;
+            if (!game.ApplyMove(h.From, h.To)) return "move refused -> " + Status();
+            await Settle();
+        }
+        return Status();
+    }
+
+    // Swaps cells a and b back and forth n times (spends moves without progress).
+    public static async Task<string> Waste(int n, int a, int b)
+    {
+        for (int i = 0; i < n && Manager_Game.Instance.State == GameState.Playing; i++)
+        {
+            Manager_Game.Instance.ApplyMove(a, b);
+            await Settle();
+        }
+        await Task.Delay(1200);
+        return Status();
     }
 
     public static string Undo() => $"undo {Manager_Game.Instance.Undo()} -> " + Status();
