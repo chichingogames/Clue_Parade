@@ -137,7 +137,7 @@ public static class PopUpBuilder
         text.fontSizeMax = 40f;
         var swipe = Text(holder, "Swipe", _bold, 42, UIBuilder.Ink, "Swipe the top row left.");
         swipe.alignment = TextAlignmentOptions.TopLeft;
-        var wrap = Text(holder, "Wrap", _regular, 34, UIBuilder.Ink, "The first item wraps to the last space.");
+        var wrap = Text(holder, "Wrap", _regular, 34, UIBuilder.Ink, "Drag the first item right onto the second.");
         wrap.alignment = TextAlignmentOptions.TopLeft;
         Set(so, "_clueIcon", icon);
         Set(so, "_clueText", text);

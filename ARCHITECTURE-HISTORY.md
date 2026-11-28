@@ -4,6 +4,17 @@ Append-only. Newest first. One entry per documentation run.
 
 ---
 
+## 2026-11-28 — branch `swap-mechanic` on `047db43`
+
+**Neighbour swaps replace row / column wraps; tutorial disabled.** New `SwapPuzzle` (BFS over 9! boards, `SwapMove`);
+`BoardState.Swap`; `Manager_Board` holds a pair instead of a line (no ghost); `Manager_Game` picks the neighbour from
+the drag direction; move limits recomputed from the swap minimum plus the pack's slack; Hint / guide / Tester / validator
+/ HUD note moved to swaps; `requiredFirstSwipe`, the tutorial toast and the wrap solution are no longer used.
+**Verified** in the Editor: compile clean, Validate Levels 30 OK, case 4 in Play mode (swap, edge drag ignored,
+snap-back, undo, hint + guide, shortest solve to the win popup in 6 swaps).
+
+---
+
 ## 2026-11-28 — `1ea9dea` + uncommitted
 
 **The 30-case content pack replaces the five-case Mia/Leo/Zoe build** (source: `Tilewrap_30_Level_Unity_Production`

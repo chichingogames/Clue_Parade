@@ -1,4 +1,5 @@
-// Pure board model: no Unity objects. Cells are [row, col]; row 0 is the top row.
+// Pure board model: no Unity objects. Cells are [row, col]; row 0 is the top row. A move swaps
+// two orthogonal neighbours (Swap); nothing wraps.
 // Each tile knows the cell it belongs in (TileData.Id = row * Size + col). A cell is "home" (a
 // matched slot) when it holds that tile. Matches are shown: the tile gets a check and the column's
 // subject shows the fitted part, for as long as it stays home. Correct tiles stay movable: nothing
@@ -20,20 +21,12 @@ public class BoardState
 
     public BoardState(LevelDefinition level) : this(level.Size, level.StartCells) { }
 
-    // dir +1 = right, -1 = left. The tile pushed off one end wraps to the other.
-    public void ShiftRow(int row, int dir)
+    // The two neighbouring tiles trade cells. Its own inverse (Undo makes the same swap again).
+    public void Swap(SwapMove move)
     {
-        var line = new TileData[Size];
-        for (int c = 0; c < Size; c++) line[Wrap(c + dir)] = _cells[row, c];
-        for (int c = 0; c < Size; c++) _cells[row, c] = line[c];
-    }
-
-    // dir +1 = down (towards higher row index), -1 = up.
-    public void ShiftColumn(int col, int dir)
-    {
-        var line = new TileData[Size];
-        for (int r = 0; r < Size; r++) line[Wrap(r + dir)] = _cells[r, col];
-        for (int r = 0; r < Size; r++) _cells[r, col] = line[r];
+        var tile = _cells[move.row, move.col];
+        _cells[move.row, move.col] = _cells[move.OtherRow, move.OtherCol];
+        _cells[move.OtherRow, move.OtherCol] = tile;
     }
 
     public bool IsHome(int row, int col) => _cells[row, col].Id == row * Size + col;
@@ -107,6 +100,4 @@ public class BoardState
                 if (!_cells[r, c].Equals(cells[r, c])) return false;
         return true;
     }
-
-    public int Wrap(int index) => ((index % Size) + Size) % Size;
 }

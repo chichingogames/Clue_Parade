@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Central state machine. Decides whether a swipe is legal, counts moves, keeps the undo history,
+// Central state machine. Decides whether a swap is legal, counts moves, keeps the undo history,
 // and ends the level. Moving on after a win or fail is the player's call (Manager_Flow's popups).
 // Input is gated, never paused by a flag: it is accepted while Playing and no popup is up
 // (ApplyInputGate re-runs on state changes and popup open / close).
@@ -11,8 +11,7 @@ public class Manager_Game : Singleton<Manager_Game>
     public event Action<GameState> OnStateChanged = delegate { };
     public event Action<int> OnLevelStarted = delegate { };
     public event Action OnMoveMade = delegate { };      // also raised by Undo: the board and MovesUsed changed
-    public event Action<LevelMove> OnMoveCommitted = delegate { };   // a counted move (swipe or ApplyMove)
-    public event Action<LevelMove> OnMoveRejected = delegate { };    // a swipe refused for the required first move (its argument)
+    public event Action<SwapMove> OnMoveCommitted = delegate { };    // a counted move (drag or ApplyMove)
     public event Action OnUndone = delegate { };
 
     public GameState State { get; private set; } = GameState.Loading;
@@ -24,30 +23,17 @@ public class Manager_Game : Singleton<Manager_Game>
     // Undo works while playing and also after a win or fail ("Undo for one more move").
     public bool CanUndo => _history.Count > 0 && State != GameState.Loading;
 
-    // The level's guided first swipe while it still applies: no move made and the board is the
-    // start board (so Undo back to the start brings it back). Null otherwise.
-    public LevelMove RequiredMove =>
-        State == GameState.Playing && Level?.RequiredFirstMove != null && MovesUsed == 0
-        && Manager_Board.Instance.State.SameCells(Level.StartCells) ? Level.RequiredFirstMove : null;
-
-    // Current press: the cell it started on, and whether a line has been picked up.
+    // Current press: the cell it started on, the direction it was dragged (one of dRow / dCol is
+    // +-1, the other 0), the swap that picks, and whether the pair has been picked up.
     private bool _pressOnBoard;
     private int _pressRow;
     private int _pressCol;
-    private bool _lineHeld;
-    private bool _lineIsRow;
+    private int _dragRow;
+    private int _dragCol;
+    private SwapMove _pressMove;
+    private bool _pairHeld;
 
-    // Cells a line can move in one swipe. Each swipe is one move.
-    private const int MaxStepsPerMove = 1;
-
-    private readonly Stack<Move> _history = new Stack<Move>();
-
-    private struct Move
-    {
-        public bool IsRow;
-        public int Index;
-        public int Steps;
-    }
+    private readonly Stack<SwapMove> _history = new Stack<SwapMove>();
 
     public override void Awake2()
     {
@@ -135,16 +121,17 @@ public class Manager_Game : Singleton<Manager_Game>
 
     public void AdvanceLevel() => StartLevel(CurrentLevel + 1);
 
-    // ---------- Hold-and-drag / swipe ----------
-    // A press on the board picks up its row or column once the pointer has moved
-    // Tuning.DragStartThreshold along one axis; the line then follows the pointer.
-    // A move is exactly one cell: the line follows the pointer but no further than MaxStepsPerMove
-    // cells, and on release snaps to 0 or 1 cell (see StepsForRelease).
+    // ---------- Drag to swap ----------
+    // A press on a tile picks it up once the pointer has moved Tuning.DragStartThreshold; the
+    // dominant direction (right, left, up or down) picks the neighbour it swaps with, locked for
+    // the rest of the press. The pair then follows the pointer, up to a full swap. On release the
+    // swap commits if it was dragged Tuning.DragCommitThreshold of a cell, or flicked; otherwise it
+    // snaps back. A drag towards the board's edge (no neighbour) does nothing. Each swap is one move.
 
     private void HandlePress(Vector2 screenPosition)
     {
         var board = Manager_Board.Instance;
-        _lineHeld = false;
+        _pairHeld = false;
         _pressOnBoard = State == GameState.Playing && !board.IsAnimating
                         && board.TryGetCell(screenPosition, out _pressRow, out _pressCol);
     }
@@ -154,17 +141,25 @@ public class Manager_Game : Singleton<Manager_Game>
         if (!_pressOnBoard) return;
         var board = Manager_Board.Instance;
 
-        if (!_lineHeld)
+        if (!_pairHeld)
         {
             float threshold = Tuning.DragStartThreshold * Mathf.Min(Screen.width, Screen.height);
             Vector2 delta = screenNow - screenStart;
             if (delta.magnitude < threshold) return;
 
-            // Lock to the dominant axis for the rest of this press.
-            _lineIsRow = Mathf.Abs(delta.x) >= Mathf.Abs(delta.y);
+            // Screen up = towards row 0.
+            bool horizontal = Mathf.Abs(delta.x) >= Mathf.Abs(delta.y);
+            _dragRow = horizontal ? 0 : (delta.y > 0f ? -1 : 1);
+            _dragCol = horizontal ? (delta.x > 0f ? 1 : -1) : 0;
+            _pressMove = SwapMove.Between(_pressRow, _pressCol, _dragRow, _dragCol, Level.Size);
+            if (_pressMove == null)
+            {
+                _pressOnBoard = false;     // towards the edge: nothing to swap with
+                return;
+            }
 
-            board.BeginDrag(_lineIsRow, _lineIsRow ? _pressRow : _pressCol);
-            _lineHeld = true;
+            board.BeginDrag(_pressMove);
+            _pairHeld = true;
         }
 
         board.SetDragOffset(DragOffset(screenStart, screenNow));
@@ -172,58 +167,45 @@ public class Manager_Game : Singleton<Manager_Game>
 
     private void HandleRelease(Vector2 screenStart, Vector2 screenEnd, float secondsHeld)
     {
-        if (!_lineHeld) return;      // a tap, or a press that never picked up a line
-        _lineHeld = false;
+        if (!_pairHeld) return;      // a tap, or a press that never picked up a pair
+        _pairHeld = false;
         _pressOnBoard = false;
 
         var board = Manager_Board.Instance;
-        int steps = StepsForRelease(DragOffset(screenStart, screenEnd), secondsHeld);
-        int index = _lineIsRow ? _pressRow : _pressCol;
-        if (steps == 0)
+        float offset = DragOffset(screenStart, screenEnd);
+        bool commit = offset >= Tuning.DragCommitThreshold || (offset > 0f && secondsHeld <= Tuning.FlickMaxDuration);
+        if (!commit)
         {
             board.CancelDrag();
             return;
         }
 
-        // A guided first swipe: anything else snaps back and costs nothing.
-        var required = RequiredMove;
-        if (required != null && !required.Is(_lineIsRow, index, steps))
-        {
-            board.CancelDrag();
-            OnMoveRejected(required);
-            return;
-        }
-
-        board.CommitDrag(steps);
-        CountMove(_lineIsRow, index, steps);
+        board.CommitDrag();
+        CountMove(_pressMove);
     }
 
-    // A move made from code (tutorials, hints, the tester): same rules and counting as a swipe.
-    // steps: only the sign is used (row + = right, column + = down): a move is one cell.
+    // A swap made from code (hints, the tester): same rules and counting as a drag.
     // Ignored unless Playing and the board is idle.
-    public bool ApplyMove(bool isRow, int index, int steps)
+    public bool ApplyMove(SwapMove move)
     {
         var board = Manager_Board.Instance;
-        if (State != GameState.Playing || board.IsAnimating || board.IsDragging || _lineHeld || steps == 0) return false;
-        steps = Mathf.Clamp(steps, -MaxStepsPerMove, MaxStepsPerMove);
+        if (State != GameState.Playing || board.IsAnimating || board.IsDragging || _pairHeld || move == null) return false;
+        if (SwapMove.Between(move.row, move.col, move.OtherRow - move.row, move.OtherCol - move.col, Level.Size) == null) return false;
 
-        if (isRow) board.ShiftRow(index, steps);
-        else board.ShiftColumn(index, steps);
-        CountMove(isRow, index, steps);
+        board.Swap(move);
+        CountMove(move);
         return true;
     }
 
-    // Takes back the last swipe, refunding its move. From Won or Failed this
-    // returns to Playing. Refused while a line is moving.
+    // Takes back the last swap (the same swap again), refunding its move. From Won or Failed this
+    // returns to Playing. Refused while a pair is moving.
     public bool Undo()
     {
         var board = Manager_Board.Instance;
-        if (!CanUndo || board.IsAnimating || board.IsDragging || _lineHeld) return false;
+        if (!CanUndo || board.IsAnimating || board.IsDragging || _pairHeld) return false;
 
-        var move = _history.Pop();
-        if (move.IsRow) board.ShiftRow(move.Index, -move.Steps, celebrate: false);
-        else board.ShiftColumn(move.Index, -move.Steps, celebrate: false);
-        MovesUsed -= Mathf.Abs(move.Steps);
+        board.Swap(_history.Pop(), celebrate: false);
+        MovesUsed--;
         Manager_Audio.Instance?.PlaySound(SoundType.Undo);     // haptic comes from the slide's settle
 
         SetState(GameState.Playing);
@@ -232,42 +214,28 @@ public class Manager_Game : Singleton<Manager_Game>
         return true;
     }
 
-    private void CountMove(bool isRow, int index, int steps)
+    private void CountMove(SwapMove move)
     {
-        _history.Push(new Move { IsRow = isRow, Index = index, Steps = steps });
-        MovesUsed += Mathf.Abs(steps);
-        OnMoveCommitted(new LevelMove { axis = isRow ? "row" : "column", line = index, direction = Math.Sign(steps) });
+        _history.Push(move);
+        MovesUsed++;
+        OnMoveCommitted(move);
         OnMoveMade();
         EvaluateEndConditions();
     }
 
     private void HandleCancel()
     {
-        if (_lineHeld) Manager_Board.Instance.CancelDrag();
-        _lineHeld = false;
+        if (_pairHeld) Manager_Board.Instance.CancelDrag();
+        _pairHeld = false;
         _pressOnBoard = false;
     }
 
-    // Line offset in cells: row + = right, column + = down (screen up = towards row 0).
-    // Clamped to one move's reach, so the line stops following past one cell.
+    // How far the pressed tile has been dragged towards its neighbour, in cells (0..1).
     private float DragOffset(Vector2 screenStart, Vector2 screenNow)
     {
         Vector2 cells = Manager_Board.Instance.ScreenDeltaToCells(screenStart, screenNow);
-        return Mathf.Clamp(_lineIsRow ? cells.x : -cells.y, -MaxStepsPerMove, MaxStepsPerMove);
-    }
-
-    // Every whole cell dragged is a step; the leftover part counts as one more step once it
-    // reaches Tuning.DragCommitThreshold of a cell. A quick flick moves at least one cell.
-    // Never more than MaxStepsPerMove (the offset is already clamped; this is the guard).
-    private static int StepsForRelease(float offset, float secondsHeld)
-    {
-        float distance = Mathf.Abs(offset);
-        int whole = Mathf.FloorToInt(distance);
-        int steps = whole + (distance - whole >= Tuning.DragCommitThreshold ? 1 : 0);
-
-        if (steps == 0 && secondsHeld <= Tuning.FlickMaxDuration) steps = 1;
-        steps = Mathf.Min(steps, MaxStepsPerMove);
-        return steps * (offset < 0f ? -1 : 1);
+        float along = _dragCol != 0 ? cells.x * _dragCol : -cells.y * _dragRow;    // cells.y is up
+        return Mathf.Clamp01(along);
     }
 
     private void EvaluateEndConditions()

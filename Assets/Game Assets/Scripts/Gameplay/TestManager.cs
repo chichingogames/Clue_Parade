@@ -2,8 +2,8 @@ using Sortify;
 using UnityEngine;
 
 /// <summary>
-/// A cheat panel for testing: jump between levels, force a win or a loss, make moves and play
-/// a level's known solution, all from Inspector buttons.
+/// A cheat panel for testing: jump between levels, force a win or a loss, make swaps and play
+/// a shortest solve, all from Inspector buttons.
 /// </summary>
 /// <remarks>
 /// <b>Everything in here is editor-only.</b> The class still compiles into a player as an empty
@@ -30,12 +30,13 @@ public class TestManager : MonoBehaviour
     [SerializeField, Min(1)] private int _levelNumber = 1;
 
     [Header("Move")]
-    [Tooltip("On: 'Shift Line' moves a row. Off: a column.")]
-    [SerializeField] private bool _shiftRow = true;
-    [Tooltip("Row or column index. 0 is the top row / left column.")]
-    [SerializeField, Min(0)] private int _lineIndex;
-    [Tooltip("Direction: + is right (row) or down (column), - is left / up. A move is always one cell.")]
-    [SerializeField] private int _steps = 1;
+    [Tooltip("Tile 'Swap Tile' moves: row (0 = top) and column (0 = left).")]
+    [SerializeField, Min(0)] private int _swapRow;
+    [SerializeField, Min(0)] private int _swapColumn;
+    [Tooltip("Which neighbour it swaps with.")]
+    [SerializeField] private SwapDirection _swapDirection = SwapDirection.Right;
+
+    private enum SwapDirection { Right, Left, Up, Down }
 
     [Header("Time")]
     [Tooltip("Speed the game runs at. 0 freezes it, 1 is normal. Slides and the win/fail delay are DOTween on scaled time, so both follow this.")]
@@ -116,52 +117,40 @@ public class TestManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Restarts the level and plays its authored solution one move at a time, through the same
-    /// path as a swipe: moves are counted and the win lands on the last one.
+    /// Restarts the level and plays a shortest solve (SwapPuzzle) one swap at a time, through the
+    /// same path as a drag: swaps are counted and the win lands on the last one.
     /// </summary>
     /// <remarks>
-    /// Each move waits for <see cref="Manager_Board.OnBoardSettled"/> from the one before, since
-    /// <see cref="Manager_Game.ApplyMove"/> refuses a move while a line is still sliding.
+    /// Each swap waits for <see cref="Manager_Board.OnBoardSettled"/> from the one before, since
+    /// <see cref="Manager_Game.ApplyMove"/> refuses a move while a pair is still sliding.
     /// </remarks>
-    [Button("Play Solution (real win)")]
+    [Button("Play Shortest Solve (real win)")]
     private void PlaySolution()
     {
         if (!Ready(out Manager_Game game)) return;
         StopSolution();
         game.RestartLevel();
 
-        var solution = game.Level.Solution;
-        if (solution.Length == 0)
-        {
-            Debug.LogWarning($"[TestManager] level {game.CurrentLevel} has no solution in its file.");
-            return;
-        }
-
-        _solution = solution;
-        _solutionStep = 0;
+        _solving = true;
         Manager_Board.Instance.OnBoardSettled += NextSolutionMove;
-        Debug.Log($"[TestManager] playing the {solution.Length}-move solution of level {game.CurrentLevel}.");
         NextSolutionMove();
     }
 
-    #endregion
-
-    #region Moves
-
-    [Button("Shift Line", header: "Moves")]
-    private void ShiftLine()
+    [Button("Swap Tile", header: "Moves")]
+    private void SwapTile()
     {
         if (!Ready(out Manager_Game game)) return;
 
-        int size = game.Level.Size;
-        if (_lineIndex >= size || _steps == 0)
+        int dRow = _swapDirection == SwapDirection.Up ? -1 : _swapDirection == SwapDirection.Down ? 1 : 0;
+        int dCol = _swapDirection == SwapDirection.Left ? -1 : _swapDirection == SwapDirection.Right ? 1 : 0;
+        var move = SwapMove.Between(_swapRow, _swapColumn, dRow, dCol, game.Level.Size);
+        if (move == null)
         {
-            Debug.LogWarning($"[TestManager] need a line index below {size} and non-zero steps.");
+            Debug.LogWarning($"[TestManager] ({_swapRow},{_swapColumn}) has no neighbour {_swapDirection} on a {game.Level.Size}x{game.Level.Size} board.");
             return;
         }
-
-        if (!game.ApplyMove(_shiftRow, _lineIndex, _steps))
-            Debug.LogWarning($"[TestManager] move refused: state is {game.State}, or a line is still moving.");
+        if (!game.ApplyMove(move))
+            Debug.LogWarning($"[TestManager] swap refused: state is {game.State}, or a pair is still moving.");
     }
 
     [Button("Log State")]
@@ -239,29 +228,27 @@ public class TestManager : MonoBehaviour
 
     #region Private
 
-    private LevelMove[] _solution;
-    private int _solutionStep;
+    private bool _solving;
 
     private void NextSolutionMove()
     {
         var game = Manager_Game.Instance;
-        if (_solution == null || game == null || game.State != GameState.Playing || _solutionStep >= _solution.Length)
+        if (!_solving || game == null || game.State != GameState.Playing
+            || !SwapPuzzle.TryNextMove(Manager_Board.Instance.State.TileIds(), out var move))
         {
             StopSolution();
             return;
         }
-
-        var move = _solution[_solutionStep++];
-        if (!game.ApplyMove(move.IsRow, move.line, move.direction))
+        if (!game.ApplyMove(move))
         {
-            Debug.LogWarning($"[TestManager] solution stopped at move {_solutionStep}: the board was busy.");
+            Debug.LogWarning("[TestManager] solve stopped: the board was busy.");
             StopSolution();
         }
     }
 
     private void StopSolution()
     {
-        _solution = null;
+        _solving = false;
         if (Manager_Board.Instance != null) Manager_Board.Instance.OnBoardSettled -= NextSolutionMove;
     }
 

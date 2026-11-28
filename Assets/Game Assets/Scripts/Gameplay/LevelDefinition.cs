@@ -1,5 +1,3 @@
-using System;
-
 public interface ILevelSource
 {
     // Number of levels, numbered 1..Count without gaps.
@@ -13,14 +11,14 @@ public interface ILevelSource
 // rows are categories (Hats, Gear, Walls). Each tile is an item with one target cell; the case is
 // solved when all N*N items are in their target cells at the same time. Each item carries the
 // clue fact that says where it goes ("Trail bag gets the raincoat."). Converted from the content
-// pack's case file by CaseLevelSource.
+// pack's case file by CaseLevelSource. A move swaps two neighbouring tiles (SwapMove).
 public class LevelDefinition
 {
     public int Number { get; }
     public int Size { get; }
     public TileData[,] StartCells { get; }
-    public int MoveLimit { get; }          // 0 = unlimited
-    public int MinimumMoves { get; }       // verified shortest solve
+    public int MoveLimit { get; }          // swaps; 0 = unlimited
+    public int MinimumMoves { get; }       // swaps of a shortest solve (SwapPuzzle)
 
     public string Title { get; }
     public string Goal { get; }            // "Match all 9 items using the clues."
@@ -34,11 +32,6 @@ public class LevelDefinition
     public LevelSubject[] Subjects { get; }   // column c's subject
     public string[] Categories { get; }       // row r's label ("Hats")
     public LevelItem[] Items { get; }         // indexed by tile id (= target cell, row-major)
-    public LevelMove[] Solution { get; }      // a known solve from the start board
-
-    // Onboarding (optional in the file).
-    public LevelMove RequiredFirstMove { get; set; }
-    public string TutorialText { get; set; } = "";
 
     public bool HasMoveLimit => MoveLimit > 0;
     public bool IsHard => Difficulty == "hard";
@@ -48,7 +41,7 @@ public class LevelDefinition
     public LevelDefinition(int number, int size, TileData[,] startCells, int moveLimit, int minimumMoves,
                            string title, string goal, string setup, string completion, string difficulty,
                            int chapterId, int nextLevelId, int firstClearCoins,
-                           LevelSubject[] subjects, string[] categories, LevelItem[] items, LevelMove[] solution)
+                           LevelSubject[] subjects, string[] categories, LevelItem[] items)
     {
         Number = number;
         Size = size;
@@ -66,7 +59,6 @@ public class LevelDefinition
         Subjects = subjects;
         Categories = categories;
         Items = items;
-        Solution = solution ?? new LevelMove[0];
     }
 }
 
@@ -85,39 +77,4 @@ public class LevelItem
     public string Label;
     public string Sprite;
     public string Clue;
-}
-
-[Serializable]
-public class LevelMove
-{
-    public string axis;        // "row" or "column"
-    public int line;
-    public int direction;      // +1 = right / down, -1 = left / up
-
-    public bool IsRow => axis == "row";
-
-    public bool Is(bool isRow, int index, int dir) => IsRow == isRow && line == index && direction == Math.Sign(dir);
-
-    // "top row right", "middle column down" (3x3 names; other sizes use numbers).
-    public string Describe(int size)
-    {
-        string dir = IsRow ? (direction > 0 ? "right" : "left") : (direction > 0 ? "down" : "up");
-        return $"{Place(size)} {(IsRow ? "row" : "column")} {dir}";
-    }
-
-    // "top", "middle", "left"... for a 3x3 board.
-    public string Place(int size)
-    {
-        string[] rows = { "top", "middle", "bottom" };
-        string[] cols = { "left", "middle", "right" };
-        return size == 3 ? (IsRow ? rows[line] : cols[line]) : $"#{line + 1}";
-    }
-
-    // Which item wraps, and where to: "The last item wraps to the first space."
-    public string DescribeWrap()
-    {
-        string leaving = IsRow ? (direction > 0 ? "last" : "first") : (direction > 0 ? "bottom" : "top");
-        string entering = IsRow ? (direction > 0 ? "first" : "last") : (direction > 0 ? "top" : "bottom");
-        return $"The {leaving} item wraps to the {entering} space.";
-    }
 }

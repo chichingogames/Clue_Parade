@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Chichingo.TilewrapVaried;
 using DG.Tweening;
 using UnityEngine;
 
-// The flow around the board (the ten-case plan and storyboards, the 30-case handoff): the tutorial
-// line and toasts, Hint (explain the clue first, then the next swipe from the current board, from
-// the content's hint table), the Notebook, the win / out-of-moves popups, the case map, the menu,
+// The flow around the board (the ten-case plan and storyboards, the 30-case handoff; this build swaps
+// neighbouring tiles and has no tutorial): toasts, Hint (explain the clue first, then the next swap
+// of a shortest solve from the current board, SwapPuzzle), the Notebook, the win / out-of-moves popups, the case map, the menu,
 // the first-clear reward, the end-of-campaign feedback and the local playtest log. It decides;
 // popups and the HUD display (they get callbacks and listen to the events below). Board rules stay
 // in Manager_Game / BoardState.
@@ -24,7 +23,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
     // Bumped on every level start.
     private int _session;
-    private LevelMove _hint;
+    private SwapMove _hint;
     private Tween _attention;
     private Tween _outcomeDelay;
     private bool _lastWinWasFirstClear;
@@ -35,7 +34,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
     private float _activeSeconds;
 
     private int _matchedAtPickUp;
-    private LevelMove _pendingMove;
+    private SwapMove _pendingMove;
     private bool _undoing;
 
     public override void Awake2()
@@ -43,9 +42,8 @@ public class Manager_Flow : Singleton<Manager_Flow>
         Game.OnLevelStarted += HandleLevelStarted;
         Game.OnStateChanged += HandleStateChanged;
         Game.OnMoveCommitted += HandleMoveCommitted;
-        Game.OnMoveRejected += HandleMoveRejected;
         Game.OnUndone += HandleUndone;
-        Board.OnLinePickedUp += HandleLinePickedUp;
+        Board.OnTilesPickedUp += HandleTilesPickedUp;
         Board.OnBoardSettled += HandleBoardSettled;
     }
 
@@ -74,9 +72,6 @@ public class Manager_Flow : Singleton<Manager_Flow>
         RefreshGuide();
         StartAttentionTimer();
 
-        // A teaching case says what to do until it has been cleared once.
-        if (!string.IsNullOrEmpty(level.TutorialText) && !Save.CompletedLevels.Contains(levelNumber)) Toast(level.TutorialText);
-
         bool firstOpen = !_firstLevelOpened;
         _firstLevelOpened = true;
         if (firstOpen && Save.CompletedLevels.Count >= LevelCount) ShowMap();
@@ -84,9 +79,9 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
     // ---------- Moves ----------
 
-    private void HandleLinePickedUp() => _matchedAtPickUp = Board.State.MatchedCount;
+    private void HandleTilesPickedUp() => _matchedAtPickUp = Board.State.MatchedCount;
 
-    private void HandleMoveCommitted(LevelMove move)
+    private void HandleMoveCommitted(SwapMove move)
     {
         if (!_firstAction)
         {
@@ -97,12 +92,6 @@ public class Manager_Flow : Singleton<Manager_Flow>
         _hint = null;
         Board.HideGuide();
         _pendingMove = move;
-    }
-
-    private void HandleMoveRejected(LevelMove expected)
-    {
-        Log("tutorial_other_move", $"expected={expected.Describe(Game.Level.Size)}");
-        Toast($"First, swipe the {expected.Describe(Game.Level.Size)}.");
     }
 
     private void HandleUndone()
@@ -221,8 +210,8 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
     // ---------- Hint ----------
 
-    // The selected category's first unsatisfied fact, then the next swipe of a shortest solve from
-    // the current board (TilewrapWrapPuzzle over the precomputed table; never a stale authored move).
+    // The selected category's first unsatisfied fact, then the next swap of a shortest solve from the
+    // current board (SwapPuzzle; one moving that fact's item when a shortest one does).
     public void OpenHint()
     {
         var level = Game.Level;
@@ -237,18 +226,24 @@ public class Manager_Flow : Singleton<Manager_Flow>
         if (column < 0) column = 0;
         var item = level.Items[row * state.Size + column];
 
-        var move = Game.RequiredMove ?? NextMove(level, state);
+        SwapPuzzle.TryNextMove(state.TileIds(), out var move, row * state.Size + column);
         Log("clue_hint_open", $"item={item.Id}; move={move?.Describe(state.Size) ?? "none"}");
+        string first = null, second = null;
+        if (move != null)
+        {
+            first = level.ItemFor(state[move.row, move.col]).Label;
+            second = level.ItemFor(state[move.OtherRow, move.OtherCol]).Label;
+        }
         PopUps.GetPopup<PopUp_Hint>(PopupName.Hint).Setup(
             FileRef.Instance.Sprite(item.Sprite), item.Clue,
-            move != null ? $"Swipe the {move.Describe(state.Size)}." : null,
-            move?.DescribeWrap(),
+            move != null ? $"Swap the {first} and the {second}." : null,
+            move != null ? $"Drag the {first} {(move.horizontal ? "right" : "down")} onto the {second}." : null,
             () => { PopUps.ClosePopup(PopupName.Hint); ShowHintMove(move); },
             () => PopUps.ClosePopup(PopupName.Hint));
         PopUps.ShowPopup(PopupName.Hint);
     }
 
-    private void ShowHintMove(LevelMove move)
+    private void ShowHintMove(SwapMove move)
     {
         if (Game.State != GameState.Playing || move == null) return;
         _hint = move;
@@ -256,33 +251,10 @@ public class Manager_Flow : Singleton<Manager_Flow>
         RefreshGuide();
     }
 
-    // Null when solved or the table is missing (logged).
-    private static LevelMove NextMove(LevelDefinition level, BoardState state)
-    {
-        var distances = FileRef.Instance.HintDistances;
-        if (distances == null || state.Size != 3)
-        {
-            Debug.LogWarning("[Flow] No hint table for this board.");
-            return null;
-        }
-        // Tile ids are already each cell's index into the goal board, which is all the table needs.
-        var board = new string[state.CellCount];
-        var goal = new string[state.CellCount];
-        int[] ids = state.TileIds();
-        for (int i = 0; i < ids.Length; i++)
-        {
-            board[i] = ids[i].ToString();
-            goal[i] = i.ToString();
-        }
-        if (!TilewrapWrapPuzzle.TryNextMove(board, goal, distances, out var next)) return null;
-        return new LevelMove { axis = next.axis, line = next.line, direction = next.direction };
-    }
-
-    // The hint's move if one is shown, else the level's required first swipe while it applies.
+    // The hint's swap while it is shown.
     private void RefreshGuide()
     {
-        var move = _hint ?? Game.RequiredMove;
-        if (move != null && Game.State == GameState.Playing) Board.ShowGuide(move);
+        if (_hint != null && Game.State == GameState.Playing) Board.ShowGuide(_hint);
         else Board.HideGuide();
     }
 
@@ -318,7 +290,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
             };
         }
         PopUps.GetPopup<PopUp_Notebook>(PopupName.Notebook).Setup(names, level.Categories, entries,
-            $"Swipe rows or columns. Tiles wrap. All {state.CellCount} must match together.", ReturnToLevel);
+            $"Drag a tile onto a neighbour to swap them. All {state.CellCount} must match together.", ReturnToLevel);
         PopUps.ShowPopup(PopupName.Notebook);
     }
 
@@ -393,7 +365,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
         {
             new PopUp_Feedback.Question { Key = "goal", Title = "Was the goal clear?", Selected = save.FeedbackGoal,
                 Options = new[] { ("clear", "Yes, I knew what to match"), ("unclear", "I wasn’t sure what to match") } },
-            new PopUp_Feedback.Question { Key = "wrap", Title = "Did wrapping make sense?", Selected = save.FeedbackWrap,
+            new PopUp_Feedback.Question { Key = "wrap", Title = "Did swapping make sense?", Selected = save.FeedbackWrap,
                 Options = new[] { ("clear", "Yes, after trying it"), ("unclear", "I still found it confusing") } },
             new PopUp_Feedback.Question { Key = "difficulty", Title = "How were the cases?", Selected = save.FeedbackDifficulty,
                 Options = new[] { ("easy", "Too easy"), ("right", "About right"), ("hard", "Too difficult") } },

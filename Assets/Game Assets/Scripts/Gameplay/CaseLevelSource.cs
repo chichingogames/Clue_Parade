@@ -8,8 +8,9 @@ using UnityEngine;
 //   startingCells / goalCells   9 item ids, row-major. goalCells is the solved board, so an item's
 //                               tile id is its index in goalCells (= its target cell).
 //   subjects[] (column, name, rigId), categories[] (row, label), items[] (id, label, sprite,
-//   targetCell, clue), moveLimit (0 = unlimited), minimumMoves, solution, requiredFirstSwipe,
-//   tutorial.entryText, title / goalText / setupText / completionText, difficulty, nextLevelId.
+//   targetCell, clue), moveLimit (0 = unlimited), minimumMoves, title / goalText / setupText /
+//   completionText, difficulty, nextLevelId. Its solution, requiredFirstSwipe and tutorial are
+//   for row / column wraps and are not used: this build swaps neighbours, with no tutorial.
 // Files are parsed once and cached. A case naming a sprite or rig that FileRef lacks is rejected.
 public class CaseLevelSource : ILevelSource
 {
@@ -99,27 +100,20 @@ public class CaseLevelSource : ILevelSource
         for (int i = 0; i < data.startingCells.Length; i++)
             cells[i / n, i % n] = new TileData(Array.IndexOf(data.goalCells, data.startingCells[i]));
 
-        var required = Convert(data.requiredFirstSwipe);
-        if (required != null && (required.line < 0 || required.line >= n || Math.Abs(required.direction) != 1))
-        { error = "requiredFirstSwipe must be { axis: row|column, line 0..2, direction +1|-1 }"; return false; }
+        // The pack's numbers are for wrap swipes; this build swaps neighbours. The minimum is the swap
+        // board's, and a limited case keeps the pack's slack over its minimum (at least 2 spare).
+        var ids = new int[n * n];
+        for (int i = 0; i < ids.Length; i++) ids[i] = cells[i / n, i % n].Id;
+        int minimum = SwapPuzzle.Distance(ids);
+        if (minimum < 0) { error = "the swap solver only handles 3x3 boards"; return false; }
+        int limit = data.moveLimit > 0 ? minimum + Math.Max(MinimumSpare, data.moveLimit - data.minimumMoves) : 0;
 
-        var solution = new LevelMove[data.solution?.Length ?? 0];
-        for (int i = 0; i < solution.Length; i++) solution[i] = Convert(data.solution[i]);
-
-        level = new LevelDefinition(data.id, n, cells, data.moveLimit, data.minimumMoves,
+        level = new LevelDefinition(data.id, n, cells, limit, minimum,
                                     data.title, data.goalText, data.setupText, data.completionText, data.difficulty,
                                     data.chapterId, data.nextLevelId, data.firstClearCoins,
-                                    subjects, categories, items, solution)
-        {
-            RequiredFirstMove = required,
-            TutorialText = data.tutorial?.entryText ?? "",
-        };
+                                    subjects, categories, items);
         return true;
     }
 
-    // JsonUtility fills a missing move with an empty instance (axis null).
-    private static LevelMove Convert(MoveData move) =>
-        move == null || (move.axis != "row" && move.axis != "column")
-            ? null
-            : new LevelMove { axis = move.axis, line = move.line, direction = move.direction };
+    private const int MinimumSpare = 2;
 }

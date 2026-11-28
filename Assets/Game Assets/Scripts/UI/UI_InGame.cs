@@ -99,7 +99,7 @@ public class UI_InGame : MonoBehaviour
         game.OnStateChanged += HandleStateChanged;
         game.OnMoveMade += Refresh;
         board.OnBoardSettled += HandleBoardSettled;
-        board.OnLinePickedUp += Refresh;
+        board.OnTilesPickedUp += Refresh;
         board.OnSelectionChanged += Refresh;
         flow.OnToast += _toast.Show;
         flow.OnHintAttention += PulseHint;
@@ -120,7 +120,7 @@ public class UI_InGame : MonoBehaviour
         if (board != null)
         {
             board.OnBoardSettled -= HandleBoardSettled;
-            board.OnLinePickedUp -= Refresh;
+            board.OnTilesPickedUp -= Refresh;
             board.OnSelectionChanged -= Refresh;
         }
         var flow = Manager_Flow.Instance;

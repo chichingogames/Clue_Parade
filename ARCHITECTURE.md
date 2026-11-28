@@ -6,6 +6,24 @@ on 2026-11-28 against `1ea9dea` plus uncommitted work.
 **This file is maintained by hand.** When you change a system, edit the matching section.
 See `ARCHITECTURE-HISTORY.md` for what changed and when.
 
+> **Branch `swap-mechanic` (2026-11-28):** a move **swaps a tile with one of its 4 neighbours** instead of
+> wrapping a row or column, and the **tutorial is disabled**. Where the sections below describe line drags, wraps,
+> `requiredFirstSwipe`, the tutorial toast or the wrap hint table, read this instead:
+> - **Model:** `BoardState.Swap(SwapMove)` (its own inverse; `ShiftRow` / `ShiftColumn` / `Wrap` are gone).
+>   `SwapMove` (row, col, horizontal: the pair with the right or lower neighbour) lives in `SwapPuzzle.cs`;
+>   `LevelMove`, `LevelDefinition.Solution`, `RequiredFirstMove` and `TutorialText` are gone.
+> - **Solver:** `SwapPuzzle` builds a BFS distance table over all 9! boards on first use (12 neighbour pairs);
+>   `Distance(ids)` and `TryNextMove(ids, out move, preferTile)` drive the Hint, the Tester's shortest solve and
+>   `CaseLevelSource`, which sets `MinimumMoves` to the swap minimum and a limited case's `MoveLimit` to that minimum
+>   plus the pack's slack (`moveLimit - minimumMoves`, at least 2). The pack's hint table is no longer read at runtime.
+> - **Input** (`Manager_Game`): press a tile, drag past `DragStartThreshold`; the dominant direction picks the
+>   neighbour (none at the edge: ignored); the pair follows the pointer (`Manager_Board.BeginDrag / SetDragOffset`,
+>   0..1); release commits at `DragCommitThreshold` or on a flick, else snaps back. One swap = one move; Undo swaps
+>   again. `Manager_Board.OnLinePickedUp` is now `OnTilesPickedUp`; the guide draws a band over the two cells.
+> - **Flow:** no tutorial toast, no guided first swipe; Hint text is "Swap the X and the Y." / "Drag the X right|down
+>   onto the Y.", preferring a shortest swap that moves the hinted clue's item.
+> - **Validator:** checks the swap minimum fits the limit; the pack's wrap `solution` / `minimumMoves` are not checked.
+
 ---
 
 ## 1  What this is

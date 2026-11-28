@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // "Hint": first the plain clue fact (bulb + the item's picture + the sentence) for the selected
-// category's first unsatisfied item, then the next swipe from the CURRENT board in words ("Swipe the
-// top row left." and which item wraps where). "Show the next swipe" closes it and draws the guide
-// on the board; "I'll try it" just closes. Opening it costs no move.
+// category's first unsatisfied item, then the next swap from the CURRENT board in words ("Swap the
+// Raincoat and the Sun hat." and which way to drag). "Show the next swipe" closes it and draws the
+// guide on the board; "I'll try it" just closes. Opening it costs no move.
 public class PopUp_Hint : BasePopUp
 {
     [SerializeField] private Image _clueIcon;

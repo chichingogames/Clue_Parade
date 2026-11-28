@@ -253,7 +253,7 @@ public static class UIBuilder
     private static void BuildProgress(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
                                       List<RectTransform> intro)
     {
-        var note = Label(root, "Control Note", 40, 1680, 1000, 40, regular, "Swipe rows or columns. Tiles wrap.", 25, NoteColor,
+        var note = Label(root, "Control Note", 40, 1680, 1000, 40, regular, "Drag a tile onto a neighbour to swap them.", 25, NoteColor,
                          TextAlignmentOptions.Center);
         var progress = Label(root, "Progress", 40, 1725, 1000, 44, bold, "6/9 matched", 34, Cream, TextAlignmentOptions.Center);
         Set(so, "_progressText", progress.GetComponent<TMP_Text>());

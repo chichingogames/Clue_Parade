@@ -38,8 +38,8 @@ public static class PlayCheck
         return text.ToString();
     }
 
-    // A real swipe through Manager_Game's input handlers, from the centre of cell (row, col) by
-    // (dx, dy) cells (x right, y up), at the cell size on screen. Waits for the slide to settle.
+    // A real drag through Manager_Game's input handlers, from the centre of cell (row, col) by
+    // (dx, dy) cells (x right, y up): (1, 0) swaps with the right neighbour. Waits for the slide.
     public static async Task<string> Swipe(int row, int col, float dx, float dy)
     {
         var game = Manager_Game.Instance;
@@ -60,7 +60,7 @@ public static class PlayCheck
         return $"swipe from ({start.x:0},{start.y:0}) to ({end.x:0},{end.y:0}) -> " + Status();
     }
 
-    // Press and drag without releasing (to capture a line mid-wrap); Release() lets go where it is.
+    // Press and drag without releasing (to capture a pair mid-swap); Release() lets go where it is.
     public static string Hold(int row, int col, float dx, float dy)
     {
         var game = Manager_Game.Instance;

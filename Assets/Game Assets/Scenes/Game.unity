@@ -4139,7 +4139,7 @@ RectTransform:
   m_GameObject: {fileID: 300337130}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.4168123, y: 1.4168123, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 90945492}
@@ -10716,7 +10716,7 @@ RectTransform:
   m_GameObject: {fileID: 730770402}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.4168123, y: 1.4168123, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2051100073}
@@ -16177,7 +16177,7 @@ RectTransform:
   m_GameObject: {fileID: 1372592944}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.4168123, y: 1.4168123, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 800015102}
@@ -16325,9 +16325,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestManager
   _levelNumber: 1
-  _shiftRow: 1
-  _lineIndex: 0
-  _steps: 4
+  _swapRow: 0
+  _swapColumn: 0
+  _swapDirection: 0
   _timeScale: 1
 --- !u!4 &1424073844
 Transform:
@@ -22737,7 +22737,7 @@ RectTransform:
   m_GameObject: {fileID: 1857574365}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.4168123, y: 1.4168123, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 185879808}
@@ -24922,7 +24922,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Swipe rows or columns. Tiles wrap.
+  m_text: Drag a tile onto a neighbour to swap them.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8203260d47fc6614297d662d3cbdc84e, type: 2}
   m_sharedMaterial: {fileID: -7072197937503346677, guid: 8203260d47fc6614297d662d3cbdc84e, type: 2}

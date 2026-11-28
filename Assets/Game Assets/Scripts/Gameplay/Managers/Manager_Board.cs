@@ -3,19 +3,18 @@ using DG.Tweening;
 using UnityEngine;
 
 // Owns the BoardState and its views: builds the board from Cell / ItemTile prefabs, drags and
-// shifts lines, and animates. Board-local space: centered on _boardRoot, row 0 at the top, cells
+// swaps tiles, and animates. Board-local space: centered on _boardRoot, row 0 at the top, cells
 // CellSize wide and high (the ItemTile prefab's size; 2.9 units = the pack's 290 px cells).
 //
-// One line (row or column) at a time can be "held": its tiles are drawn at a fractional offset
-// (in cells; row + = right, column + = down) and wrap around the edge, with a ghost copy showing
-// the part of the wrapping tile that is past the edge. _mask hides everything outside the board
-// (the tile labels too, through their stencil material).
+// One pair of neighbouring tiles at a time can be "held": dragging the pressed tile towards one of
+// its four neighbours slides it there and the neighbour the other way, by a fraction (0..1) of the
+// way. Nothing wraps.
 //
 // Matches: every tile in its home cell shows a check (the HUD's subject rigs show the fitted part).
 // The selected category's row (SelectedRow: the clues on screen) has the highlight behind it. All
 // derived from BoardState after each settle, so undo and broken matches need no special case. A
 // played move that matches new cells flashes them pale green with a ring and a few stars; the
-// guide (Board/Guide) shows a swipe to make.
+// guide (Board/Guide) shows a swap to make (the Hint).
 public class Manager_Board : Singleton<Manager_Board>
 {
     [SerializeField] private Transform _boardRoot;
@@ -37,13 +36,13 @@ public class Manager_Board : Singleton<Manager_Board>
     // Raised when SelectedRow changes without a move (a category tab tap).
     public event Action OnSelectionChanged = delegate { };
 
-    // Raised when a line is picked up (a player's drag, or a shift from code: undo, ApplyMove).
-    public event Action OnLinePickedUp = delegate { };
+    // Raised when a pair is picked up (a player's drag, or a swap from code: undo, ApplyMove).
+    public event Action OnTilesPickedUp = delegate { };
 
     public BoardState State { get; private set; }
     public LevelDefinition Level { get; private set; }
     public bool IsDragging => _held && _animation == null;
-    // True while a line slides or the launch intro scales the board in; presses are refused meanwhile.
+    // True while a pair slides or the launch intro scales the board in; presses are refused meanwhile.
     public bool IsAnimating => _animation != null || _intro != null;
     public float DragOffset => _offset;
     // Cells the last settled move matched that were not matched when it was picked up.
@@ -59,22 +58,21 @@ public class Manager_Board : Singleton<Manager_Board>
     private ItemTile[,] _tiles;
     private int _chosenRow = -1;
 
-    // Held line
+    // Held pair: _heldA started in (_heldMove.row, col), _heldB in the neighbour's cell.
     private bool _held;
-    private bool _heldIsRow;
-    private int _heldIndex;
-    private ItemTile[] _heldTiles;   // the line's tiles in their order before the drag
+    private SwapMove _heldMove;
+    private ItemTile _heldA;
+    private ItemTile _heldB;
     private float _offset;
-    private ItemTile _ghost;
     private Tween _animation;
 
     // Launch intro: the whole board scales up once, on the first Build.
     private Tween _intro;
     private bool _introPlayed;
 
-    // Which cells were matched when the line was picked up, to find what a move newly matched.
+    // Which cells were matched when the pair was picked up, to find what a move newly matched.
     private bool[,] _homeAtPickUp;
-    // False for a shift that takes a move back (Undo): its matches come back without celebration.
+    // False for a swap that takes a move back (Undo): its matches come back without celebration.
     private bool _celebrate;
 
     private int Size => State.Size;
@@ -139,104 +137,86 @@ public class Manager_Board : Singleton<Manager_Board>
 
     // ---------- Dragging ----------
 
-    public void BeginDrag(bool isRow, int index)
+    // Picks up the two neighbours of `move`: dragging slides the tile in (move.row, move.col)
+    // towards the other cell and the other tile the opposite way.
+    public void BeginDrag(SwapMove move)
     {
         if (_held) return;
 
         _homeAtPickUp = HomeCells();
         _celebrate = true;
         _held = true;
-        _heldIsRow = isRow;
-        _heldIndex = index;
+        _heldMove = move;
         _offset = 0f;
-        _heldTiles = new ItemTile[Size];
-        for (int i = 0; i < Size; i++)
-        {
-            _heldTiles[i] = isRow ? _tiles[index, i] : _tiles[i, index];
-            (isRow ? _cells[index, i] : _cells[i, index]).SetMatched(false);   // checks are stale while moving
-        }
-
-        _ghost = SpawnTile(_heldTiles[0].Data, Vector3.zero);
-        _ghost.name = "Ghost";
-        _ghost.gameObject.SetActive(false);
-        OnLinePickedUp();
+        _heldA = _tiles[move.row, move.col];
+        _heldB = _tiles[move.OtherRow, move.OtherCol];
+        _cells[move.row, move.col].SetMatched(false);     // checks are stale while moving
+        _cells[move.OtherRow, move.OtherCol].SetMatched(false);
+        RenderHeldPair();
+        OnTilesPickedUp();
     }
 
-    // offset in cells: row + = right, column + = down.
+    // How far the two tiles have traded places: 0 = where they started, 1 = swapped.
     public void SetDragOffset(float offset)
     {
         if (!IsDragging) return;
-        _offset = offset;
-        RenderHeldLine();
+        _offset = Mathf.Clamp01(offset);
+        RenderHeldPair();
     }
 
-    // Slide the held line back to where it started; the board is unchanged.
+    // Slide the pair back to where it started; the board is unchanged.
     public void CancelDrag()
     {
         if (!IsDragging) return;
-        AnimateHeldLine(0f, 0);
+        AnimateHeldPair(0f, false);
     }
 
-    // Commit the held line by whole steps (sign = direction), updating the model now
-    // and sliding the views from the current drag offset to the final place.
-    public void CommitDrag(int steps)
+    // Commit the swap: the model changes now, the views finish sliding from the current offset.
+    public void CommitDrag()
     {
         if (!IsDragging) return;
-
-        if (_heldIsRow) State.ShiftRow(_heldIndex, steps);
-        else State.ShiftColumn(_heldIndex, steps);
-
-        AnimateHeldLine(steps, steps);
+        State.Swap(_heldMove);
+        AnimateHeldPair(1f, true);
     }
 
-    // Programmatic one-shot shifts (dir +1 = right / down). celebrate false (Undo): new matches
-    // appear without the match sound or the customer's pop.
-    public void ShiftRow(int row, int steps, bool celebrate = true)
+    // A swap made from code (ApplyMove, Undo). celebrate false (Undo): new matches appear without
+    // the match sound or effects.
+    public void Swap(SwapMove move, bool celebrate = true)
     {
-        BeginDrag(true, row);
+        BeginDrag(move);
         _celebrate = celebrate;
-        CommitDrag(steps);
+        CommitDrag();
     }
 
-    public void ShiftColumn(int col, int steps, bool celebrate = true)
+    private void AnimateHeldPair(float targetOffset, bool committed)
     {
-        BeginDrag(false, col);
-        _celebrate = celebrate;
-        CommitDrag(steps);
-    }
+        float duration = Tuning.ShiftDuration * Mathf.Clamp(Mathf.Abs(targetOffset - _offset) * 1.5f, 0.35f, 1.5f);
 
-    private void AnimateHeldLine(float targetOffset, int committedSteps)
-    {
-        float duration = Tuning.ShiftDuration * Mathf.Clamp(Mathf.Abs(targetOffset - _offset), 0.35f, 1.5f);
-
-        _animation = DOTween.To(() => _offset, x => { _offset = x; RenderHeldLine(); }, targetOffset, duration)
+        _animation = DOTween.To(() => _offset, x => { _offset = x; RenderHeldPair(); }, targetOffset, duration)
             .SetEase(Ease.OutCubic)
             .SetLink(gameObject)
-            .OnComplete(() => SettleHeldLine(committedSteps));
+            .OnComplete(() => SettleHeldPair(committed));
     }
 
     // Reorder the views to match the model and snap them into their cells.
-    private void SettleHeldLine(int committedSteps)
+    private void SettleHeldPair(bool committed)
     {
-        for (int i = 0; i < Size; i++)
-        {
-            var tile = _heldTiles[State.Wrap(i - committedSteps)];
-            int r = _heldIsRow ? _heldIndex : i;
-            int c = _heldIsRow ? i : _heldIndex;
-            _tiles[r, c] = tile;
-            tile.transform.localPosition = CellPosition(r, c);
-        }
+        var m = _heldMove;
+        _tiles[m.row, m.col] = committed ? _heldB : _heldA;
+        _tiles[m.OtherRow, m.OtherCol] = committed ? _heldA : _heldB;
+        _tiles[m.row, m.col].transform.localPosition = CellPosition(m.row, m.col);
+        _tiles[m.OtherRow, m.OtherCol].transform.localPosition = CellPosition(m.OtherRow, m.OtherCol);
 
         int gained = CountNewMatches();
-        LastNewMatches = committedSteps != 0 ? gained : 0;
-        bool celebrate = _celebrate && committedSteps != 0;
+        LastNewMatches = committed ? gained : 0;
+        bool celebrate = _celebrate && committed;
         LastSettleCelebrated = celebrate;
         if (celebrate && gained > 0) CelebrateNewMatches();
         // A chosen category stays on screen until a move completes it.
-        if (committedSteps != 0 && _chosenRow >= 0 && State.IsRowComplete(_chosenRow)) _chosenRow = -1;
-        ReleaseHeldLine();
+        if (committed && _chosenRow >= 0 && State.IsRowComplete(_chosenRow)) _chosenRow = -1;
+        ReleaseHeldPair();
         RefreshIndicators();
-        if (committedSteps != 0) PlaySettleFeedback(celebrate ? gained : 0);
+        if (committed) PlaySettleFeedback(celebrate ? gained : 0);
         OnBoardSettled();
     }
 
@@ -340,44 +320,25 @@ public class Manager_Board : Singleton<Manager_Board>
         return gained;
     }
 
-    private void RenderHeldLine()
+    // The pair drawn a little in front of the other tiles, traded `_offset` of the way.
+    private void RenderHeldPair()
     {
-        ItemTile crossing = null;
-        float ghostPosition = 0f;
-
-        for (int i = 0; i < Size; i++)
-        {
-            // Wrapped position along the line, in [-0.5, Size - 0.5).
-            float p = Mod(i + _offset + 0.5f, Size) - 0.5f;
-            _heldTiles[i].transform.localPosition = LinePosition(p);
-
-            // A tile half past one edge shows its other half entering on the opposite edge.
-            if (p > Size - 1) { crossing = _heldTiles[i]; ghostPosition = p - Size; }
-            else if (p < 0f) { crossing = _heldTiles[i]; ghostPosition = p + Size; }
-        }
-
-        _ghost.gameObject.SetActive(crossing != null);
-        if (crossing == null) return;
-
-        if (!_ghost.Data.Equals(crossing.Data)) SetupTile(_ghost, crossing.Data);
-        _ghost.transform.localPosition = LinePosition(ghostPosition);
+        var m = _heldMove;
+        Vector3 a = CellPosition(m.row, m.col) + Vector3.back * 0.01f;
+        Vector3 b = CellPosition(m.OtherRow, m.OtherCol) + Vector3.back * 0.01f;
+        _heldA.transform.localPosition = Vector3.Lerp(a, b, _offset);
+        _heldB.transform.localPosition = Vector3.Lerp(b, a, _offset);
     }
 
-    private void ReleaseHeldLine()
+    private void ReleaseHeldPair()
     {
-        if (_ghost != null) Destroy(_ghost.gameObject);
-        _ghost = null;
         _held = false;
-        _heldTiles = null;
+        _heldMove = null;
+        _heldA = _heldB = null;
         _homeAtPickUp = null;
         _offset = 0f;
         _animation = null;
     }
-
-    private Vector3 LinePosition(float p) =>
-        _heldIsRow ? CellPosition(_heldIndex, p) : CellPosition(p, _heldIndex);
-
-    private static float Mod(float x, float m) => x - m * Mathf.Floor(x / m);
 
     // ---------- Queries ----------
 
@@ -455,15 +416,14 @@ public class Manager_Board : Singleton<Manager_Board>
 
     // ---------- Guide ----------
 
-    // Shows the swipe `move` on the board (band over its line, arrow, sliding hand) until HideGuide.
-    public void ShowGuide(LevelMove move)
+    // Shows the swap `move` on the board (band over its two cells, arrow, sliding hand) until HideGuide.
+    public void ShowGuide(SwapMove move)
     {
         if (_guide == null || State == null || move == null) return;
-        float mid = (Size - 1) * 0.5f;
-        Vector3 center = move.IsRow ? CellPosition(move.line, mid) : CellPosition(mid, move.line);
-        Vector2 band = move.IsRow ? new Vector2(GridSize.x, CellSize.y) : new Vector2(CellSize.x, GridSize.y);
-        Vector2 direction = move.IsRow ? new Vector2(move.direction, 0f) : new Vector2(0f, -move.direction);   // + = down
-        _guide.Show(center, band - Vector2.one * 0.08f, direction, (move.IsRow ? CellSize.x : CellSize.y) * 1.2f);
+        Vector3 center = (CellPosition(move.row, move.col) + CellPosition(move.OtherRow, move.OtherCol)) * 0.5f;
+        Vector2 band = move.horizontal ? new Vector2(CellSize.x * 2f, CellSize.y) : new Vector2(CellSize.x, CellSize.y * 2f);
+        Vector2 direction = move.horizontal ? Vector2.right : Vector2.down;
+        _guide.Show(center, band - Vector2.one * 0.08f, direction, (move.horizontal ? CellSize.x : CellSize.y) * 1.2f);
     }
 
     public void HideGuide()
@@ -507,7 +467,7 @@ public class Manager_Board : Singleton<Manager_Board>
 
     // Every Build: the level's tiles scale up from 0 in a diagonal wave from the top-left
     // (row + col steps of TileSpawnStagger). On launch the wave waits until the board is half grown.
-    // Only the level's own tiles: the drag ghost appears instantly. Moves are allowed meanwhile
+    // Moves are allowed meanwhile
     // (dragging only touches position). The tweens die with the tiles (SetLink).
     // Returns when the wave starts (seconds from now), so the checks can follow it.
     private float AnimateTileSpawn()
@@ -568,7 +528,7 @@ public class Manager_Board : Singleton<Manager_Board>
     {
         _animation?.Kill();
         _intro?.Complete();     // a level change mid-intro jumps to full size
-        ReleaseHeldLine();
+        ReleaseHeldPair();
         HideGuide();
         DestroyChildren(_cellsRoot);
         DestroyChildren(_tilesRoot);
