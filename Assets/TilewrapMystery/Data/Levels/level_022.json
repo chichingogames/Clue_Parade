@@ -1,0 +1,671 @@
+{
+  "schemaVersion": 5,
+  "id": 22,
+  "sourceTheme": 22,
+  "title": "Art studio",
+  "subtitle": "Which picture preserves the faded address?",
+  "question": "What was paired with the wood frame?",
+  "setupText": "The missing star trail leads here. Which picture preserves the faded address?",
+  "completionText": "The drawing shows the crate’s original blue lining and a launch-stage mark.",
+  "nextLead": "A harbour worker recorded the lining on a cargo list.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "artstudio_0",
+      "name": "Easel A",
+      "column": 0,
+      "rigId": "artstudio_0"
+    },
+    {
+      "id": "artstudio_1",
+      "name": "Easel B",
+      "column": 1,
+      "rigId": "artstudio_1"
+    },
+    {
+      "id": "artstudio_2",
+      "name": "Easel C",
+      "column": 2,
+      "rigId": "artstudio_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "artstudio_00",
+      "label": "Hill painting",
+      "sprite": "artstudio_00",
+      "native": true
+    },
+    {
+      "id": "artstudio_01",
+      "label": "Puppy painting",
+      "sprite": "artstudio_01",
+      "native": true
+    },
+    {
+      "id": "artstudio_02",
+      "label": "Flower painting",
+      "sprite": "artstudio_02",
+      "native": true
+    },
+    {
+      "id": "artstudio_03",
+      "label": "Gold frame",
+      "sprite": "artstudio_03",
+      "native": true
+    },
+    {
+      "id": "artstudio_04",
+      "label": "Wood frame",
+      "sprite": "artstudio_04",
+      "native": true
+    },
+    {
+      "id": "artstudio_05",
+      "label": "Silver frame",
+      "sprite": "artstudio_05",
+      "native": true
+    },
+    {
+      "id": "artstudio_06",
+      "label": "Paint palette",
+      "sprite": "artstudio_06",
+      "native": true
+    },
+    {
+      "id": "artstudio_07",
+      "label": "Brush pot",
+      "sprite": "artstudio_07",
+      "native": true
+    },
+    {
+      "id": "artstudio_08",
+      "label": "Water cup",
+      "sprite": "artstudio_08",
+      "native": true
+    },
+    {
+      "id": "l022_extra_00",
+      "label": "Pink daisy",
+      "sprite": "garden_03",
+      "native": false
+    },
+    {
+      "id": "l022_extra_01",
+      "label": "Teddy bear",
+      "sprite": "gifts_04",
+      "native": false
+    },
+    {
+      "id": "l022_extra_02",
+      "label": "Pocket watch",
+      "sprite": "pocket_watch",
+      "native": false
+    },
+    {
+      "id": "l022_extra_03",
+      "label": "Mini windmill",
+      "sprite": "garden_06",
+      "native": false
+    },
+    {
+      "id": "l022_extra_04",
+      "label": "Blue brew",
+      "sprite": "potions_02",
+      "native": false
+    },
+    {
+      "id": "l022_extra_05",
+      "label": "Brass key",
+      "sprite": "brass_key",
+      "native": false
+    },
+    {
+      "id": "l022_extra_06",
+      "label": "Leaf charm",
+      "sprite": "potions_08",
+      "native": false
+    },
+    {
+      "id": "l022_extra_07",
+      "label": "Red bow",
+      "sprite": "gifts_06",
+      "native": false
+    },
+    {
+      "id": "l022_extra_08",
+      "label": "Blue star tag",
+      "sprite": "blue_tag",
+      "native": false
+    },
+    {
+      "id": "l022_extra_09",
+      "label": "Striped pot",
+      "sprite": "garden_01",
+      "native": false
+    },
+    {
+      "id": "l022_extra_10",
+      "label": "Wood floor",
+      "sprite": "rooms_03",
+      "native": false
+    },
+    {
+      "id": "l022_extra_11",
+      "label": "Delivery log",
+      "sprite": "delivery_log",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Pictures",
+      "items": [
+        "artstudio_01",
+        "artstudio_00",
+        "artstudio_02"
+      ],
+      "action": "Reconstruct pictures in any row.",
+      "visibleClues": [
+        {
+          "icon": "artstudio_05",
+          "text": "The highest-numbered stand has the silver frame.",
+          "rule": {
+            "kind": "highest",
+            "a": "artstudio_05"
+          },
+          "refs": [
+            "artstudio_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "artstudio_08",
+          "text": "The water cup is on a lower stand number than the gold frame.",
+          "rule": {
+            "kind": "less",
+            "a": "artstudio_08",
+            "b": "artstudio_03"
+          },
+          "refs": [
+            "artstudio_08",
+            "artstudio_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Frames",
+      "items": [
+        "artstudio_03",
+        "artstudio_05",
+        "artstudio_04"
+      ],
+      "action": "Reconstruct frames in any row.",
+      "visibleClues": [
+        {
+          "icon": "artstudio_05",
+          "text": "The highest-numbered stand has the silver frame.",
+          "rule": {
+            "kind": "highest",
+            "a": "artstudio_05"
+          },
+          "refs": [
+            "artstudio_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "artstudio_08",
+          "text": "The water cup is on a lower stand number than the gold frame.",
+          "rule": {
+            "kind": "less",
+            "a": "artstudio_08",
+            "b": "artstudio_03"
+          },
+          "refs": [
+            "artstudio_08",
+            "artstudio_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Tools",
+      "items": [
+        "artstudio_06",
+        "artstudio_07",
+        "artstudio_08"
+      ],
+      "action": "Reconstruct tools in any row.",
+      "visibleClues": [
+        {
+          "icon": "artstudio_05",
+          "text": "The highest-numbered stand has the silver frame.",
+          "rule": {
+            "kind": "highest",
+            "a": "artstudio_05"
+          },
+          "refs": [
+            "artstudio_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "artstudio_08",
+          "text": "The water cup is on a lower stand number than the gold frame.",
+          "rule": {
+            "kind": "less",
+            "a": "artstudio_08",
+            "b": "artstudio_03"
+          },
+          "refs": [
+            "artstudio_08",
+            "artstudio_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l022_extra_02",
+        "l022_extra_01",
+        "l022_extra_00"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l022_extra_02",
+          "text": "The pocket watch goes with the puppy painting.",
+          "rule": {
+            "kind": "same",
+            "a": "l022_extra_02",
+            "b": "artstudio_01"
+          },
+          "refs": [
+            "l022_extra_02",
+            "artstudio_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l022_extra_00",
+          "text": "The pink daisy and hill painting have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l022_extra_00",
+            "b": "artstudio_00"
+          },
+          "refs": [
+            "l022_extra_00",
+            "artstudio_00"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l022_extra_05",
+        "l022_extra_04",
+        "l022_extra_03"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l022_extra_03",
+          "text": "The mini windmill goes with the water cup.",
+          "rule": {
+            "kind": "same",
+            "a": "l022_extra_03",
+            "b": "artstudio_08"
+          },
+          "refs": [
+            "l022_extra_03",
+            "artstudio_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l022_extra_04",
+          "text": "The blue brew and paint palette have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l022_extra_04",
+            "b": "artstudio_06"
+          },
+          "refs": [
+            "l022_extra_04",
+            "artstudio_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l022_extra_08",
+        "l022_extra_07",
+        "l022_extra_06"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l022_extra_07",
+          "text": "The red bow goes with the silver frame.",
+          "rule": {
+            "kind": "same",
+            "a": "l022_extra_07",
+            "b": "artstudio_05"
+          },
+          "refs": [
+            "l022_extra_07",
+            "artstudio_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l022_extra_06",
+          "text": "The leaf charm and gold frame have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l022_extra_06",
+            "b": "artstudio_03"
+          },
+          "refs": [
+            "l022_extra_06",
+            "artstudio_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l022_extra_09",
+        "l022_extra_11",
+        "l022_extra_10"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l022_extra_11",
+          "text": "The delivery log goes with the silver frame.",
+          "rule": {
+            "kind": "same",
+            "a": "l022_extra_11",
+            "b": "artstudio_05"
+          },
+          "refs": [
+            "l022_extra_11",
+            "artstudio_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l022_extra_09",
+          "text": "The striped pot and wood frame have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l022_extra_09",
+            "b": "artstudio_04"
+          },
+          "refs": [
+            "l022_extra_09",
+            "artstudio_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "artstudio_03",
+    "l022_extra_01",
+    "artstudio_05",
+    "artstudio_08",
+    "artstudio_00",
+    "artstudio_01",
+    "l022_extra_00",
+    "l022_extra_02",
+    "artstudio_07",
+    "artstudio_06",
+    "artstudio_04",
+    "artstudio_02"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l022_extra_03",
+        "l022_extra_08",
+        "l022_extra_09"
+      ]
+    },
+    {
+      "items": [
+        "l022_extra_04",
+        "l022_extra_07",
+        "l022_extra_11"
+      ]
+    },
+    {
+      "items": [
+        "l022_extra_10",
+        "l022_extra_06",
+        "l022_extra_05"
+      ]
+    }
+  ],
+  "moveLimit": 36,
+  "difficulty": "standard",
+  "firstClearCoins": 30,
+  "designSeed": 862022,
+  "chapterId": 5,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "magnifier",
+  "evidenceReveal": "The drawing shows the crate’s original blue lining and a launch-stage mark.",
+  "durationTargetSeconds": [
+    100,
+    240
+  ],
+  "referenceSolution": [
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    }
+  ],
+  "referenceMoveCount": 22,
+  "storyQuestion": "Which picture preserves the faded address?",
+  "dossier": {
+    "label": "Stand",
+    "values": [
+      2,
+      3,
+      1
+    ],
+    "labels": [
+      "Stand 2",
+      "Stand 3",
+      "Stand 1"
+    ],
+    "low": "lowest-numbered stand",
+    "high": "highest-numbered stand"
+  },
+  "cluePool": [
+    {
+      "icon": "artstudio_05",
+      "text": "The highest-numbered stand has the silver frame.",
+      "rule": {
+        "kind": "highest",
+        "a": "artstudio_05"
+      },
+      "refs": [
+        "artstudio_05"
+      ],
+      "column": null
+    },
+    {
+      "icon": "artstudio_08",
+      "text": "The water cup is on a lower stand number than the gold frame.",
+      "rule": {
+        "kind": "less",
+        "a": "artstudio_08",
+        "b": "artstudio_03"
+      },
+      "refs": [
+        "artstudio_08",
+        "artstudio_03"
+      ],
+      "column": null
+    },
+    {
+      "icon": "artstudio_02",
+      "text": "The flower painting goes with the wood frame.",
+      "rule": {
+        "kind": "same",
+        "a": "artstudio_02",
+        "b": "artstudio_04"
+      },
+      "refs": [
+        "artstudio_02",
+        "artstudio_04"
+      ],
+      "column": null
+    },
+    {
+      "icon": "artstudio_01",
+      "text": "The puppy painting owner is left of the brush pot owner.",
+      "rule": {
+        "kind": "left",
+        "a": "artstudio_01",
+        "b": "artstudio_07"
+      },
+      "refs": [
+        "artstudio_01",
+        "artstudio_07"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the stand badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "What was paired with the wood frame?",
+    "answer": "Wood floor",
+    "icon": "l022_extra_10",
+    "evidence": [
+      "The witness remembers the wood frame.",
+      "The missing object belonged to that same profile."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 23,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

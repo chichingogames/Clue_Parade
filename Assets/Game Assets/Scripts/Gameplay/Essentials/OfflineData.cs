@@ -20,7 +20,7 @@ public class OfflineData
     // Campaign and playtest (writer: Manager_Flow). Case ids 1-5 are the five-case build's levels,
     // so a save from it keeps its clears.
     public List<int> CompletedLevels = new List<int>();   // first clears, ascending
-    public int Coins = 0;                                  // first-clear rewards
+    public int Coins = 60;                                 // starting 60 (the pack's economy); first-clear rewards, minus help bought
     public List<string> Lessons = new List<string>();     // retired: the five-case lesson ids (no writer now)
     public string FeedbackGoal = "";                       // retired: the closing feedback answers (no writer now)
     public string FeedbackWrap = "";

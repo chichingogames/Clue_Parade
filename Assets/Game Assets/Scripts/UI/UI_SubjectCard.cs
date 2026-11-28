@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Chichingo.TilewrapMystery;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// One subject (a board column's person, pet, cake, vehicle...) drawn from its case's rig: layers
-// stacked by order on the rig's canvas, the base always, each fitted part once its item has been
+// One subject (a board column's person, pet, cake, vehicle...) drawn from the pack's fitted rig
+// prefab (TilewrapRigView, loaded on demand): the base always, each fitted part once its item has been
 // delivered, plus the case's extra layers. Found objects (items that are not part of the rig) are
-// packed in a small badge: the last two delivered and a count. An optional profile fact (the case's
+// packed in a small badge: the last three delivered and a count. An optional profile fact (the case's
 // dossier: "8 yrs", "40 km/h") sits under the name. The HUD shows the scene so far above each column;
 // the win popup shows it finished. A new part fades in (Tuning.SlotFadeDuration) and the card pops. A
 // focused card (a tapped clue names its profile) glows, and delivered parts a clue names pulse.
@@ -28,10 +29,9 @@ public class UI_SubjectCard : MonoBehaviour
     // What to draw: the rig and every sprite it needs.
     public struct Setup
     {
-        public DeliveryRig Rig;
+        public TilewrapRigView Rig;           // the prefab
         public string Name;
         public string Fact;                    // the dossier badge, or null
-        public Func<string, Sprite> Sprite;    // sprite key -> sprite
         public Extra[] Extras;
         public Dictionary<string, Sprite> Packable;   // found objects of this column: item id -> icon
     }
@@ -50,7 +50,7 @@ public class UI_SubjectCard : MonoBehaviour
 
     private static readonly Color FocusColor = new Color32(0xFF, 0xE5, 0x87, 0xFF);
 
-    private RectTransform _rig;
+    private TilewrapRigView _rig;
     // Every part that can appear: its item id ("" = base, always on) and image.
     private readonly List<(string item, Image image)> _parts = new List<(string, Image)>();
     private readonly List<bool> _shown = new List<bool>();
@@ -74,9 +74,8 @@ public class UI_SubjectCard : MonoBehaviour
     public static Setup For(DeliveryCase level, int column)
     {
         var subject = level.subjects.FirstOrDefault(s => s.column == column);
-        var rig = level.rigs.FirstOrDefault(r => subject != null && r.id == subject.rigId)
-                  ?? (column < level.rigs.Length ? level.rigs[column] : null);
-        var rigItems = new HashSet<string>(rig?.layers.Select(l => l.itemId) ?? Enumerable.Empty<string>());
+        var rig = FileRef.Instance.Rig(subject?.rigId);
+        var rigItems = new HashSet<string>(rig != null ? rig.bindings.Select(b => b.itemId) : Enumerable.Empty<string>());
         var packable = level.sets.Select(s => s.items[column])
                             .Where(id => !rigItems.Contains(id) && level.Item(id) != null && !level.Item(id).native)
                             .Distinct()
@@ -86,7 +85,6 @@ public class UI_SubjectCard : MonoBehaviour
             Rig = rig,
             Name = subject?.name ?? "",
             Fact = level.hasDossier && column < level.dossier.labels.Length ? level.dossier.labels[column] : null,
-            Sprite = FileRef.Instance.Sprite,
             Extras = ExtrasFor(level, column),
             Packable = packable,
         };
@@ -113,35 +111,29 @@ public class UI_SubjectCard : MonoBehaviour
         _packable = setup.Packable ?? new Dictionary<string, Sprite>();
         _packedShown = 0;
         if (_packed != null) _packed.SetActive(false);
-        var rig = setup.Rig;
-        if (rig == null || _frame == null) return;
+        var prefab = setup.Rig;
+        if (prefab == null || _frame == null) return;
 
-        _rig = (RectTransform)new GameObject("Rig", typeof(RectTransform)).transform;
-        _rig.SetParent(_frame, false);
-        _rig.anchorMin = _rig.anchorMax = _rig.pivot = new Vector2(0.5f, 0.5f);
-        _rig.sizeDelta = new Vector2(rig.width, rig.height);
-        Vector2 room = _frame.rect.size;
-        float scale = Mathf.Min(room.x / rig.width, room.y / rig.height);
-        _rig.localScale = Vector3.one * scale;
-
-        var layers = rig.layers.Select(l => (item: string.IsNullOrEmpty(l.itemId) || l.goalIndex < 0 ? "" : l.itemId,
-                                             sprite: setup.Sprite(l.sprite), rect: l.rect, order: l.order, name: l.sprite))
-                        .Concat((setup.Extras ?? new Extra[0]).Select(x => (item: x.Id, sprite: x.Sprite,
-                                rect: new[] { x.Rect.x, x.Rect.y, x.Rect.width, x.Rect.height }, order: x.Order, name: x.Id)))
-                        .OrderBy(l => l.order);
-        foreach (var layer in layers)
+        // A fresh instance, fitted to the frame. Its bindings are the fitted parts ("" = always shown).
+        _rig = Instantiate(prefab, _frame, false);
+        _rig.name = prefab.name;
+        _rig.Fit(_frame.rect.size);
+        foreach (var binding in _rig.bindings)
+            if (binding.layer != null && binding.layer.TryGetComponent<Image>(out var image))
+                _parts.Add((binding.alwaysVisible || string.IsNullOrEmpty(binding.itemId) ? "" : binding.itemId, image));
+        foreach (var extra in setup.Extras ?? new Extra[0])
         {
-            if (layer.sprite == null || layer.rect == null || layer.rect.Length < 4) continue;
-            var go = new GameObject(layer.name, typeof(RectTransform), typeof(Image));
+            if (extra.Sprite == null) continue;
+            var go = new GameObject(extra.Id, typeof(RectTransform), typeof(Image));
             var rect = (RectTransform)go.transform;
-            rect.SetParent(_rig, false);
+            rect.SetParent(_rig.transform, false);
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0f, 1f);
-            rect.anchoredPosition = new Vector2(layer.rect[0], -layer.rect[1]);
-            rect.sizeDelta = new Vector2(layer.rect[2], layer.rect[3]);
+            rect.anchoredPosition = new Vector2(extra.Rect.x, -extra.Rect.y);
+            rect.sizeDelta = new Vector2(extra.Rect.width, extra.Rect.height);
             var image = go.GetComponent<Image>();
-            image.sprite = layer.sprite;
+            image.sprite = extra.Sprite;
             image.raycastTarget = false;
-            _parts.Add((layer.item, image));
+            _parts.Add((extra.Id, image));
         }
         foreach (var part in _parts)
         {

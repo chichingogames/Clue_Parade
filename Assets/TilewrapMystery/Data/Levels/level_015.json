@@ -1,0 +1,722 @@
+{
+  "schemaVersion": 5,
+  "id": 15,
+  "sourceTheme": 15,
+  "title": "Tiny aquariums",
+  "subtitle": "Was the festival star stolen—or protected?",
+  "question": "Which item belongs to the largest tank?",
+  "setupText": "The missing star trail leads here. Was the festival star stolen—or protected?",
+  "completionText": "The waterproof note confirms a safety move during the rain.",
+  "nextLead": "Who signed the safety move is still unknown.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "aquariums_0",
+      "name": "Tank A",
+      "column": 0,
+      "rigId": "aquariums_0"
+    },
+    {
+      "id": "aquariums_1",
+      "name": "Tank B",
+      "column": 1,
+      "rigId": "aquariums_1"
+    },
+    {
+      "id": "aquariums_2",
+      "name": "Tank C",
+      "column": 2,
+      "rigId": "aquariums_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "aquariums_00",
+      "label": "Blue gravel",
+      "sprite": "aquariums_00",
+      "native": true
+    },
+    {
+      "id": "aquariums_01",
+      "label": "White pebbles",
+      "sprite": "aquariums_01",
+      "native": true
+    },
+    {
+      "id": "aquariums_02",
+      "label": "Golden sand",
+      "sprite": "aquariums_02",
+      "native": true
+    },
+    {
+      "id": "aquariums_03",
+      "label": "Seaweed",
+      "sprite": "aquariums_03",
+      "native": true
+    },
+    {
+      "id": "aquariums_04",
+      "label": "Pink coral",
+      "sprite": "aquariums_04",
+      "native": true
+    },
+    {
+      "id": "aquariums_05",
+      "label": "Water moss",
+      "sprite": "aquariums_05",
+      "native": true
+    },
+    {
+      "id": "aquariums_06",
+      "label": "Goldfish",
+      "sprite": "aquariums_06",
+      "native": true
+    },
+    {
+      "id": "aquariums_07",
+      "label": "Tiny turtle",
+      "sprite": "aquariums_07",
+      "native": true
+    },
+    {
+      "id": "aquariums_08",
+      "label": "Seahorse",
+      "sprite": "aquariums_08",
+      "native": true
+    },
+    {
+      "id": "l015_extra_00",
+      "label": "Pebble ring",
+      "sprite": "garden_08",
+      "native": false
+    },
+    {
+      "id": "l015_extra_01",
+      "label": "Fish flag",
+      "sprite": "sandcastles_05",
+      "native": false
+    },
+    {
+      "id": "l015_extra_02",
+      "label": "Crate photo",
+      "sprite": "crate_photo",
+      "native": false
+    },
+    {
+      "id": "l015_extra_03",
+      "label": "Pink daisy",
+      "sprite": "garden_03",
+      "native": false
+    },
+    {
+      "id": "l015_extra_04",
+      "label": "Lizard",
+      "sprite": "terrariums_06",
+      "native": false
+    },
+    {
+      "id": "l015_extra_05",
+      "label": "Courier ticket",
+      "sprite": "courier_ticket",
+      "native": false
+    },
+    {
+      "id": "l015_extra_06",
+      "label": "Blue brew",
+      "sprite": "potions_02",
+      "native": false
+    },
+    {
+      "id": "l015_extra_07",
+      "label": "Basil",
+      "sprite": "garden_04",
+      "native": false
+    },
+    {
+      "id": "l015_extra_08",
+      "label": "Blue star tag",
+      "sprite": "blue_tag",
+      "native": false
+    },
+    {
+      "id": "l015_extra_09",
+      "label": "Dark soil",
+      "sprite": "terrariums_02",
+      "native": false
+    },
+    {
+      "id": "l015_extra_10",
+      "label": "Pink shell",
+      "sprite": "sandcastles_06",
+      "native": false
+    },
+    {
+      "id": "l015_extra_11",
+      "label": "Brass key",
+      "sprite": "brass_key",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Grounds",
+      "items": [
+        "aquariums_00",
+        "aquariums_01",
+        "aquariums_02"
+      ],
+      "action": "Reconstruct grounds in any row.",
+      "visibleClues": [
+        {
+          "icon": "aquariums_07",
+          "text": "The smallest tank has the tiny turtle.",
+          "rule": {
+            "kind": "lowest",
+            "a": "aquariums_07"
+          },
+          "refs": [
+            "aquariums_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "aquariums_08",
+          "text": "The seahorse and golden sand belong to opposite end profiles.",
+          "rule": {
+            "kind": "notNext",
+            "a": "aquariums_08",
+            "b": "aquariums_02"
+          },
+          "refs": [
+            "aquariums_08",
+            "aquariums_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Plants",
+      "items": [
+        "aquariums_03",
+        "aquariums_05",
+        "aquariums_04"
+      ],
+      "action": "Reconstruct plants in any row.",
+      "visibleClues": [
+        {
+          "icon": "aquariums_07",
+          "text": "The smallest tank has the tiny turtle.",
+          "rule": {
+            "kind": "lowest",
+            "a": "aquariums_07"
+          },
+          "refs": [
+            "aquariums_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "aquariums_08",
+          "text": "The seahorse and golden sand belong to opposite end profiles.",
+          "rule": {
+            "kind": "notNext",
+            "a": "aquariums_08",
+            "b": "aquariums_02"
+          },
+          "refs": [
+            "aquariums_08",
+            "aquariums_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Animals",
+      "items": [
+        "aquariums_08",
+        "aquariums_07",
+        "aquariums_06"
+      ],
+      "action": "Reconstruct animals in any row.",
+      "visibleClues": [
+        {
+          "icon": "aquariums_07",
+          "text": "The smallest tank has the tiny turtle.",
+          "rule": {
+            "kind": "lowest",
+            "a": "aquariums_07"
+          },
+          "refs": [
+            "aquariums_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "aquariums_08",
+          "text": "The seahorse and golden sand belong to opposite end profiles.",
+          "rule": {
+            "kind": "notNext",
+            "a": "aquariums_08",
+            "b": "aquariums_02"
+          },
+          "refs": [
+            "aquariums_08",
+            "aquariums_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l015_extra_02",
+        "l015_extra_00",
+        "l015_extra_01"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l015_extra_00",
+          "text": "The pebble ring goes with the water moss.",
+          "rule": {
+            "kind": "same",
+            "a": "l015_extra_00",
+            "b": "aquariums_05"
+          },
+          "refs": [
+            "l015_extra_00",
+            "aquariums_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l015_extra_01",
+          "text": "The fish flag and seaweed have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l015_extra_01",
+            "b": "aquariums_03"
+          },
+          "refs": [
+            "l015_extra_01",
+            "aquariums_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l015_extra_03",
+        "l015_extra_05",
+        "l015_extra_04"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l015_extra_03",
+          "text": "The pink daisy goes with the seahorse.",
+          "rule": {
+            "kind": "same",
+            "a": "l015_extra_03",
+            "b": "aquariums_08"
+          },
+          "refs": [
+            "l015_extra_03",
+            "aquariums_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l015_extra_05",
+          "text": "The courier ticket and goldfish have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l015_extra_05",
+            "b": "aquariums_06"
+          },
+          "refs": [
+            "l015_extra_05",
+            "aquariums_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l015_extra_08",
+        "l015_extra_06",
+        "l015_extra_07"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l015_extra_06",
+          "text": "The blue brew goes with the water moss.",
+          "rule": {
+            "kind": "same",
+            "a": "l015_extra_06",
+            "b": "aquariums_05"
+          },
+          "refs": [
+            "l015_extra_06",
+            "aquariums_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l015_extra_07",
+          "text": "The basil and seaweed have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l015_extra_07",
+            "b": "aquariums_03"
+          },
+          "refs": [
+            "l015_extra_07",
+            "aquariums_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l015_extra_11",
+        "l015_extra_10",
+        "l015_extra_09"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l015_extra_09",
+          "text": "The dark soil goes with the goldfish.",
+          "rule": {
+            "kind": "same",
+            "a": "l015_extra_09",
+            "b": "aquariums_06"
+          },
+          "refs": [
+            "l015_extra_09",
+            "aquariums_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l015_extra_10",
+          "text": "The pink shell and seahorse have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l015_extra_10",
+            "b": "aquariums_08"
+          },
+          "refs": [
+            "l015_extra_10",
+            "aquariums_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "aquariums_05",
+    "aquariums_02",
+    "aquariums_08",
+    "aquariums_07",
+    "aquariums_06",
+    "l015_extra_01",
+    "aquariums_03",
+    "l015_extra_02",
+    "aquariums_00",
+    "aquariums_04",
+    "l015_extra_00",
+    "aquariums_01"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l015_extra_06",
+        "l015_extra_09",
+        "l015_extra_05"
+      ]
+    },
+    {
+      "items": [
+        "l015_extra_08",
+        "l015_extra_11",
+        "l015_extra_03"
+      ]
+    },
+    {
+      "items": [
+        "l015_extra_07",
+        "l015_extra_10",
+        "l015_extra_04"
+      ]
+    }
+  ],
+  "moveLimit": 30,
+  "difficulty": "expert",
+  "firstClearCoins": 90,
+  "designSeed": 862015,
+  "chapterId": 3,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "crate_photo",
+  "evidenceReveal": "The waterproof note confirms a safety move during the rain.",
+  "durationTargetSeconds": [
+    180,
+    360
+  ],
+  "deduction": {
+    "question": "Why was the crate moved?",
+    "options": [
+      "To protect it from the rain",
+      "To repair the festival star",
+      "To change the launch time"
+    ],
+    "answer": 0,
+    "evidence": [
+      "The repair log says KEEP THE CRATE DRY.",
+      "The handling note records a safety transfer during the storm."
+    ]
+  },
+  "referenceSolution": [
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 1,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 28,
+  "storyQuestion": "Was the festival star stolen—or protected?",
+  "dossier": {
+    "label": "Volume",
+    "values": [
+      5,
+      2,
+      8
+    ],
+    "labels": [
+      "5 L",
+      "2 L",
+      "8 L"
+    ],
+    "low": "smallest tank",
+    "high": "largest tank"
+  },
+  "cluePool": [
+    {
+      "icon": "aquariums_07",
+      "text": "The smallest tank has the tiny turtle.",
+      "rule": {
+        "kind": "lowest",
+        "a": "aquariums_07"
+      },
+      "refs": [
+        "aquariums_07"
+      ],
+      "column": null
+    },
+    {
+      "icon": "aquariums_08",
+      "text": "The seahorse and golden sand belong to opposite end profiles.",
+      "rule": {
+        "kind": "notNext",
+        "a": "aquariums_08",
+        "b": "aquariums_02"
+      },
+      "refs": [
+        "aquariums_08",
+        "aquariums_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "aquariums_07",
+      "text": "The tiny turtle goes with the water moss.",
+      "rule": {
+        "kind": "same",
+        "a": "aquariums_07",
+        "b": "aquariums_05"
+      },
+      "refs": [
+        "aquariums_07",
+        "aquariums_05"
+      ],
+      "column": null
+    },
+    {
+      "icon": "aquariums_01",
+      "text": "The white pebbles and seaweed have different owners.",
+      "rule": {
+        "kind": "different",
+        "a": "aquariums_01",
+        "b": "aquariums_03"
+      },
+      "refs": [
+        "aquariums_01",
+        "aquariums_03"
+      ],
+      "column": null
+    },
+    {
+      "icon": "aquariums_08",
+      "text": "The seahorse owner is left of the pink coral owner.",
+      "rule": {
+        "kind": "left",
+        "a": "aquariums_08",
+        "b": "aquariums_04"
+      },
+      "refs": [
+        "aquariums_08",
+        "aquariums_04"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the volume badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "Which item belongs to the largest tank?",
+    "answer": "Dark soil",
+    "icon": "l015_extra_09",
+    "evidence": [
+      "Use the volume badges as evidence.",
+      "Connect the profile to its final confirmed item."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 16,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

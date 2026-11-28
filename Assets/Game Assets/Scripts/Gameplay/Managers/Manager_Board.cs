@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Chichingo.TilewrapMystery;
 using DG.Tweening;
 using UnityEngine;
 
@@ -24,6 +25,8 @@ public class Manager_Board : Singleton<Manager_Board>
     [SerializeField] private SpriteRenderer _activeRow;
     [Tooltip("Full-screen booth art behind everything; FitCamera scales it to cover the view.")]
     [SerializeField] private SpriteRenderer _background;
+    [Tooltip("The pack's animated background (its own camera-space canvas behind the board). While set, the static _background is hidden.")]
+    [SerializeField] private TilewrapAmbientBackground _ambient;
     [SerializeField] private Transform _cellsRoot;
     [SerializeField] private Transform _tilesRoot;
     [Tooltip("Board/Dividers: grid lines, the first half vertical, the rest horizontal (N - 1 each).")]
@@ -72,6 +75,7 @@ public class Manager_Board : Singleton<Manager_Board>
     private float _offset;
     private Tween _animation;
     private bool _playing;
+    private int _deliveriesThisMove;      // cascade depth: picks match_1 / 2 / 3
 
     // Marks set by the flow.
     private int _selected = -1;
@@ -103,6 +107,11 @@ public class Manager_Board : Singleton<Manager_Board>
         _tiles = new ItemTile[board.Length];
         var fileRef = FileRef.Instance;
         _boardRoot.localPosition = ReferenceLayout.BoardCenter;
+        if (_ambient != null)
+        {
+            _ambient.SetChapter(level.chapterId);
+            if (_background != null) _background.enabled = false;
+        }
 
         // The frame is 9-sliced: sized, not scaled, so its corners stay sharp. The mask (a 1-unit
         // sprite) is scaled to the grid.
@@ -263,6 +272,7 @@ public class Manager_Board : Singleton<Manager_Board>
     {
         if (!_held || events.Count == 0 || events[0].Type != DeliveryEventType.Swap) { onDone?.Invoke(); return; }
         _playing = true;
+        _deliveriesThisMove = 0;
         float duration = Tuning.ShiftDuration * Mathf.Clamp((1f - _offset) * 1.5f, 0.35f, 1.5f);
         _animation = DOTween.To(() => _offset, x => { _offset = x; RenderHeld(); }, 1f, duration)
             .SetEase(Ease.OutCubic).SetLink(gameObject)
@@ -315,9 +325,11 @@ public class Manager_Board : Singleton<Manager_Board>
             _tiles[i] = null;
         }
         Board = (string[])e.Board.Clone();
-        bool won = e.View.Status == DeliveryStatus.Won;
+        bool won = e.View.Stage == Level.sets.Length;     // the last set (the snapshot is taken before the status turns Won)
         var audio = Manager_Audio.Instance;
-        audio?.PlaySound(won ? SoundType.LevelComplete : SoundType.TileMatch, won ? -1 : Mathf.Min(e.View.Stage, 3) - 1);
+        _deliveriesThisMove++;
+        if (won) audio?.PlaySound(Level.IsFinale ? SoundType.CaseClosed : SoundType.LevelComplete);
+        else audio?.PlaySound(SoundType.TileMatch, Mathf.Min(_deliveriesThisMove, 3) - 1);
         Haptics.Play(won ? HapticType.Heavy : HapticType.Medium);
         OnDelivering(e, sprites, positions);
         OnStepShown(e);
@@ -335,6 +347,7 @@ public class Manager_Board : Singleton<Manager_Board>
         var byId = new Dictionary<string, ItemTile>();
         foreach (var tile in _tiles) if (tile != null) byId[tile.Id] = tile;
         float duration = e.Spawned.Length > 0 ? RefillSeconds : FallSeconds;
+        if (e.Spawned.Length > 0) Manager_Audio.Instance?.PlaySound(SoundType.Refill);
         var spawned = new HashSet<string>(e.Spawned);
         for (int i = 0; i < _tiles.Length; i++)
         {

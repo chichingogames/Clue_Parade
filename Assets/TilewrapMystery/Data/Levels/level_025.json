@@ -1,0 +1,868 @@
+{
+  "schemaVersion": 5,
+  "id": 25,
+  "sourceTheme": 25,
+  "title": "Toy gift shop",
+  "subtitle": "Which parcel actually contains the star?",
+  "question": "Which item belongs to the priciest gift?",
+  "setupText": "The missing star trail leads here. Which parcel actually contains the star?",
+  "completionText": "The real star is in the dry, blue-lined crate with the original star tag.",
+  "nextLead": "The crate is ready to be returned, but its release papers are missing.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "gifts_0",
+      "name": "Gift A",
+      "column": 0,
+      "rigId": "gifts_0"
+    },
+    {
+      "id": "gifts_1",
+      "name": "Gift B",
+      "column": 1,
+      "rigId": "gifts_1"
+    },
+    {
+      "id": "gifts_2",
+      "name": "Gift C",
+      "column": 2,
+      "rigId": "gifts_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "gifts_00",
+      "label": "Star box",
+      "sprite": "gifts_00",
+      "native": true
+    },
+    {
+      "id": "gifts_01",
+      "label": "Stripe box",
+      "sprite": "gifts_01",
+      "native": true
+    },
+    {
+      "id": "gifts_02",
+      "label": "Flower box",
+      "sprite": "gifts_02",
+      "native": true
+    },
+    {
+      "id": "gifts_03",
+      "label": "Toy robot",
+      "sprite": "gifts_03",
+      "native": true
+    },
+    {
+      "id": "gifts_04",
+      "label": "Teddy bear",
+      "sprite": "gifts_04",
+      "native": true
+    },
+    {
+      "id": "gifts_05",
+      "label": "Toy duck",
+      "sprite": "gifts_05",
+      "native": true
+    },
+    {
+      "id": "gifts_06",
+      "label": "Red bow",
+      "sprite": "gifts_06",
+      "native": true
+    },
+    {
+      "id": "gifts_07",
+      "label": "Blue bow",
+      "sprite": "gifts_07",
+      "native": true
+    },
+    {
+      "id": "gifts_08",
+      "label": "Purple bow",
+      "sprite": "gifts_08",
+      "native": true
+    },
+    {
+      "id": "l025_extra_00",
+      "label": "Anchor emblem",
+      "sprite": "treasures_06",
+      "native": false
+    },
+    {
+      "id": "l025_extra_01",
+      "label": "Penguin",
+      "sprite": "post_06",
+      "native": false
+    },
+    {
+      "id": "l025_extra_02",
+      "label": "Magnifying glass",
+      "sprite": "magnifier",
+      "native": false
+    },
+    {
+      "id": "l025_extra_03",
+      "label": "Wrapped gift",
+      "sprite": "floats_07",
+      "native": false
+    },
+    {
+      "id": "l025_extra_04",
+      "label": "Yellow scarf",
+      "sprite": "snowmen_05",
+      "native": false
+    },
+    {
+      "id": "l025_extra_05",
+      "label": "Crate photo",
+      "sprite": "crate_photo",
+      "native": false
+    },
+    {
+      "id": "l025_extra_06",
+      "label": "Gold cap",
+      "sprite": "sweetmachines_05",
+      "native": false
+    },
+    {
+      "id": "l025_extra_07",
+      "label": "Antler hat",
+      "sprite": "snowmen_02",
+      "native": false
+    },
+    {
+      "id": "l025_extra_08",
+      "label": "Courier ticket",
+      "sprite": "courier_ticket",
+      "native": false
+    },
+    {
+      "id": "l025_extra_09",
+      "label": "Pinecone",
+      "sprite": "luggage_06",
+      "native": false
+    },
+    {
+      "id": "l025_extra_10",
+      "label": "Broom",
+      "sprite": "snowmen_06",
+      "native": false
+    },
+    {
+      "id": "l025_extra_11",
+      "label": "Delivery log",
+      "sprite": "delivery_log",
+      "native": false
+    },
+    {
+      "id": "l025_extra_12",
+      "label": "Jelly beans",
+      "sprite": "sweetmachines_01",
+      "native": false
+    },
+    {
+      "id": "l025_extra_13",
+      "label": "Blue parcel",
+      "sprite": "post_01",
+      "native": false
+    },
+    {
+      "id": "l025_extra_14",
+      "label": "Red wax seal",
+      "sprite": "wax_seal",
+      "native": false
+    },
+    {
+      "id": "l025_extra_15",
+      "label": "Star dial",
+      "sprite": "sweetmachines_07",
+      "native": false
+    },
+    {
+      "id": "l025_extra_16",
+      "label": "Purple scroll",
+      "sprite": "post_02",
+      "native": false
+    },
+    {
+      "id": "l025_extra_17",
+      "label": "Flashlight",
+      "sprite": "flashlight",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Boxes",
+      "items": [
+        "gifts_00",
+        "gifts_01",
+        "gifts_02"
+      ],
+      "action": "Reconstruct boxes in any row.",
+      "visibleClues": [
+        {
+          "icon": "gifts_06",
+          "text": "The cheapest gift has the red bow.",
+          "rule": {
+            "kind": "lowest",
+            "a": "gifts_06"
+          },
+          "refs": [
+            "gifts_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "gifts_07",
+          "text": "The blue bow goes with the toy robot.",
+          "rule": {
+            "kind": "same",
+            "a": "gifts_07",
+            "b": "gifts_03"
+          },
+          "refs": [
+            "gifts_07",
+            "gifts_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Toys",
+      "items": [
+        "gifts_03",
+        "gifts_05",
+        "gifts_04"
+      ],
+      "action": "Reconstruct toys in any row.",
+      "visibleClues": [
+        {
+          "icon": "gifts_06",
+          "text": "The cheapest gift has the red bow.",
+          "rule": {
+            "kind": "lowest",
+            "a": "gifts_06"
+          },
+          "refs": [
+            "gifts_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "gifts_07",
+          "text": "The blue bow goes with the toy robot.",
+          "rule": {
+            "kind": "same",
+            "a": "gifts_07",
+            "b": "gifts_03"
+          },
+          "refs": [
+            "gifts_07",
+            "gifts_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Bows",
+      "items": [
+        "gifts_07",
+        "gifts_06",
+        "gifts_08"
+      ],
+      "action": "Reconstruct bows in any row.",
+      "visibleClues": [
+        {
+          "icon": "gifts_06",
+          "text": "The cheapest gift has the red bow.",
+          "rule": {
+            "kind": "lowest",
+            "a": "gifts_06"
+          },
+          "refs": [
+            "gifts_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "gifts_07",
+          "text": "The blue bow goes with the toy robot.",
+          "rule": {
+            "kind": "same",
+            "a": "gifts_07",
+            "b": "gifts_03"
+          },
+          "refs": [
+            "gifts_07",
+            "gifts_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l025_extra_01",
+        "l025_extra_02",
+        "l025_extra_00"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l025_extra_02",
+          "text": "The magnifying glass goes with the red bow.",
+          "rule": {
+            "kind": "same",
+            "a": "l025_extra_02",
+            "b": "gifts_06"
+          },
+          "refs": [
+            "l025_extra_02",
+            "gifts_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l025_extra_01",
+          "text": "The penguin and purple bow have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l025_extra_01",
+            "b": "gifts_08"
+          },
+          "refs": [
+            "l025_extra_01",
+            "gifts_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l025_extra_04",
+        "l025_extra_03",
+        "l025_extra_05"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l025_extra_04",
+          "text": "The yellow scarf goes with the toy robot.",
+          "rule": {
+            "kind": "same",
+            "a": "l025_extra_04",
+            "b": "gifts_03"
+          },
+          "refs": [
+            "l025_extra_04",
+            "gifts_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l025_extra_05",
+          "text": "The crate photo and toy duck have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l025_extra_05",
+            "b": "gifts_05"
+          },
+          "refs": [
+            "l025_extra_05",
+            "gifts_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l025_extra_08",
+        "l025_extra_07",
+        "l025_extra_06"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l025_extra_08",
+          "text": "The courier ticket goes with the blue bow.",
+          "rule": {
+            "kind": "same",
+            "a": "l025_extra_08",
+            "b": "gifts_07"
+          },
+          "refs": [
+            "l025_extra_08",
+            "gifts_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l025_extra_06",
+          "text": "The gold cap and red bow have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l025_extra_06",
+            "b": "gifts_06"
+          },
+          "refs": [
+            "l025_extra_06",
+            "gifts_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l025_extra_09",
+        "l025_extra_11",
+        "l025_extra_10"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l025_extra_11",
+          "text": "The delivery log goes with the stripe box.",
+          "rule": {
+            "kind": "same",
+            "a": "l025_extra_11",
+            "b": "gifts_01"
+          },
+          "refs": [
+            "l025_extra_11",
+            "gifts_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l025_extra_09",
+          "text": "The pinecone and flower box have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l025_extra_09",
+            "b": "gifts_02"
+          },
+          "refs": [
+            "l025_extra_09",
+            "gifts_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Packing list",
+      "items": [
+        "l025_extra_14",
+        "l025_extra_12",
+        "l025_extra_13"
+      ],
+      "action": "Reconstruct packing list in any row.",
+      "visibleClues": [
+        {
+          "icon": "l025_extra_13",
+          "text": "The blue parcel goes with the purple bow.",
+          "rule": {
+            "kind": "same",
+            "a": "l025_extra_13",
+            "b": "gifts_08"
+          },
+          "refs": [
+            "l025_extra_13",
+            "gifts_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l025_extra_12",
+          "text": "The jelly beans and blue bow have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l025_extra_12",
+            "b": "gifts_07"
+          },
+          "refs": [
+            "l025_extra_12",
+            "gifts_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Case supplies",
+      "items": [
+        "l025_extra_17",
+        "l025_extra_15",
+        "l025_extra_16"
+      ],
+      "action": "Reconstruct case supplies in any row.",
+      "visibleClues": [
+        {
+          "icon": "l025_extra_16",
+          "text": "The purple scroll goes with the flower box.",
+          "rule": {
+            "kind": "same",
+            "a": "l025_extra_16",
+            "b": "gifts_02"
+          },
+          "refs": [
+            "l025_extra_16",
+            "gifts_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l025_extra_15",
+          "text": "The star dial and star box have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l025_extra_15",
+            "b": "gifts_00"
+          },
+          "refs": [
+            "l025_extra_15",
+            "gifts_00"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "gifts_08",
+    "gifts_03",
+    "gifts_00",
+    "gifts_06",
+    "gifts_05",
+    "gifts_07",
+    "l025_extra_00",
+    "gifts_01",
+    "l025_extra_02",
+    "l025_extra_01",
+    "gifts_02",
+    "gifts_04"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l025_extra_06",
+        "l025_extra_11",
+        "l025_extra_03"
+      ]
+    },
+    {
+      "items": [
+        "l025_extra_08",
+        "l025_extra_09",
+        "l025_extra_04"
+      ]
+    },
+    {
+      "items": [
+        "l025_extra_07",
+        "l025_extra_10",
+        "l025_extra_05"
+      ]
+    },
+    {
+      "items": [
+        "l025_extra_13",
+        "l025_extra_12",
+        "l025_extra_15"
+      ]
+    },
+    {
+      "items": [
+        "l025_extra_14",
+        "l025_extra_16",
+        "l025_extra_17"
+      ]
+    }
+  ],
+  "moveLimit": 37,
+  "difficulty": "expert",
+  "firstClearCoins": 90,
+  "designSeed": 862025,
+  "chapterId": 5,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "crate_photo",
+  "evidenceReveal": "The real star is in the dry, blue-lined crate with the original star tag.",
+  "durationTargetSeconds": [
+    180,
+    360
+  ],
+  "deduction": {
+    "question": "Which parcel should we recover?",
+    "options": [
+      "The blue-lined crate with a fresh blank tag",
+      "The dry blue-lined crate with the original tag",
+      "The star-marked box with a red lining"
+    ],
+    "answer": 1,
+    "evidence": [
+      "The artist copied a blue lining and the original star tag.",
+      "The harbour list confirms the real crate stayed inland."
+    ]
+  },
+  "referenceSolution": [
+    {
+      "a": 1,
+      "b": 2
+    },
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 0,
+      "b": 3
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 35,
+  "storyQuestion": "Which parcel actually contains the star?",
+  "dossier": {
+    "label": "Price",
+    "values": [
+      9,
+      4,
+      7
+    ],
+    "labels": [
+      "$9",
+      "$4",
+      "$7"
+    ],
+    "low": "cheapest gift",
+    "high": "priciest gift"
+  },
+  "cluePool": [
+    {
+      "icon": "gifts_06",
+      "text": "The cheapest gift has the red bow.",
+      "rule": {
+        "kind": "lowest",
+        "a": "gifts_06"
+      },
+      "refs": [
+        "gifts_06"
+      ],
+      "column": null
+    },
+    {
+      "icon": "gifts_07",
+      "text": "The blue bow goes with the toy robot.",
+      "rule": {
+        "kind": "same",
+        "a": "gifts_07",
+        "b": "gifts_03"
+      },
+      "refs": [
+        "gifts_07",
+        "gifts_03"
+      ],
+      "column": null
+    },
+    {
+      "icon": "gifts_04",
+      "text": "The teddy bear and star box belong to opposite end profiles.",
+      "rule": {
+        "kind": "notNext",
+        "a": "gifts_04",
+        "b": "gifts_00"
+      },
+      "refs": [
+        "gifts_04",
+        "gifts_00"
+      ],
+      "column": null
+    },
+    {
+      "icon": "gifts_01",
+      "text": "The stripe box owner is left of the purple bow owner.",
+      "rule": {
+        "kind": "left",
+        "a": "gifts_01",
+        "b": "gifts_08"
+      },
+      "refs": [
+        "gifts_01",
+        "gifts_08"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the price badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "Which item belongs to the priciest gift?",
+    "answer": "Flashlight",
+    "icon": "l025_extra_17",
+    "evidence": [
+      "Use the price badges as evidence.",
+      "Connect the profile to its final confirmed item."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 26,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

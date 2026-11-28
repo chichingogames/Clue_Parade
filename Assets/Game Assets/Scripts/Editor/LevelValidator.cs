@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-// Checks every case in FileRef.Cases: three subjects with rigs whose part sprites exist, every item,
+// Checks every case in FileRef.Cases: three subjects whose fitted rig prefabs exist with every part's sprite, every item,
 // clue, evidence and answer sprite, a 3 x rows start, each set names three known items, every clue's
 // rule and refs name known items, the inventory adds up (start + refills = every item once), and
 // following the hint from the start delivers every set (DeliveryRules.Solve), within the move limit
@@ -48,12 +48,14 @@ public static class LevelValidator
         if (level.subjects.Length != 3) return "needs three subjects";
         foreach (var subject in level.subjects)
         {
-            var rig = level.rigs.FirstOrDefault(r => r.id == subject.rigId);
-            if (rig == null) return $"rig '{subject.rigId}' is missing";
-            foreach (var layer in rig.layers)
+            var rig = fileRef.Rig(subject.rigId);
+            if (rig == null) return $"rig prefab '{subject.rigId}' is missing (run Build current 30-level content)";
+            foreach (var binding in rig.bindings)
             {
-                if (fileRef.Sprite(layer.sprite) == null) return $"rig part sprite '{layer.sprite}' is missing";
-                if (layer.goalIndex >= 0 && level.Item(layer.itemId) == null) return $"rig part '{layer.sprite}' names unknown item '{layer.itemId}'";
+                var image = binding.layer != null ? binding.layer.GetComponent<UnityEngine.UI.Image>() : null;
+                if (image == null || image.sprite == null) return $"rig '{subject.rigId}' has a part without a sprite";
+                if (!binding.alwaysVisible && !string.IsNullOrEmpty(binding.itemId) && level.Item(binding.itemId) == null)
+                    return $"rig '{subject.rigId}' fits unknown item '{binding.itemId}'";
             }
         }
         foreach (var item in level.items)

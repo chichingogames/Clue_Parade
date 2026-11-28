@@ -1,0 +1,676 @@
+{
+  "schemaVersion": 5,
+  "id": 29,
+  "sourceTheme": 29,
+  "title": "Treasure cove",
+  "subtitle": "Which chest holds the release key?",
+  "question": "Which witness statement is wrong?",
+  "setupText": "The missing star trail leads here. Which chest holds the release key?",
+  "completionText": "The release key and the original crate photo agree: launch-stage storage.",
+  "nextLead": "One last check will return the star to the festival.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "treasures_0",
+      "name": "Chest A",
+      "column": 0,
+      "rigId": "treasures_0"
+    },
+    {
+      "id": "treasures_1",
+      "name": "Chest B",
+      "column": 1,
+      "rigId": "treasures_1"
+    },
+    {
+      "id": "treasures_2",
+      "name": "Chest C",
+      "column": 2,
+      "rigId": "treasures_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "treasures_00",
+      "label": "Red velvet",
+      "sprite": "treasures_00",
+      "native": true
+    },
+    {
+      "id": "treasures_01",
+      "label": "Blue silk",
+      "sprite": "treasures_01",
+      "native": true
+    },
+    {
+      "id": "treasures_02",
+      "label": "Green lining",
+      "sprite": "treasures_02",
+      "native": true
+    },
+    {
+      "id": "treasures_03",
+      "label": "Pearls",
+      "sprite": "treasures_03",
+      "native": true
+    },
+    {
+      "id": "treasures_04",
+      "label": "Gold coins",
+      "sprite": "treasures_04",
+      "native": true
+    },
+    {
+      "id": "treasures_05",
+      "label": "Bright gems",
+      "sprite": "treasures_05",
+      "native": true
+    },
+    {
+      "id": "treasures_06",
+      "label": "Anchor emblem",
+      "sprite": "treasures_06",
+      "native": true
+    },
+    {
+      "id": "treasures_07",
+      "label": "Dragon emblem",
+      "sprite": "treasures_07",
+      "native": true
+    },
+    {
+      "id": "treasures_08",
+      "label": "Palm emblem",
+      "sprite": "treasures_08",
+      "native": true
+    },
+    {
+      "id": "l029_extra_00",
+      "label": "Star box",
+      "sprite": "gifts_00",
+      "native": false
+    },
+    {
+      "id": "l029_extra_01",
+      "label": "Treasure box",
+      "sprite": "harbour_08",
+      "native": false
+    },
+    {
+      "id": "l029_extra_02",
+      "label": "Secret note",
+      "sprite": "secret_note",
+      "native": false
+    },
+    {
+      "id": "l029_extra_03",
+      "label": "Crab trap",
+      "sprite": "harbour_07",
+      "native": false
+    },
+    {
+      "id": "l029_extra_04",
+      "label": "Toy robot",
+      "sprite": "gifts_03",
+      "native": false
+    },
+    {
+      "id": "l029_extra_05",
+      "label": "Courier ticket",
+      "sprite": "courier_ticket",
+      "native": false
+    },
+    {
+      "id": "l029_extra_06",
+      "label": "Paw flag",
+      "sprite": "post_04",
+      "native": false
+    },
+    {
+      "id": "l029_extra_07",
+      "label": "Moon charm",
+      "sprite": "potions_06",
+      "native": false
+    },
+    {
+      "id": "l029_extra_08",
+      "label": "Crate photo",
+      "sprite": "crate_photo",
+      "native": false
+    },
+    {
+      "id": "l029_extra_09",
+      "label": "Crystal stopper",
+      "sprite": "potions_04",
+      "native": false
+    },
+    {
+      "id": "l029_extra_10",
+      "label": "Red letter",
+      "sprite": "post_00",
+      "native": false
+    },
+    {
+      "id": "l029_extra_11",
+      "label": "Route map",
+      "sprite": "route_map",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Linings",
+      "items": [
+        "treasures_00",
+        "treasures_02",
+        "treasures_01"
+      ],
+      "action": "Reconstruct linings in any row.",
+      "visibleClues": [
+        {
+          "icon": "treasures_08",
+          "text": "The newest find has the palm emblem.",
+          "rule": {
+            "kind": "lowest",
+            "a": "treasures_08"
+          },
+          "refs": [
+            "treasures_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "treasures_02",
+          "text": "The green lining owner is left of the gold coins owner.",
+          "rule": {
+            "kind": "left",
+            "a": "treasures_02",
+            "b": "treasures_04"
+          },
+          "refs": [
+            "treasures_02",
+            "treasures_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Treasure",
+      "items": [
+        "treasures_05",
+        "treasures_03",
+        "treasures_04"
+      ],
+      "action": "Reconstruct treasure in any row.",
+      "visibleClues": [
+        {
+          "icon": "treasures_08",
+          "text": "The newest find has the palm emblem.",
+          "rule": {
+            "kind": "lowest",
+            "a": "treasures_08"
+          },
+          "refs": [
+            "treasures_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "treasures_02",
+          "text": "The green lining owner is left of the gold coins owner.",
+          "rule": {
+            "kind": "left",
+            "a": "treasures_02",
+            "b": "treasures_04"
+          },
+          "refs": [
+            "treasures_02",
+            "treasures_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Emblems",
+      "items": [
+        "treasures_08",
+        "treasures_07",
+        "treasures_06"
+      ],
+      "action": "Reconstruct emblems in any row.",
+      "visibleClues": [
+        {
+          "icon": "treasures_08",
+          "text": "The newest find has the palm emblem.",
+          "rule": {
+            "kind": "lowest",
+            "a": "treasures_08"
+          },
+          "refs": [
+            "treasures_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "treasures_02",
+          "text": "The green lining owner is left of the gold coins owner.",
+          "rule": {
+            "kind": "left",
+            "a": "treasures_02",
+            "b": "treasures_04"
+          },
+          "refs": [
+            "treasures_02",
+            "treasures_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l029_extra_01",
+        "l029_extra_00",
+        "l029_extra_02"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l029_extra_01",
+          "text": "The treasure box goes with the bright gems.",
+          "rule": {
+            "kind": "same",
+            "a": "l029_extra_01",
+            "b": "treasures_05"
+          },
+          "refs": [
+            "l029_extra_01",
+            "treasures_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l029_extra_02",
+          "text": "The secret note and pearls have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l029_extra_02",
+            "b": "treasures_03"
+          },
+          "refs": [
+            "l029_extra_02",
+            "treasures_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l029_extra_04",
+        "l029_extra_05",
+        "l029_extra_03"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l029_extra_03",
+          "text": "The crab trap goes with the blue silk.",
+          "rule": {
+            "kind": "same",
+            "a": "l029_extra_03",
+            "b": "treasures_01"
+          },
+          "refs": [
+            "l029_extra_03",
+            "treasures_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l029_extra_04",
+          "text": "The toy robot and green lining have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l029_extra_04",
+            "b": "treasures_02"
+          },
+          "refs": [
+            "l029_extra_04",
+            "treasures_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l029_extra_07",
+        "l029_extra_08",
+        "l029_extra_06"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l029_extra_08",
+          "text": "The crate photo goes with the dragon emblem.",
+          "rule": {
+            "kind": "same",
+            "a": "l029_extra_08",
+            "b": "treasures_07"
+          },
+          "refs": [
+            "l029_extra_08",
+            "treasures_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l029_extra_06",
+          "text": "The paw flag and palm emblem have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l029_extra_06",
+            "b": "treasures_08"
+          },
+          "refs": [
+            "l029_extra_06",
+            "treasures_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l029_extra_11",
+        "l029_extra_10",
+        "l029_extra_09"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l029_extra_11",
+          "text": "The route map goes with the palm emblem.",
+          "rule": {
+            "kind": "same",
+            "a": "l029_extra_11",
+            "b": "treasures_08"
+          },
+          "refs": [
+            "l029_extra_11",
+            "treasures_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l029_extra_10",
+          "text": "The red letter and anchor emblem have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l029_extra_10",
+            "b": "treasures_06"
+          },
+          "refs": [
+            "l029_extra_10",
+            "treasures_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "treasures_02",
+    "treasures_05",
+    "treasures_01",
+    "l029_extra_00",
+    "treasures_07",
+    "l029_extra_02",
+    "treasures_08",
+    "treasures_00",
+    "treasures_04",
+    "treasures_06",
+    "l029_extra_01",
+    "treasures_03"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l029_extra_04",
+        "l029_extra_07",
+        "l029_extra_11"
+      ]
+    },
+    {
+      "items": [
+        "l029_extra_05",
+        "l029_extra_08",
+        "l029_extra_10"
+      ]
+    },
+    {
+      "items": [
+        "l029_extra_03",
+        "l029_extra_09",
+        "l029_extra_06"
+      ]
+    }
+  ],
+  "moveLimit": 36,
+  "difficulty": "standard",
+  "firstClearCoins": 30,
+  "designSeed": 862029,
+  "chapterId": 6,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "route_map",
+  "evidenceReveal": "The release key and the original crate photo agree: launch-stage storage.",
+  "durationTargetSeconds": [
+    100,
+    240
+  ],
+  "referenceSolution": [
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 1,
+      "b": 4
+    },
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 22,
+  "storyQuestion": "Which chest holds the release key?",
+  "dossier": {
+    "label": "Found",
+    "values": [
+      1,
+      3,
+      5
+    ],
+    "labels": [
+      "1 day ago",
+      "3 days ago",
+      "5 days ago"
+    ],
+    "low": "newest find",
+    "high": "oldest find"
+  },
+  "cluePool": [
+    {
+      "icon": "treasures_08",
+      "text": "The newest find has the palm emblem.",
+      "rule": {
+        "kind": "lowest",
+        "a": "treasures_08"
+      },
+      "refs": [
+        "treasures_08"
+      ],
+      "column": null
+    },
+    {
+      "icon": "treasures_02",
+      "text": "The green lining owner is left of the gold coins owner.",
+      "rule": {
+        "kind": "left",
+        "a": "treasures_02",
+        "b": "treasures_04"
+      },
+      "refs": [
+        "treasures_02",
+        "treasures_04"
+      ],
+      "column": null
+    },
+    {
+      "icon": "treasures_05",
+      "text": "The bright gems and dragon emblem have different owners.",
+      "rule": {
+        "kind": "different",
+        "a": "treasures_05",
+        "b": "treasures_07"
+      },
+      "refs": [
+        "treasures_05",
+        "treasures_07"
+      ],
+      "column": null
+    },
+    {
+      "icon": "treasures_06",
+      "text": "The anchor emblem and red velvet belong to opposite end profiles.",
+      "rule": {
+        "kind": "notNext",
+        "a": "treasures_06",
+        "b": "treasures_00"
+      },
+      "refs": [
+        "treasures_06",
+        "treasures_00"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the found badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "Which witness statement is wrong?",
+    "answer": "Blue silk goes with bright gems.",
+    "icon": null,
+    "evidence": [
+      "Check each witness statement against the finished scene.",
+      "Exactly one statement pairs details from different profiles."
+    ],
+    "statements": [
+      "Red velvet goes with bright gems.",
+      "Green lining goes with pearls.",
+      "Blue silk goes with bright gems."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 30,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

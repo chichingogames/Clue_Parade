@@ -1,0 +1,960 @@
+{
+  "schemaVersion": 5,
+  "id": 30,
+  "sourceTheme": 30,
+  "title": "Grand finale",
+  "subtitle": "Where should the missing festival star go?",
+  "question": "Which item belongs to the latest launch?",
+  "setupText": "The missing star trail leads here. Where should the missing festival star go?",
+  "completionText": "The star returns to the launch stage. Bolt’s safety move is explained, the false tag corrected, and the festival can begin.",
+  "nextLead": "Case closed. The missing finale is finally ready.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "fireworks_0",
+      "name": "Launch A",
+      "column": 0,
+      "rigId": "fireworks_0"
+    },
+    {
+      "id": "fireworks_1",
+      "name": "Launch B",
+      "column": 1,
+      "rigId": "fireworks_1"
+    },
+    {
+      "id": "fireworks_2",
+      "name": "Launch C",
+      "column": 2,
+      "rigId": "fireworks_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "fireworks_00",
+      "label": "Star rocket",
+      "sprite": "fireworks_00",
+      "native": true
+    },
+    {
+      "id": "fireworks_01",
+      "label": "Moon rocket",
+      "sprite": "fireworks_01",
+      "native": true
+    },
+    {
+      "id": "fireworks_02",
+      "label": "Flower rocket",
+      "sprite": "fireworks_02",
+      "native": true
+    },
+    {
+      "id": "fireworks_03",
+      "label": "Spark fountain",
+      "sprite": "fireworks_03",
+      "native": true
+    },
+    {
+      "id": "fireworks_04",
+      "label": "Rainbow wheel",
+      "sprite": "fireworks_04",
+      "native": true
+    },
+    {
+      "id": "fireworks_05",
+      "label": "Gold sparkler",
+      "sprite": "fireworks_05",
+      "native": true
+    },
+    {
+      "id": "fireworks_06",
+      "label": "Lantern string",
+      "sprite": "fireworks_06",
+      "native": true
+    },
+    {
+      "id": "fireworks_07",
+      "label": "Flag garland",
+      "sprite": "fireworks_07",
+      "native": true
+    },
+    {
+      "id": "fireworks_08",
+      "label": "Star garland",
+      "sprite": "fireworks_08",
+      "native": true
+    },
+    {
+      "id": "l030_extra_00",
+      "label": "Crystal stopper",
+      "sprite": "potions_04",
+      "native": false
+    },
+    {
+      "id": "l030_extra_01",
+      "label": "Green crystal",
+      "sprite": "dragons_08",
+      "native": false
+    },
+    {
+      "id": "l030_extra_02",
+      "label": "Route map",
+      "sprite": "route_map",
+      "native": false
+    },
+    {
+      "id": "l030_extra_03",
+      "label": "Red ribbon",
+      "sprite": "floats_04",
+      "native": false
+    },
+    {
+      "id": "l030_extra_04",
+      "label": "Ring engine",
+      "sprite": "space_05",
+      "native": false
+    },
+    {
+      "id": "l030_extra_05",
+      "label": "Flashlight",
+      "sprite": "flashlight",
+      "native": false
+    },
+    {
+      "id": "l030_extra_06",
+      "label": "Flag bunting",
+      "sprite": "floats_03",
+      "native": false
+    },
+    {
+      "id": "l030_extra_07",
+      "label": "Green leaf wings",
+      "sprite": "dragons_04",
+      "native": false
+    },
+    {
+      "id": "l030_extra_08",
+      "label": "Green brew",
+      "sprite": "potions_01",
+      "native": false
+    },
+    {
+      "id": "l030_extra_09",
+      "label": "Gold stopper",
+      "sprite": "potions_05",
+      "native": false
+    },
+    {
+      "id": "l030_extra_10",
+      "label": "Red wax seal",
+      "sprite": "wax_seal",
+      "native": false
+    },
+    {
+      "id": "l030_extra_11",
+      "label": "Dragon emblem",
+      "sprite": "treasures_07",
+      "native": false
+    },
+    {
+      "id": "l030_extra_12",
+      "label": "Bright gems",
+      "sprite": "treasures_05",
+      "native": false
+    },
+    {
+      "id": "l030_extra_13",
+      "label": "Secret note",
+      "sprite": "secret_note",
+      "native": false
+    },
+    {
+      "id": "l030_extra_14",
+      "label": "Hanging lantern",
+      "sprite": "music_08",
+      "native": false
+    },
+    {
+      "id": "l030_extra_15",
+      "label": "Blue bow",
+      "sprite": "gifts_07",
+      "native": false
+    },
+    {
+      "id": "l030_extra_16",
+      "label": "Magnifying glass",
+      "sprite": "magnifier",
+      "native": false
+    },
+    {
+      "id": "l030_extra_17",
+      "label": "Stripe box",
+      "sprite": "gifts_01",
+      "native": false
+    },
+    {
+      "id": "l030_extra_36",
+      "label": "Festival star",
+      "sprite": "festival_star",
+      "native": false
+    },
+    {
+      "id": "l030_extra_37",
+      "label": "Delivery log",
+      "sprite": "delivery_log",
+      "native": false
+    },
+    {
+      "id": "l030_extra_38",
+      "label": "Brass key",
+      "sprite": "brass_key",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Rockets",
+      "items": [
+        "fireworks_01",
+        "fireworks_00",
+        "fireworks_02"
+      ],
+      "action": "Reconstruct rockets in any row.",
+      "visibleClues": [
+        {
+          "icon": "fireworks_03",
+          "text": "The latest launch has the spark fountain.",
+          "rule": {
+            "kind": "highest",
+            "a": "fireworks_03"
+          },
+          "refs": [
+            "fireworks_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "fireworks_03",
+          "text": "The spark fountain goes with the star garland.",
+          "rule": {
+            "kind": "same",
+            "a": "fireworks_03",
+            "b": "fireworks_08"
+          },
+          "refs": [
+            "fireworks_03",
+            "fireworks_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Sparks",
+      "items": [
+        "fireworks_03",
+        "fireworks_05",
+        "fireworks_04"
+      ],
+      "action": "Reconstruct sparks in any row.",
+      "visibleClues": [
+        {
+          "icon": "fireworks_03",
+          "text": "The latest launch has the spark fountain.",
+          "rule": {
+            "kind": "highest",
+            "a": "fireworks_03"
+          },
+          "refs": [
+            "fireworks_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "fireworks_03",
+          "text": "The spark fountain goes with the star garland.",
+          "rule": {
+            "kind": "same",
+            "a": "fireworks_03",
+            "b": "fireworks_08"
+          },
+          "refs": [
+            "fireworks_03",
+            "fireworks_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Garlands",
+      "items": [
+        "fireworks_08",
+        "fireworks_06",
+        "fireworks_07"
+      ],
+      "action": "Reconstruct garlands in any row.",
+      "visibleClues": [
+        {
+          "icon": "fireworks_03",
+          "text": "The latest launch has the spark fountain.",
+          "rule": {
+            "kind": "highest",
+            "a": "fireworks_03"
+          },
+          "refs": [
+            "fireworks_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "fireworks_03",
+          "text": "The spark fountain goes with the star garland.",
+          "rule": {
+            "kind": "same",
+            "a": "fireworks_03",
+            "b": "fireworks_08"
+          },
+          "refs": [
+            "fireworks_03",
+            "fireworks_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l030_extra_00",
+        "l030_extra_01",
+        "l030_extra_02"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l030_extra_02",
+          "text": "The route map goes with the flag garland.",
+          "rule": {
+            "kind": "same",
+            "a": "l030_extra_02",
+            "b": "fireworks_07"
+          },
+          "refs": [
+            "l030_extra_02",
+            "fireworks_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l030_extra_00",
+          "text": "The crystal stopper and lantern string have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l030_extra_00",
+            "b": "fireworks_06"
+          },
+          "refs": [
+            "l030_extra_00",
+            "fireworks_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l030_extra_05",
+        "l030_extra_03",
+        "l030_extra_04"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l030_extra_05",
+          "text": "The flashlight goes with the star garland.",
+          "rule": {
+            "kind": "same",
+            "a": "l030_extra_05",
+            "b": "fireworks_08"
+          },
+          "refs": [
+            "l030_extra_05",
+            "fireworks_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l030_extra_04",
+          "text": "The ring engine and lantern string have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l030_extra_04",
+            "b": "fireworks_06"
+          },
+          "refs": [
+            "l030_extra_04",
+            "fireworks_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l030_extra_06",
+        "l030_extra_07",
+        "l030_extra_08"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l030_extra_08",
+          "text": "The green brew goes with the rainbow wheel.",
+          "rule": {
+            "kind": "same",
+            "a": "l030_extra_08",
+            "b": "fireworks_04"
+          },
+          "refs": [
+            "l030_extra_08",
+            "fireworks_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l030_extra_07",
+          "text": "The green leaf wings and spark fountain have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l030_extra_07",
+            "b": "fireworks_03"
+          },
+          "refs": [
+            "l030_extra_07",
+            "fireworks_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l030_extra_11",
+        "l030_extra_10",
+        "l030_extra_09"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l030_extra_09",
+          "text": "The gold stopper goes with the flag garland.",
+          "rule": {
+            "kind": "same",
+            "a": "l030_extra_09",
+            "b": "fireworks_07"
+          },
+          "refs": [
+            "l030_extra_09",
+            "fireworks_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l030_extra_10",
+          "text": "The red wax seal and star garland have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l030_extra_10",
+            "b": "fireworks_08"
+          },
+          "refs": [
+            "l030_extra_10",
+            "fireworks_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Packing list",
+      "items": [
+        "l030_extra_12",
+        "l030_extra_14",
+        "l030_extra_13"
+      ],
+      "action": "Reconstruct packing list in any row.",
+      "visibleClues": [
+        {
+          "icon": "l030_extra_13",
+          "text": "The secret note goes with the flower rocket.",
+          "rule": {
+            "kind": "same",
+            "a": "l030_extra_13",
+            "b": "fireworks_02"
+          },
+          "refs": [
+            "l030_extra_13",
+            "fireworks_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l030_extra_12",
+          "text": "The bright gems and star rocket have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l030_extra_12",
+            "b": "fireworks_00"
+          },
+          "refs": [
+            "l030_extra_12",
+            "fireworks_00"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Case supplies",
+      "items": [
+        "l030_extra_16",
+        "l030_extra_15",
+        "l030_extra_17"
+      ],
+      "action": "Reconstruct case supplies in any row.",
+      "visibleClues": [
+        {
+          "icon": "l030_extra_15",
+          "text": "The blue bow goes with the lantern string.",
+          "rule": {
+            "kind": "same",
+            "a": "l030_extra_15",
+            "b": "fireworks_06"
+          },
+          "refs": [
+            "l030_extra_15",
+            "fireworks_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l030_extra_16",
+          "text": "The magnifying glass and flag garland have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l030_extra_16",
+            "b": "fireworks_07"
+          },
+          "refs": [
+            "l030_extra_16",
+            "fireworks_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Case seal",
+      "items": [
+        "l030_extra_36",
+        "l030_extra_38",
+        "l030_extra_37"
+      ],
+      "action": "Reconstruct case seal in any row.",
+      "visibleClues": [
+        {
+          "icon": "l030_extra_37",
+          "text": "The delivery log goes with the flower rocket.",
+          "rule": {
+            "kind": "same",
+            "a": "l030_extra_37",
+            "b": "fireworks_02"
+          },
+          "refs": [
+            "l030_extra_37",
+            "fireworks_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l030_extra_38",
+          "text": "The brass key and moon rocket have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l030_extra_38",
+            "b": "fireworks_01"
+          },
+          "refs": [
+            "l030_extra_38",
+            "fireworks_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "l030_extra_02",
+    "fireworks_07",
+    "fireworks_04",
+    "fireworks_06",
+    "fireworks_00",
+    "fireworks_01",
+    "l030_extra_01",
+    "l030_extra_00",
+    "fireworks_03",
+    "fireworks_02",
+    "fireworks_05",
+    "fireworks_08"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l030_extra_09",
+        "l030_extra_08",
+        "l030_extra_05"
+      ]
+    },
+    {
+      "items": [
+        "l030_extra_04",
+        "l030_extra_10",
+        "l030_extra_07"
+      ]
+    },
+    {
+      "items": [
+        "l030_extra_03",
+        "l030_extra_06",
+        "l030_extra_11"
+      ]
+    },
+    {
+      "items": [
+        "l030_extra_12",
+        "l030_extra_17",
+        "l030_extra_36"
+      ]
+    },
+    {
+      "items": [
+        "l030_extra_13",
+        "l030_extra_37",
+        "l030_extra_15"
+      ]
+    },
+    {
+      "items": [
+        "l030_extra_14",
+        "l030_extra_38",
+        "l030_extra_16"
+      ]
+    }
+  ],
+  "moveLimit": 40,
+  "difficulty": "expert",
+  "firstClearCoins": 90,
+  "designSeed": 862030,
+  "chapterId": 6,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "festival_star",
+  "evidenceReveal": "The star returns to the launch stage. Bolt’s safety move is explained, the false tag corrected, and the festival can begin.",
+  "durationTargetSeconds": [
+    180,
+    360
+  ],
+  "deduction": {
+    "question": "Where does the recovered star belong?",
+    "options": [
+      "The festival launch stage",
+      "The space exhibit",
+      "The harbour boat"
+    ],
+    "answer": 0,
+    "evidence": [
+      "The original route map ends at the launch stage.",
+      "The corrected release note sends the crate back to that same stage."
+    ]
+  },
+  "referenceSolution": [
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 38,
+  "storyQuestion": "Where should the missing festival star go?",
+  "dossier": {
+    "label": "Launch",
+    "values": [
+      11,
+      9,
+      10
+    ],
+    "labels": [
+      "23:00",
+      "21:00",
+      "22:00"
+    ],
+    "low": "earliest launch",
+    "high": "latest launch"
+  },
+  "cluePool": [
+    {
+      "icon": "fireworks_03",
+      "text": "The latest launch has the spark fountain.",
+      "rule": {
+        "kind": "highest",
+        "a": "fireworks_03"
+      },
+      "refs": [
+        "fireworks_03"
+      ],
+      "column": null
+    },
+    {
+      "icon": "fireworks_03",
+      "text": "The spark fountain goes with the star garland.",
+      "rule": {
+        "kind": "same",
+        "a": "fireworks_03",
+        "b": "fireworks_08"
+      },
+      "refs": [
+        "fireworks_03",
+        "fireworks_08"
+      ],
+      "column": null
+    },
+    {
+      "icon": "fireworks_03",
+      "text": "The spark fountain goes with the moon rocket.",
+      "rule": {
+        "kind": "same",
+        "a": "fireworks_03",
+        "b": "fireworks_01"
+      },
+      "refs": [
+        "fireworks_03",
+        "fireworks_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "fireworks_00",
+      "text": "The star rocket owner is left of the flag garland owner.",
+      "rule": {
+        "kind": "left",
+        "a": "fireworks_00",
+        "b": "fireworks_07"
+      },
+      "refs": [
+        "fireworks_00",
+        "fireworks_07"
+      ],
+      "column": null
+    },
+    {
+      "icon": "fireworks_05",
+      "text": "The gold sparkler and flower rocket have different owners.",
+      "rule": {
+        "kind": "different",
+        "a": "fireworks_05",
+        "b": "fireworks_02"
+      },
+      "refs": [
+        "fireworks_05",
+        "fireworks_02"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the launch badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "Which item belongs to the latest launch?",
+    "answer": "Festival star",
+    "icon": "l030_extra_36",
+    "evidence": [
+      "Use the launch badges as evidence.",
+      "Connect the profile to its final confirmed item."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 0,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

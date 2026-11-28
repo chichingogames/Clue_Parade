@@ -9,11 +9,12 @@ public enum PopupName { Lesson = 0, Win = 1, Failed = 2, Hint = 3, Notebook = 4,
 // Strength of a vibration pulse (Haptics.Play). Not serialized.
 public enum HapticType { Light = 0, Medium = 1, Heavy = 2 }
 
-// Stored by ordinal in FileRef's sound table. Audio file name = snake_case of the name
-// (Undo -> undo.wav, or undo_01.wav, undo_02.wav... for variants), except TileMatch and
-// LevelComplete, which are the content pack's match_1..3 and level_win (AssetBuilder).
-// LineComplete is not played; it keeps its ordinal.
-public enum SoundType { UiTap = 0, SwipeSettle = 1, TileMatch = 2, LineComplete = 3, LevelComplete = 4, OutOfMoves = 5, Restart = 6, Undo = 7 }
+// Stored by ordinal in FileRef's sound table. Most are the v5 pack's clips (AssetBuilder.PackKeys:
+// swap, match_1..3 by cascade depth, level_win, soft_fail, undo, invalid, clue, notebook, hint, refill,
+// coins, case_closed); UiTap and Restart are ours: SFX/snake_case of the name (ui_tap.wav, or
+// ui_tap_01.wav... for variants). LineComplete is not played; it keeps its ordinal.
+public enum SoundType { UiTap = 0, SwipeSettle = 1, TileMatch = 2, LineComplete = 3, LevelComplete = 4, OutOfMoves = 5, Restart = 6, Undo = 7,
+                        Invalid = 8, Clue = 9, Notebook = 10, Hint = 11, Refill = 12, Coins = 13, CaseClosed = 14 }
 
 // Sorting orders on the Default layer (the handoff board: a cream panel the tiles sit on).
 public static class SortOrder

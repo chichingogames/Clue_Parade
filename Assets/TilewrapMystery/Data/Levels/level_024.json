@@ -1,0 +1,676 @@
+{
+  "schemaVersion": 5,
+  "id": 24,
+  "sourceTheme": 24,
+  "title": "Pocket jungle",
+  "subtitle": "Which leaf stamp belongs to the real parcel?",
+  "question": "Which witness statement is wrong?",
+  "setupText": "The missing star trail leads here. Which leaf stamp belongs to the real parcel?",
+  "completionText": "The fern stamp belongs to the gift desk beside the festival store.",
+  "nextLead": "Compare the gift desk’s boxes with the crate photo.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "terrariums_0",
+      "name": "Jar A",
+      "column": 0,
+      "rigId": "terrariums_0"
+    },
+    {
+      "id": "terrariums_1",
+      "name": "Jar B",
+      "column": 1,
+      "rigId": "terrariums_1"
+    },
+    {
+      "id": "terrariums_2",
+      "name": "Jar C",
+      "column": 2,
+      "rigId": "terrariums_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "terrariums_00",
+      "label": "Pale sand",
+      "sprite": "terrariums_00",
+      "native": true
+    },
+    {
+      "id": "terrariums_01",
+      "label": "Moss bed",
+      "sprite": "terrariums_01",
+      "native": true
+    },
+    {
+      "id": "terrariums_02",
+      "label": "Dark soil",
+      "sprite": "terrariums_02",
+      "native": true
+    },
+    {
+      "id": "terrariums_03",
+      "label": "Fern",
+      "sprite": "terrariums_03",
+      "native": true
+    },
+    {
+      "id": "terrariums_04",
+      "label": "Bamboo",
+      "sprite": "terrariums_04",
+      "native": true
+    },
+    {
+      "id": "terrariums_05",
+      "label": "Orchid",
+      "sprite": "terrariums_05",
+      "native": true
+    },
+    {
+      "id": "terrariums_06",
+      "label": "Lizard",
+      "sprite": "terrariums_06",
+      "native": true
+    },
+    {
+      "id": "terrariums_07",
+      "label": "Tree frog",
+      "sprite": "terrariums_07",
+      "native": true
+    },
+    {
+      "id": "terrariums_08",
+      "label": "Ladybird",
+      "sprite": "terrariums_08",
+      "native": true
+    },
+    {
+      "id": "l024_extra_00",
+      "label": "Cork stopper",
+      "sprite": "potions_03",
+      "native": false
+    },
+    {
+      "id": "l024_extra_01",
+      "label": "Mini windmill",
+      "sprite": "garden_06",
+      "native": false
+    },
+    {
+      "id": "l024_extra_02",
+      "label": "Red wax seal",
+      "sprite": "wax_seal",
+      "native": false
+    },
+    {
+      "id": "l024_extra_03",
+      "label": "Kettle",
+      "sprite": "camping_04",
+      "native": false
+    },
+    {
+      "id": "l024_extra_04",
+      "label": "Pink brew",
+      "sprite": "potions_00",
+      "native": false
+    },
+    {
+      "id": "l024_extra_05",
+      "label": "Brass key",
+      "sprite": "brass_key",
+      "native": false
+    },
+    {
+      "id": "l024_extra_06",
+      "label": "Blue brew",
+      "sprite": "potions_02",
+      "native": false
+    },
+    {
+      "id": "l024_extra_07",
+      "label": "Sleeping bag",
+      "sprite": "camping_05",
+      "native": false
+    },
+    {
+      "id": "l024_extra_08",
+      "label": "Flashlight",
+      "sprite": "flashlight",
+      "native": false
+    },
+    {
+      "id": "l024_extra_09",
+      "label": "Hedgehog",
+      "sprite": "camping_08",
+      "native": false
+    },
+    {
+      "id": "l024_extra_10",
+      "label": "Owl",
+      "sprite": "camping_07",
+      "native": false
+    },
+    {
+      "id": "l024_extra_11",
+      "label": "Pocket watch",
+      "sprite": "pocket_watch",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Grounds",
+      "items": [
+        "terrariums_01",
+        "terrariums_02",
+        "terrariums_00"
+      ],
+      "action": "Reconstruct grounds in any row.",
+      "visibleClues": [
+        {
+          "icon": "terrariums_04",
+          "text": "The most-lit jar has the bamboo.",
+          "rule": {
+            "kind": "highest",
+            "a": "terrariums_04"
+          },
+          "refs": [
+            "terrariums_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "terrariums_08",
+          "text": "The ladybird goes with the orchid.",
+          "rule": {
+            "kind": "same",
+            "a": "terrariums_08",
+            "b": "terrariums_05"
+          },
+          "refs": [
+            "terrariums_08",
+            "terrariums_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Plants",
+      "items": [
+        "terrariums_05",
+        "terrariums_03",
+        "terrariums_04"
+      ],
+      "action": "Reconstruct plants in any row.",
+      "visibleClues": [
+        {
+          "icon": "terrariums_04",
+          "text": "The most-lit jar has the bamboo.",
+          "rule": {
+            "kind": "highest",
+            "a": "terrariums_04"
+          },
+          "refs": [
+            "terrariums_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "terrariums_08",
+          "text": "The ladybird goes with the orchid.",
+          "rule": {
+            "kind": "same",
+            "a": "terrariums_08",
+            "b": "terrariums_05"
+          },
+          "refs": [
+            "terrariums_08",
+            "terrariums_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Animals",
+      "items": [
+        "terrariums_08",
+        "terrariums_06",
+        "terrariums_07"
+      ],
+      "action": "Reconstruct animals in any row.",
+      "visibleClues": [
+        {
+          "icon": "terrariums_04",
+          "text": "The most-lit jar has the bamboo.",
+          "rule": {
+            "kind": "highest",
+            "a": "terrariums_04"
+          },
+          "refs": [
+            "terrariums_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "terrariums_08",
+          "text": "The ladybird goes with the orchid.",
+          "rule": {
+            "kind": "same",
+            "a": "terrariums_08",
+            "b": "terrariums_05"
+          },
+          "refs": [
+            "terrariums_08",
+            "terrariums_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l024_extra_01",
+        "l024_extra_02",
+        "l024_extra_00"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l024_extra_00",
+          "text": "The cork stopper goes with the bamboo.",
+          "rule": {
+            "kind": "same",
+            "a": "l024_extra_00",
+            "b": "terrariums_04"
+          },
+          "refs": [
+            "l024_extra_00",
+            "terrariums_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l024_extra_02",
+          "text": "The red wax seal and orchid have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l024_extra_02",
+            "b": "terrariums_05"
+          },
+          "refs": [
+            "l024_extra_02",
+            "terrariums_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l024_extra_05",
+        "l024_extra_04",
+        "l024_extra_03"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l024_extra_05",
+          "text": "The brass key goes with the ladybird.",
+          "rule": {
+            "kind": "same",
+            "a": "l024_extra_05",
+            "b": "terrariums_08"
+          },
+          "refs": [
+            "l024_extra_05",
+            "terrariums_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l024_extra_03",
+          "text": "The kettle and lizard have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l024_extra_03",
+            "b": "terrariums_06"
+          },
+          "refs": [
+            "l024_extra_03",
+            "terrariums_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l024_extra_06",
+        "l024_extra_08",
+        "l024_extra_07"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l024_extra_07",
+          "text": "The sleeping bag goes with the pale sand.",
+          "rule": {
+            "kind": "same",
+            "a": "l024_extra_07",
+            "b": "terrariums_00"
+          },
+          "refs": [
+            "l024_extra_07",
+            "terrariums_00"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l024_extra_08",
+          "text": "The flashlight and moss bed have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l024_extra_08",
+            "b": "terrariums_01"
+          },
+          "refs": [
+            "l024_extra_08",
+            "terrariums_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l024_extra_10",
+        "l024_extra_11",
+        "l024_extra_09"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l024_extra_09",
+          "text": "The hedgehog goes with the tree frog.",
+          "rule": {
+            "kind": "same",
+            "a": "l024_extra_09",
+            "b": "terrariums_07"
+          },
+          "refs": [
+            "l024_extra_09",
+            "terrariums_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l024_extra_10",
+          "text": "The owl and lizard have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l024_extra_10",
+            "b": "terrariums_06"
+          },
+          "refs": [
+            "l024_extra_10",
+            "terrariums_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "terrariums_01",
+    "terrariums_00",
+    "terrariums_04",
+    "l024_extra_00",
+    "terrariums_08",
+    "terrariums_02",
+    "terrariums_07",
+    "terrariums_06",
+    "terrariums_03",
+    "l024_extra_02",
+    "l024_extra_01",
+    "terrariums_05"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l024_extra_08",
+        "l024_extra_03",
+        "l024_extra_11"
+      ]
+    },
+    {
+      "items": [
+        "l024_extra_09",
+        "l024_extra_05",
+        "l024_extra_06"
+      ]
+    },
+    {
+      "items": [
+        "l024_extra_07",
+        "l024_extra_04",
+        "l024_extra_10"
+      ]
+    }
+  ],
+  "moveLimit": 36,
+  "difficulty": "standard",
+  "firstClearCoins": 30,
+  "designSeed": 862024,
+  "chapterId": 5,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "delivery_log",
+  "evidenceReveal": "The fern stamp belongs to the gift desk beside the festival store.",
+  "durationTargetSeconds": [
+    100,
+    240
+  ],
+  "referenceSolution": [
+    {
+      "a": 2,
+      "b": 5
+    },
+    {
+      "a": 1,
+      "b": 2
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 22,
+  "storyQuestion": "Which leaf stamp belongs to the real parcel?",
+  "dossier": {
+    "label": "Light",
+    "values": [
+      50,
+      30,
+      70
+    ],
+    "labels": [
+      "50%",
+      "30%",
+      "70%"
+    ],
+    "low": "least-lit jar",
+    "high": "most-lit jar"
+  },
+  "cluePool": [
+    {
+      "icon": "terrariums_04",
+      "text": "The most-lit jar has the bamboo.",
+      "rule": {
+        "kind": "highest",
+        "a": "terrariums_04"
+      },
+      "refs": [
+        "terrariums_04"
+      ],
+      "column": null
+    },
+    {
+      "icon": "terrariums_08",
+      "text": "The ladybird goes with the orchid.",
+      "rule": {
+        "kind": "same",
+        "a": "terrariums_08",
+        "b": "terrariums_05"
+      },
+      "refs": [
+        "terrariums_08",
+        "terrariums_05"
+      ],
+      "column": null
+    },
+    {
+      "icon": "terrariums_01",
+      "text": "The moss bed owner is left of the fern owner.",
+      "rule": {
+        "kind": "left",
+        "a": "terrariums_01",
+        "b": "terrariums_03"
+      },
+      "refs": [
+        "terrariums_01",
+        "terrariums_03"
+      ],
+      "column": null
+    },
+    {
+      "icon": "terrariums_02",
+      "text": "The dark soil jar gets less light than the tree frog jar.",
+      "rule": {
+        "kind": "less",
+        "a": "terrariums_02",
+        "b": "terrariums_07"
+      },
+      "refs": [
+        "terrariums_02",
+        "terrariums_07"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the light badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "Which witness statement is wrong?",
+    "answer": "Pale sand goes with orchid.",
+    "icon": null,
+    "evidence": [
+      "Check each witness statement against the finished scene.",
+      "Exactly one statement pairs details from different profiles."
+    ],
+    "statements": [
+      "Moss bed goes with orchid.",
+      "Dark soil goes with fern.",
+      "Pale sand goes with orchid."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 25,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

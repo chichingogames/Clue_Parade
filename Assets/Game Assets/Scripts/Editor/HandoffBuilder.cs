@@ -4,22 +4,25 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore.LowLevel;
 
-// The Tilewrap content pack (Assets/TilewrapVaried, copied as delivered). Its own importer,
-// Tools > Chichingo > Tilewrap > Build 30-level content, applies the sprite import settings from
-// Data/content.json, builds the 90 registered rig prefabs and Generated/TilewrapContentLibrary.asset.
+// The Tilewrap v5 content pack (Assets/TilewrapMystery, copied as delivered plus Data/levels_01_30.json
+// assembled from its Data/Levels files). Its own importer, Tools > Chichingo > Tilewrap > Build current
+// 30-level content, validates every reference route, applies the sprite import settings from
+// Data/content.json, builds the 90 fitted rig prefabs (Resources/TilewrapMystery/Rigs), the
+// background and audio prefabs and Generated/TilewrapContentLibrary.asset.
 // This gives the game's builders what they need from it: its sprites by path, the TMP font assets of
 // its fonts (Fonts/TilewrapUI-*.ttf -> Game Assets/Fonts/TilewrapUI-* SDF.asset) and the masked
 // material the board's tile names use. Never overwrites an existing font asset or material.
 public static class HandoffBuilder
 {
-    public const string Root = "Assets/TilewrapVaried";
+    public const string Root = "Assets/TilewrapMystery";
+    private const string SpriteRoot = Root + "/Resources/TilewrapMystery/Sprites";
     public const string LibraryPath = Root + "/Generated/TilewrapContentLibrary.asset";
 
     // A pack sprite by its path under Assets/TilewrapVaried/Sprites, without ".png" ("UI/board_frame").
     public static Sprite LoadSprite(string relativePath)
     {
-        var sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"{Root}/Sprites/{relativePath}.png");
-        if (sprite == null) Debug.LogError($"[HandoffBuilder] Missing sprite {Root}/Sprites/{relativePath}.png");
+        var sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"{SpriteRoot}/{relativePath}.png");
+        if (sprite == null) Debug.LogError($"[HandoffBuilder] Missing sprite {SpriteRoot}/{relativePath}.png");
         return sprite;
     }
 
@@ -49,7 +52,7 @@ public static class HandoffBuilder
         return material;
     }
 
-    // Dynamic SDF font asset made from Assets/TilewrapVaried/Fonts/{name}.ttf; glyphs are added as text needs them.
+    // Dynamic SDF font asset made from Assets/TilewrapMystery/Fonts/{name}.ttf; glyphs are added as text needs them.
     private static TMP_FontAsset GetOrCreateFont(string fontName)
     {
         string path = $"{FontAssetFolder}/{fontName} SDF.asset";

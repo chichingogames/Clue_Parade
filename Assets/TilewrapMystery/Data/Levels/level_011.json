@@ -1,0 +1,527 @@
+{
+  "schemaVersion": 5,
+  "id": 11,
+  "sourceTheme": 3,
+  "title": "Room makeover",
+  "subtitle": "Which room holds the original route map?",
+  "question": "Which room held the fruit basket?",
+  "setupText": "The missing star trail leads here. Which room holds the original route map?",
+  "completionText": "The old route map ends at the festival’s launch stage.",
+  "nextLead": "A coastal mark on the map may identify the detour.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "rooms_bedroom",
+      "name": "Room A",
+      "column": 0,
+      "rigId": "rooms_bedroom"
+    },
+    {
+      "id": "rooms_kitchen",
+      "name": "Room B",
+      "column": 1,
+      "rigId": "rooms_kitchen"
+    },
+    {
+      "id": "rooms_study",
+      "name": "Room C",
+      "column": 2,
+      "rigId": "rooms_study"
+    }
+  ],
+  "items": [
+    {
+      "id": "rooms_00",
+      "label": "Pink stripes",
+      "sprite": "rooms_00",
+      "native": true
+    },
+    {
+      "id": "rooms_01",
+      "label": "Mint tiles",
+      "sprite": "rooms_01",
+      "native": true
+    },
+    {
+      "id": "rooms_02",
+      "label": "Blue stars",
+      "sprite": "rooms_02",
+      "native": true
+    },
+    {
+      "id": "rooms_03",
+      "label": "Wood floor",
+      "sprite": "rooms_03",
+      "native": true
+    },
+    {
+      "id": "rooms_04",
+      "label": "Checkerboard",
+      "sprite": "rooms_04",
+      "native": true
+    },
+    {
+      "id": "rooms_05",
+      "label": "Woven rug",
+      "sprite": "rooms_05",
+      "native": true
+    },
+    {
+      "id": "rooms_06",
+      "label": "Blue bed",
+      "sprite": "rooms_06",
+      "native": true
+    },
+    {
+      "id": "rooms_07",
+      "label": "Yellow stove",
+      "sprite": "rooms_07",
+      "native": true
+    },
+    {
+      "id": "rooms_08",
+      "label": "Red desk",
+      "sprite": "rooms_08",
+      "native": true
+    },
+    {
+      "id": "l011_extra_00",
+      "label": "Patchwork canopy",
+      "sprite": "market_01",
+      "native": false
+    },
+    {
+      "id": "l011_extra_01",
+      "label": "Wood frame",
+      "sprite": "artstudio_04",
+      "native": false
+    },
+    {
+      "id": "l011_extra_02",
+      "label": "Red wax seal",
+      "sprite": "wax_seal",
+      "native": false
+    },
+    {
+      "id": "l011_extra_03",
+      "label": "Fruit basket",
+      "sprite": "market_03",
+      "native": false
+    },
+    {
+      "id": "l011_extra_04",
+      "label": "Round lantern",
+      "sprite": "market_06",
+      "native": false
+    },
+    {
+      "id": "l011_extra_05",
+      "label": "Pocket watch",
+      "sprite": "pocket_watch",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Walls",
+      "items": [
+        "rooms_00",
+        "rooms_02",
+        "rooms_01"
+      ],
+      "action": "Reconstruct walls in any row.",
+      "visibleClues": [
+        {
+          "icon": "rooms_00",
+          "text": "The highest-floor room has the pink stripes.",
+          "rule": {
+            "kind": "highest",
+            "a": "rooms_00"
+          },
+          "refs": [
+            "rooms_00"
+          ],
+          "column": null
+        },
+        {
+          "icon": "rooms_02",
+          "text": "The blue stars profile is left of the mint tiles profile.",
+          "rule": {
+            "kind": "left",
+            "a": "rooms_02",
+            "b": "rooms_01"
+          },
+          "refs": [
+            "rooms_02",
+            "rooms_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Floors",
+      "items": [
+        "rooms_05",
+        "rooms_04",
+        "rooms_03"
+      ],
+      "action": "Reconstruct floors in any row.",
+      "visibleClues": [
+        {
+          "icon": "rooms_00",
+          "text": "The highest-floor room has the pink stripes.",
+          "rule": {
+            "kind": "highest",
+            "a": "rooms_00"
+          },
+          "refs": [
+            "rooms_00"
+          ],
+          "column": null
+        },
+        {
+          "icon": "rooms_02",
+          "text": "The blue stars profile is left of the mint tiles profile.",
+          "rule": {
+            "kind": "left",
+            "a": "rooms_02",
+            "b": "rooms_01"
+          },
+          "refs": [
+            "rooms_02",
+            "rooms_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Furniture",
+      "items": [
+        "rooms_07",
+        "rooms_06",
+        "rooms_08"
+      ],
+      "action": "Reconstruct furniture in any row.",
+      "visibleClues": [
+        {
+          "icon": "rooms_00",
+          "text": "The highest-floor room has the pink stripes.",
+          "rule": {
+            "kind": "highest",
+            "a": "rooms_00"
+          },
+          "refs": [
+            "rooms_00"
+          ],
+          "column": null
+        },
+        {
+          "icon": "rooms_02",
+          "text": "The blue stars profile is left of the mint tiles profile.",
+          "rule": {
+            "kind": "left",
+            "a": "rooms_02",
+            "b": "rooms_01"
+          },
+          "refs": [
+            "rooms_02",
+            "rooms_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l011_extra_00",
+        "l011_extra_01",
+        "l011_extra_02"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l011_extra_02",
+          "text": "The red wax seal goes with the red desk.",
+          "rule": {
+            "kind": "same",
+            "a": "l011_extra_02",
+            "b": "rooms_08"
+          },
+          "refs": [
+            "l011_extra_02",
+            "rooms_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l011_extra_00",
+          "text": "The patchwork canopy goes with the yellow stove.",
+          "rule": {
+            "kind": "same",
+            "a": "l011_extra_00",
+            "b": "rooms_07"
+          },
+          "refs": [
+            "l011_extra_00",
+            "rooms_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l011_extra_04",
+        "l011_extra_03",
+        "l011_extra_05"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l011_extra_04",
+          "text": "The round lantern goes with the patchwork canopy.",
+          "rule": {
+            "kind": "same",
+            "a": "l011_extra_04",
+            "b": "l011_extra_00"
+          },
+          "refs": [
+            "l011_extra_04",
+            "l011_extra_00"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l011_extra_03",
+          "text": "The fruit basket goes with the wood frame.",
+          "rule": {
+            "kind": "same",
+            "a": "l011_extra_03",
+            "b": "l011_extra_01"
+          },
+          "refs": [
+            "l011_extra_03",
+            "l011_extra_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "rooms_07",
+    "l011_extra_00",
+    "rooms_08",
+    "rooms_03",
+    "rooms_04",
+    "l011_extra_01",
+    "rooms_01",
+    "rooms_05",
+    "rooms_00",
+    "rooms_02",
+    "rooms_06",
+    "l011_extra_02"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l011_extra_03",
+        "l011_extra_05",
+        "l011_extra_04"
+      ]
+    }
+  ],
+  "moveLimit": 24,
+  "difficulty": "practice",
+  "firstClearCoins": 30,
+  "designSeed": 862011,
+  "chapterId": 3,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "magnifier",
+  "evidenceReveal": "The old route map ends at the festival’s launch stage.",
+  "durationTargetSeconds": [
+    50,
+    150
+  ],
+  "referenceSolution": [
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 12,
+  "storyQuestion": "Which room holds the original route map?",
+  "dossier": {
+    "label": "Floor",
+    "values": [
+      3,
+      2,
+      1
+    ],
+    "labels": [
+      "Floor 3",
+      "Floor 2",
+      "Floor 1"
+    ],
+    "low": "lowest-floor room",
+    "high": "highest-floor room"
+  },
+  "cluePool": [
+    {
+      "icon": "rooms_00",
+      "text": "The highest-floor room has the pink stripes.",
+      "rule": {
+        "kind": "highest",
+        "a": "rooms_00"
+      },
+      "refs": [
+        "rooms_00"
+      ],
+      "column": null
+    },
+    {
+      "icon": "rooms_02",
+      "text": "The blue stars profile is left of the mint tiles profile.",
+      "rule": {
+        "kind": "left",
+        "a": "rooms_02",
+        "b": "rooms_01"
+      },
+      "refs": [
+        "rooms_02",
+        "rooms_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "rooms_05",
+      "text": "The woven rug goes with the pink stripes.",
+      "rule": {
+        "kind": "same",
+        "a": "rooms_05",
+        "b": "rooms_00"
+      },
+      "refs": [
+        "rooms_05",
+        "rooms_00"
+      ],
+      "column": null
+    },
+    {
+      "icon": "rooms_04",
+      "text": "The checkerboard goes with the blue stars.",
+      "rule": {
+        "kind": "same",
+        "a": "rooms_04",
+        "b": "rooms_02"
+      },
+      "refs": [
+        "rooms_04",
+        "rooms_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "rooms_08",
+      "text": "The red desk goes with the wood floor.",
+      "rule": {
+        "kind": "same",
+        "a": "rooms_08",
+        "b": "rooms_03"
+      },
+      "refs": [
+        "rooms_08",
+        "rooms_03"
+      ],
+      "column": null
+    },
+    {
+      "icon": "rooms_06",
+      "text": "The blue bed goes with the checkerboard.",
+      "rule": {
+        "kind": "same",
+        "a": "rooms_06",
+        "b": "rooms_04"
+      },
+      "refs": [
+        "rooms_06",
+        "rooms_04"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "There is one extra stock row. The matching and clues work just as before.",
+  "caseResolution": {
+    "question": "Which room held the fruit basket?",
+    "answer": "Room B",
+    "icon": "l011_extra_03",
+    "evidence": [
+      "The recovered label mentions the fruit basket.",
+      "Use the confirmed scene to identify its owner."
+    ]
+  },
+  "clueGraphVersion": 2,
+  "nextLevelId": 12,
+  "coaching": [
+    "There is one extra stock row. The matching and clues work just as before.",
+    "There is one extra stock row. The matching and clues work just as before.",
+    "There is one extra stock row. The matching and clues work just as before.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

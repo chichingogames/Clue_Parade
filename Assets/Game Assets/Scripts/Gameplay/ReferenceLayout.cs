@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// The content pack's 1080x1920 reference screen (Assets/TilewrapVaried/Data/ui_layout.json regions
+// The content pack's 1080x1920 reference screen (the old pack's ui_layout.json regions; the v5 pack's Data/presentation.json uses the same 1080x1920 frame
 // and geometry) in world units: 1 unit = 100 reference px, origin at the screen's centre, x right,
 // y up. Manager_Board fits this 10.8 x 19.2 area uniformly into the safe area, as UI_ReferenceFit
 // fits the HUD, so the world-space board lines up with the uGUI HUD around it (the subjects over

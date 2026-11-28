@@ -1,0 +1,531 @@
+{
+  "schemaVersion": 5,
+  "id": 7,
+  "sourceTheme": 7,
+  "title": "Little garden",
+  "subtitle": "Which garden received the wrong parcel?",
+  "question": "What was paired with the mini windmill?",
+  "setupText": "The missing star trail leads here. Which garden received the wrong parcel?",
+  "completionText": "The tag carries garden soil, but no one signed for a star.",
+  "nextLead": "A courier ticket mentions the ice cream cart.",
+  "rows": 3,
+  "columns": 3,
+  "orderMode": "staged",
+  "subjects": [
+    {
+      "id": "garden_0",
+      "name": "Planter A",
+      "column": 0,
+      "rigId": "garden_0"
+    },
+    {
+      "id": "garden_1",
+      "name": "Planter B",
+      "column": 1,
+      "rigId": "garden_1"
+    },
+    {
+      "id": "garden_2",
+      "name": "Planter C",
+      "column": 2,
+      "rigId": "garden_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "garden_00",
+      "label": "Spotted pot",
+      "sprite": "garden_00",
+      "native": true
+    },
+    {
+      "id": "garden_01",
+      "label": "Striped pot",
+      "sprite": "garden_01",
+      "native": true
+    },
+    {
+      "id": "garden_02",
+      "label": "Plain pot",
+      "sprite": "garden_02",
+      "native": true
+    },
+    {
+      "id": "garden_03",
+      "label": "Pink daisy",
+      "sprite": "garden_03",
+      "native": true
+    },
+    {
+      "id": "garden_04",
+      "label": "Basil",
+      "sprite": "garden_04",
+      "native": true
+    },
+    {
+      "id": "garden_05",
+      "label": "Small cactus",
+      "sprite": "garden_05",
+      "native": true
+    },
+    {
+      "id": "garden_06",
+      "label": "Mini windmill",
+      "sprite": "garden_06",
+      "native": true
+    },
+    {
+      "id": "garden_07",
+      "label": "Wood label",
+      "sprite": "garden_07",
+      "native": true
+    },
+    {
+      "id": "garden_08",
+      "label": "Pebble ring",
+      "sprite": "garden_08",
+      "native": true
+    },
+    {
+      "id": "l007_extra_00",
+      "label": "Yellow panel door",
+      "sprite": "cottages_04",
+      "native": false
+    },
+    {
+      "id": "l007_extra_01",
+      "label": "Ladybird",
+      "sprite": "terrariums_08",
+      "native": false
+    },
+    {
+      "id": "l007_extra_02",
+      "label": "Pocket watch",
+      "sprite": "pocket_watch",
+      "native": false
+    },
+    {
+      "id": "l007_extra_03",
+      "label": "Green brew",
+      "sprite": "potions_01",
+      "native": false
+    },
+    {
+      "id": "l007_extra_04",
+      "label": "Green teepee",
+      "sprite": "camping_02",
+      "native": false
+    },
+    {
+      "id": "l007_extra_05",
+      "label": "Crate photo",
+      "sprite": "crate_photo",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Pots",
+      "items": [
+        "garden_02",
+        "garden_00",
+        "garden_01"
+      ],
+      "action": "Reconstruct pots in any row.",
+      "visibleClues": [
+        {
+          "icon": "garden_00",
+          "text": "Planter B has the spotted pot.",
+          "rule": {
+            "kind": "at",
+            "a": "garden_00",
+            "column": 1
+          },
+          "refs": [
+            "garden_00"
+          ],
+          "column": 1
+        },
+        {
+          "icon": "garden_01",
+          "text": "Planter C has the striped pot.",
+          "rule": {
+            "kind": "at",
+            "a": "garden_01",
+            "column": 2
+          },
+          "refs": [
+            "garden_01"
+          ],
+          "column": 2
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Plants",
+      "items": [
+        "garden_04",
+        "garden_05",
+        "garden_03"
+      ],
+      "action": "Reconstruct plants in any row.",
+      "visibleClues": [
+        {
+          "icon": "garden_00",
+          "text": "Planter B has the spotted pot.",
+          "rule": {
+            "kind": "at",
+            "a": "garden_00",
+            "column": 1
+          },
+          "refs": [
+            "garden_00"
+          ],
+          "column": 1
+        },
+        {
+          "icon": "garden_01",
+          "text": "Planter C has the striped pot.",
+          "rule": {
+            "kind": "at",
+            "a": "garden_01",
+            "column": 2
+          },
+          "refs": [
+            "garden_01"
+          ],
+          "column": 2
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Extras",
+      "items": [
+        "garden_06",
+        "garden_07",
+        "garden_08"
+      ],
+      "action": "Reconstruct extras in any row.",
+      "visibleClues": [
+        {
+          "icon": "garden_00",
+          "text": "Planter B has the spotted pot.",
+          "rule": {
+            "kind": "at",
+            "a": "garden_00",
+            "column": 1
+          },
+          "refs": [
+            "garden_00"
+          ],
+          "column": 1
+        },
+        {
+          "icon": "garden_01",
+          "text": "Planter C has the striped pot.",
+          "rule": {
+            "kind": "at",
+            "a": "garden_01",
+            "column": 2
+          },
+          "refs": [
+            "garden_01"
+          ],
+          "column": 2
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l007_extra_02",
+        "l007_extra_00",
+        "l007_extra_01"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l007_extra_00",
+          "text": "The yellow panel door goes with the wood label.",
+          "rule": {
+            "kind": "same",
+            "a": "l007_extra_00",
+            "b": "garden_07"
+          },
+          "refs": [
+            "l007_extra_00",
+            "garden_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l007_extra_01",
+          "text": "The ladybird goes with the pebble ring.",
+          "rule": {
+            "kind": "same",
+            "a": "l007_extra_01",
+            "b": "garden_08"
+          },
+          "refs": [
+            "l007_extra_01",
+            "garden_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l007_extra_03",
+        "l007_extra_05",
+        "l007_extra_04"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l007_extra_04",
+          "text": "The green teepee goes with the ladybird.",
+          "rule": {
+            "kind": "same",
+            "a": "l007_extra_04",
+            "b": "l007_extra_01"
+          },
+          "refs": [
+            "l007_extra_04",
+            "l007_extra_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l007_extra_03",
+          "text": "The green brew goes with the pocket watch.",
+          "rule": {
+            "kind": "same",
+            "a": "l007_extra_03",
+            "b": "l007_extra_02"
+          },
+          "refs": [
+            "l007_extra_03",
+            "l007_extra_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "garden_05",
+    "garden_03",
+    "garden_06",
+    "garden_07",
+    "garden_08",
+    "garden_04",
+    "garden_01",
+    "garden_00",
+    "garden_02"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l007_extra_00",
+        "l007_extra_04",
+        "l007_extra_01"
+      ]
+    },
+    {
+      "items": [
+        "l007_extra_05",
+        "l007_extra_02",
+        "l007_extra_03"
+      ]
+    }
+  ],
+  "moveLimit": 24,
+  "difficulty": "practice",
+  "firstClearCoins": 30,
+  "designSeed": 862007,
+  "chapterId": 2,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "route_map",
+  "evidenceReveal": "The tag carries garden soil, but no one signed for a star.",
+  "durationTargetSeconds": [
+    50,
+    150
+  ],
+  "referenceSolution": [
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    }
+  ],
+  "referenceMoveCount": 12,
+  "storyQuestion": "Which garden received the wrong parcel?",
+  "dossier": {
+    "label": "Planted",
+    "values": [
+      5,
+      8,
+      2
+    ],
+    "labels": [
+      "5 days ago",
+      "8 days ago",
+      "2 days ago"
+    ],
+    "low": "newest planter",
+    "high": "oldest planter"
+  },
+  "cluePool": [
+    {
+      "icon": "garden_00",
+      "text": "Planter B has the spotted pot.",
+      "rule": {
+        "kind": "at",
+        "a": "garden_00",
+        "column": 1
+      },
+      "refs": [
+        "garden_00"
+      ],
+      "column": 1
+    },
+    {
+      "icon": "garden_01",
+      "text": "Planter C has the striped pot.",
+      "rule": {
+        "kind": "at",
+        "a": "garden_01",
+        "column": 2
+      },
+      "refs": [
+        "garden_01"
+      ],
+      "column": 2
+    },
+    {
+      "icon": "garden_03",
+      "text": "The pink daisy goes with the striped pot.",
+      "rule": {
+        "kind": "same",
+        "a": "garden_03",
+        "b": "garden_01"
+      },
+      "refs": [
+        "garden_03",
+        "garden_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "garden_04",
+      "text": "The basil goes with the plain pot.",
+      "rule": {
+        "kind": "same",
+        "a": "garden_04",
+        "b": "garden_02"
+      },
+      "refs": [
+        "garden_04",
+        "garden_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "garden_07",
+      "text": "The wood label goes with the small cactus.",
+      "rule": {
+        "kind": "same",
+        "a": "garden_07",
+        "b": "garden_05"
+      },
+      "refs": [
+        "garden_07",
+        "garden_05"
+      ],
+      "column": null
+    },
+    {
+      "icon": "garden_06",
+      "text": "The mini windmill goes with the basil.",
+      "rule": {
+        "kind": "same",
+        "a": "garden_06",
+        "b": "garden_04"
+      },
+      "refs": [
+        "garden_06",
+        "garden_04"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "More clues holds the rest of the case. Two stay visible. All clues are free in Notebook.",
+  "caseResolution": {
+    "question": "What was paired with the mini windmill?",
+    "answer": "Green brew",
+    "icon": "l007_extra_03",
+    "evidence": [
+      "The witness remembers the mini windmill.",
+      "The missing object belonged to that same profile."
+    ]
+  },
+  "clueGraphVersion": 2,
+  "nextLevelId": 8,
+  "coaching": [
+    "More clues holds the rest of the case. Two stay visible. All clues are free in Notebook.",
+    "More clues holds the rest of the case. Two stay visible. All clues are free in Notebook.",
+    "More clues holds the rest of the case. Two stay visible. All clues are free in Notebook.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

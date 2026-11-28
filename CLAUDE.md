@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-**Clue Parade** (Player Settings Product Name: **Tilewrap**, which also names builds; the code and menus still say ShiftSort, from the game it is being redesigned from) is a Unity **6000.3.17f1** mobile game (URP 2D template, `Assets/Game Assets/Scenes/Game.unity`, Input System). On branch `any-row` it implements **"Follow the Evidence"** (`Tilewrap_Deduction_30_Level_Playtest.html` + `Tilewrap_Game_Scope_v5.pdf`): 30 deduction cases where swapping neighbours lines up requested sets under fixed profiles in any row of a 3- or 4-row board, with clue rules and shared clue pools, refills, a case question per case, milestone deductions, Hint, Notebook, a chapter map, win / out-of-moves (+5 moves) popups, coins and save / resume. The cases cycle: after case 30 comes case 1. Item and rig-part art comes from the 30-case content pack (`Assets/TilewrapVaried/`) plus `Assets/Game Assets/Sprites/Evidence`.
+**Clue Parade** (Player Settings Product Name: **Tilewrap**, which also names builds; the code and menus still say ShiftSort, from the game it is being redesigned from) is a Unity **6000.3.17f1** mobile game (URP 2D template, `Assets/Game Assets/Scenes/Game.unity`, Input System). On branch `any-row` it implements **"Follow the Evidence"** (`Tilewrap_Deduction_30_Level_Playtest.html` + `Tilewrap_Game_Scope_v5.pdf`): 30 deduction cases where swapping neighbours lines up requested sets under fixed profiles in any row of a 3- or 4-row board, with clue rules and shared clue pools, refills, a case question per case, milestone deductions, Hint, Notebook, a chapter map, win / out-of-moves (+5 moves) popups, coins and save / resume. The cases cycle: after case 30 comes case 1. Cases, art, fitted rigs, audio and the animated background come from the v5 content pack (`Assets/TilewrapMystery/`, `Tilewrap_30_Level_Unity_Production_v5`).
 
 `skeleton.md` is the architecture blueprint this game is meant to follow (taken from a previous game, Color Farm). **Read it before adding any game code.** Its section 13 is the step-by-step bootstrap checklist. Where this file and `skeleton.md` disagree about the current repo state, this file is correct. `skeleton.md` describes the target, not what exists today.
 
@@ -22,12 +22,13 @@ Gaps between the blueprint and the repo right now:
 missing festival star). It replaced the five-case "Any row, two clues" build and the 30-case wrap / swap builds
 (branches `main`, `swap-mechanic`, in git history).
 
-- **Cases:** `Assets/Game Assets/Data/delivery_cases.json` (the playtest's `DELIVERY_CONTENT` without its embedded art,
-  converted to a JsonUtility-friendly shape: no nested arrays, `""` for empty cells and missing ids, `-1` for a missing
-  column), parsed by `DeliveryContent` (economy, chapters, cases) and reached through `FileRef.Cases`. Each case
-  carries its subjects' **rigs** (layers drawn by `UI_SubjectCard`). Sprites come from the 30-case content pack
-  (`Assets/TilewrapVaried/`, `FileRef.Sprite`) plus `Sprites/Evidence` (12 props the pack lacks, extracted from the
-  HTML). **ShiftSort > Validate Levels** checks every case.
+- **Cases:** the v5 pack's campaign, `Assets/TilewrapMystery/Data/levels_01_30.json` (assembled from the pack's
+  `Data/Levels/level_NNN.json` with the playtest's chapters and economy: the delivery lacked the file its importer
+  reads), reached through the pack's `TilewrapContentLibrary` (`FileRef.Content`, `FileRef.Cases` parses it into
+  `DeliveryContent`). Sprites load on demand (`FileRef.Sprite` → `library.GetSprite`), subjects are the pack's 90
+  fitted rig prefabs (`FileRef.Rig`, `Resources/TilewrapMystery/Rigs`). Each case has a coach line per set
+  (`coaching[]`) and `nextLevelId` (0 = the finale). **ShiftSort > Validate Levels** checks every case; the pack's
+  **Tools > Chichingo > Tilewrap > Build current 30-level content** also replays every reference route.
 - **Board:** 3 columns × 3 or 4 rows (`rows`), item tiles (icon only, no name); a cell may be **empty**. The board keeps
   its 870 px square: 4-row cells are shorter. **Columns are fixed profiles** (Mia/Leo/Zoe, Vehicle A/B/C…). A case
   has 3–10 **sets**; a set names one item per column. No row numbers or row labels are shown.
@@ -47,8 +48,9 @@ missing festival star). It replaced the five-case "Any row, two clues" build and
   **CONFIRMED** once they are delivered. Nothing tints an item for being under its right owner. Cases with a
   `dossier` show a badge per profile (age, price, time). The Notebook has every clue (Clues tab) and the case
   question, evidence, witness statements and earlier cases' evidence (Case file tab).
-- **Opening:** case 1 guides its first swap only (`tutorial` from/to: other swaps snap back, other tiles muted); cases
-  2–5 have a teaching coach line each (case 4 spotlights the move counter); 6–14 show their `reasoningTip`. The first
+- **Opening:** case 1 guides its first swap only (`tutorial` from/to: other swaps snap back, other tiles muted); the
+  coach line is the case's `coaching[]` line for the set in focus (case 4's first line introduces the move counter,
+  spotlit until the first swap). The first
   time a case opens its tiles settle in like slot reels (cosmetic, `OfflineData.SeenCases`).
 - **Flow** (`Manager_Flow`): coach line, Hint (an explanation of the clues first; then the next swap,
   `DeliveryRules.Hint`, exact planners for 3 and 4 rows: free through case 8, then 30 coins), the case map
@@ -80,7 +82,8 @@ Rules as implemented:
   `CurrentLevel` (the case open; the next one after a win, wrapping to 1), `Resume` (the unfinished attempt with its
   undo history, resumed on launch; dropped if the content version changes), `SeenCases`. The `Feedback*` and
   `Lessons` fields are retired (append-only).
-- **Audio:** `Manager_Audio.Instance?.PlaySound(SoundType.X)`; clips are mapped in `FileRef` by **ShiftSort > Build Assets**: TileMatch = the pack's match_1..3 (a delivery) and LevelComplete = level_win (the winning delivery), the rest from `Audio/SFX/{snake_case SoundType}[_NN].wav` (variants), music = the first `Audio/Music/*.wav`. Adding a sound: append a `SoundType` value, drop the file, clear `FileRef`'s Sounds table, run Build Assets. One HUD switch mutes music and effects (saved in `OfflineData`). Volumes live on the scene's `Sound/Music` and `Sound/SFX` AudioSources; `Manager_Audio` only references them.
+- **Audio:** `Manager_Audio.Instance?.PlaySound(SoundType.X)`; clips are mapped in `FileRef` by **ShiftSort > Build Assets** from the pack's audio at its `content.json` gains (`AssetBuilder.PackKeys`: swap, match_1..3 by cascade depth within a move, level_win / case_closed for the finale, soft_fail, undo, invalid, clue, notebook, hint, refill, coins); UiTap and Restart are ours (`Audio/SFX/{snake_case SoundType}[_NN].wav`); music = the pack's `mystery_loop`. Adding a sound: append a `SoundType` value, map or drop the file, clear `FileRef`'s Sounds table, run Build Assets. One HUD switch mutes music and effects (saved in `OfflineData`). Volumes live on the scene's `Sound/Music` and `Sound/SFX` AudioSources; `Manager_Audio` only references them. The pack's `TilewrapAudio.prefab` is not used (one music source).
+- **Background:** the pack's `TilewrapAmbientBackground` (animated teal field) on its own `Background Canvas` (Screen Space - Camera, behind the world-space board; the HUD canvas is an overlay, so it cannot live there). `Manager_Board` sets its chapter tint per case and hides the old static backdrop. Built by **ShiftSort > Build Scene**.
 - **Haptics:** `Haptics.Play(HapticType.Light/Medium/Heavy)` (Essentials) over the CandyCoded HapticFeedback package (git, v1.0.3). Always on, no setting by design. One pulse per event, called next to the matching sound. It does nothing in the Editor; use the Tester's **Log Sounds & Haptics** to check it.
 - **Tester:** the `Tester` GameObject (tag `EditorOnly`, stripped from builds) holds `TestManager`, an Inspector cheat panel: load/next/restart case, force win/fail, play the hint route to the win, swap a tile, log state, time scale. Its body is `#if UNITY_EDITOR`; buttons use `[Sortify.Button]` (`Scripts/Sortify/`) on parameterless methods. Add new cheats there, never as game code paths.
 
@@ -120,7 +123,7 @@ unity command console.get --tail 20 --level warning --project-path C:/Project/Cl
 Keep it current: when you change a system, edit its section there, not here. Things to always do:
 - Rule changes go in `DeliveryRules` (the pure model). Views get their sprites and names from `Manager_Board` and never read `FileRef` or managers.
 - **Unity skills:** drive the Editor through the `unity-cli` / `unity-pipeline` skills. Turn on `editor set_auto_tick` for headless work; put multi-line C# in `AgentScripts/*.cs` (outside `Assets/`) and run it with `unity command script run --file ... --entry ...`. `AgentScripts/PlayCheck.cs` reports the case state and makes real drags, taps and undos in Play mode (`Load(n)`, `Hint(k)` follows k hint swaps, `Waste(n, a, b)` spends moves); `FlowCheck.cs` taps HUD and popup buttons.
-- **Changing content:** cases (with their rigs) are data in `Assets/Game Assets/Data/delivery_cases.json` (regenerate it from a new playtest delivery: strip the embedded art, convert to the JsonUtility shape, extract art the pack lacks into `Sprites/Evidence` and clear `FileRef`'s evidence list before Build Assets), sprites in `Assets/TilewrapVaried` (replace it with a new delivery of the pack, keeping its `.meta` files, and run **Tools > Chichingo > Tilewrap > Build 30-level content**). Then **ShiftSort > Validate Levels**. No game code names a subject or item, except the playtest's teaching lines for cases 2–5 in `Manager_Flow.DefaultCoach` / `Explain` (ported as written; they mention the teal scarf and the sugar star).
+- **Changing content:** cases, sprites, rigs and audio are the v5 pack in `Assets/TilewrapMystery` (replace it with a new delivery, rebuild `Data/levels_01_30.json` if the delivery lacks it, run **Tools > Chichingo > Tilewrap > Build current 30-level content**, then **ShiftSort > Build Assets** with FileRef's library / music / Sounds cleared). Then **ShiftSort > Validate Levels**. No game code names a subject or item, except `Manager_Flow.Explain` (the playtest's explanations for cases 1–5, ported as written).
 - The builders (`AssetBuilder`, `SceneBuilder`) never overwrite an existing asset, prefab or filled reference. Change an existing prefab with `PrefabUtility.LoadPrefabContents`, or delete it and rebuild.
 - Before testing in Play mode from the CLI, run `unity command editor.playmode.set_run_in_background --enabled true --project-path C:/Project/Clue_Parade`. Otherwise the unfocused Editor freezes at frame 1–2 and every press is rejected.
 

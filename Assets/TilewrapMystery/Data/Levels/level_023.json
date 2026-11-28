@@ -1,0 +1,684 @@
+{
+  "schemaVersion": 5,
+  "id": 23,
+  "sourceTheme": 23,
+  "title": "Little harbour",
+  "subtitle": "Did the blue-lined crate leave by boat?",
+  "question": "What belonged to the lowest-numbered dock?",
+  "setupText": "The missing star trail leads here. Did the blue-lined crate leave by boat?",
+  "completionText": "The harbour list records an inland transfer. The star never sailed away.",
+  "nextLead": "A leaf stamp identifies the next delivery desk.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "harbour_0",
+      "name": "Boat A",
+      "column": 0,
+      "rigId": "harbour_0"
+    },
+    {
+      "id": "harbour_1",
+      "name": "Boat B",
+      "column": 1,
+      "rigId": "harbour_1"
+    },
+    {
+      "id": "harbour_2",
+      "name": "Boat C",
+      "column": 2,
+      "rigId": "harbour_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "harbour_00",
+      "label": "Striped sail",
+      "sprite": "harbour_00",
+      "native": true
+    },
+    {
+      "id": "harbour_01",
+      "label": "Moon sail",
+      "sprite": "harbour_01",
+      "native": true
+    },
+    {
+      "id": "harbour_02",
+      "label": "Dot sail",
+      "sprite": "harbour_02",
+      "native": true
+    },
+    {
+      "id": "harbour_03",
+      "label": "Fish pennant",
+      "sprite": "harbour_03",
+      "native": true
+    },
+    {
+      "id": "harbour_04",
+      "label": "Red pennant",
+      "sprite": "harbour_04",
+      "native": true
+    },
+    {
+      "id": "harbour_05",
+      "label": "Leaf pennant",
+      "sprite": "harbour_05",
+      "native": true
+    },
+    {
+      "id": "harbour_06",
+      "label": "Barrel",
+      "sprite": "harbour_06",
+      "native": true
+    },
+    {
+      "id": "harbour_07",
+      "label": "Crab trap",
+      "sprite": "harbour_07",
+      "native": true
+    },
+    {
+      "id": "harbour_08",
+      "label": "Treasure box",
+      "sprite": "harbour_08",
+      "native": true
+    },
+    {
+      "id": "l023_extra_00",
+      "label": "Leaf flag",
+      "sprite": "post_05",
+      "native": false
+    },
+    {
+      "id": "l023_extra_01",
+      "label": "Pink shell",
+      "sprite": "sandcastles_06",
+      "native": false
+    },
+    {
+      "id": "l023_extra_02",
+      "label": "Blue star tag",
+      "sprite": "blue_tag",
+      "native": false
+    },
+    {
+      "id": "l023_extra_03",
+      "label": "Road tyres",
+      "sprite": "garage_00",
+      "native": false
+    },
+    {
+      "id": "l023_extra_04",
+      "label": "Purple scroll",
+      "sprite": "post_02",
+      "native": false
+    },
+    {
+      "id": "l023_extra_05",
+      "label": "Pocket watch",
+      "sprite": "pocket_watch",
+      "native": false
+    },
+    {
+      "id": "l023_extra_06",
+      "label": "Crab flag",
+      "sprite": "sandcastles_03",
+      "native": false
+    },
+    {
+      "id": "l023_extra_07",
+      "label": "Swimsuit",
+      "sprite": "luggage_01",
+      "native": false
+    },
+    {
+      "id": "l023_extra_08",
+      "label": "Route map",
+      "sprite": "route_map",
+      "native": false
+    },
+    {
+      "id": "l023_extra_09",
+      "label": "Shirt",
+      "sprite": "luggage_02",
+      "native": false
+    },
+    {
+      "id": "l023_extra_10",
+      "label": "Round tower",
+      "sprite": "sandcastles_00",
+      "native": false
+    },
+    {
+      "id": "l023_extra_11",
+      "label": "Magnifying glass",
+      "sprite": "magnifier",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Sails",
+      "items": [
+        "harbour_00",
+        "harbour_01",
+        "harbour_02"
+      ],
+      "action": "Reconstruct sails in any row.",
+      "visibleClues": [
+        {
+          "icon": "harbour_02",
+          "text": "The lowest-numbered dock has the dot sail.",
+          "rule": {
+            "kind": "lowest",
+            "a": "harbour_02"
+          },
+          "refs": [
+            "harbour_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "harbour_04",
+          "text": "The red pennant goes with the treasure box.",
+          "rule": {
+            "kind": "same",
+            "a": "harbour_04",
+            "b": "harbour_08"
+          },
+          "refs": [
+            "harbour_04",
+            "harbour_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Flags",
+      "items": [
+        "harbour_05",
+        "harbour_04",
+        "harbour_03"
+      ],
+      "action": "Reconstruct flags in any row.",
+      "visibleClues": [
+        {
+          "icon": "harbour_02",
+          "text": "The lowest-numbered dock has the dot sail.",
+          "rule": {
+            "kind": "lowest",
+            "a": "harbour_02"
+          },
+          "refs": [
+            "harbour_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "harbour_04",
+          "text": "The red pennant goes with the treasure box.",
+          "rule": {
+            "kind": "same",
+            "a": "harbour_04",
+            "b": "harbour_08"
+          },
+          "refs": [
+            "harbour_04",
+            "harbour_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Cargo",
+      "items": [
+        "harbour_07",
+        "harbour_08",
+        "harbour_06"
+      ],
+      "action": "Reconstruct cargo in any row.",
+      "visibleClues": [
+        {
+          "icon": "harbour_02",
+          "text": "The lowest-numbered dock has the dot sail.",
+          "rule": {
+            "kind": "lowest",
+            "a": "harbour_02"
+          },
+          "refs": [
+            "harbour_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "harbour_04",
+          "text": "The red pennant goes with the treasure box.",
+          "rule": {
+            "kind": "same",
+            "a": "harbour_04",
+            "b": "harbour_08"
+          },
+          "refs": [
+            "harbour_04",
+            "harbour_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l023_extra_02",
+        "l023_extra_00",
+        "l023_extra_01"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l023_extra_01",
+          "text": "The pink shell goes with the fish pennant.",
+          "rule": {
+            "kind": "same",
+            "a": "l023_extra_01",
+            "b": "harbour_03"
+          },
+          "refs": [
+            "l023_extra_01",
+            "harbour_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l023_extra_00",
+          "text": "The leaf flag and leaf pennant have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l023_extra_00",
+            "b": "harbour_05"
+          },
+          "refs": [
+            "l023_extra_00",
+            "harbour_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l023_extra_05",
+        "l023_extra_04",
+        "l023_extra_03"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l023_extra_03",
+          "text": "The road tyres goes with the barrel.",
+          "rule": {
+            "kind": "same",
+            "a": "l023_extra_03",
+            "b": "harbour_06"
+          },
+          "refs": [
+            "l023_extra_03",
+            "harbour_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l023_extra_04",
+          "text": "The purple scroll and crab trap have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l023_extra_04",
+            "b": "harbour_07"
+          },
+          "refs": [
+            "l023_extra_04",
+            "harbour_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l023_extra_06",
+        "l023_extra_07",
+        "l023_extra_08"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l023_extra_06",
+          "text": "The crab flag goes with the leaf pennant.",
+          "rule": {
+            "kind": "same",
+            "a": "l023_extra_06",
+            "b": "harbour_05"
+          },
+          "refs": [
+            "l023_extra_06",
+            "harbour_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l023_extra_07",
+          "text": "The swimsuit and fish pennant have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l023_extra_07",
+            "b": "harbour_03"
+          },
+          "refs": [
+            "l023_extra_07",
+            "harbour_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l023_extra_10",
+        "l023_extra_11",
+        "l023_extra_09"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l023_extra_10",
+          "text": "The round tower goes with the crab trap.",
+          "rule": {
+            "kind": "same",
+            "a": "l023_extra_10",
+            "b": "harbour_07"
+          },
+          "refs": [
+            "l023_extra_10",
+            "harbour_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l023_extra_09",
+          "text": "The shirt and treasure box have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l023_extra_09",
+            "b": "harbour_08"
+          },
+          "refs": [
+            "l023_extra_09",
+            "harbour_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "harbour_02",
+    "harbour_07",
+    "harbour_00",
+    "harbour_05",
+    "l023_extra_02",
+    "harbour_01",
+    "harbour_04",
+    "l023_extra_01",
+    "harbour_06",
+    "l023_extra_00",
+    "harbour_03",
+    "harbour_08"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l023_extra_07",
+        "l023_extra_04",
+        "l023_extra_11"
+      ]
+    },
+    {
+      "items": [
+        "l023_extra_08",
+        "l023_extra_10",
+        "l023_extra_03"
+      ]
+    },
+    {
+      "items": [
+        "l023_extra_09",
+        "l023_extra_05",
+        "l023_extra_06"
+      ]
+    }
+  ],
+  "moveLimit": 36,
+  "difficulty": "standard",
+  "firstClearCoins": 30,
+  "designSeed": 862023,
+  "chapterId": 5,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "courier_ticket",
+  "evidenceReveal": "The harbour list records an inland transfer. The star never sailed away.",
+  "durationTargetSeconds": [
+    100,
+    240
+  ],
+  "referenceSolution": [
+    {
+      "a": 1,
+      "b": 2
+    },
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 2,
+      "b": 5
+    },
+    {
+      "a": 1,
+      "b": 2
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 22,
+  "storyQuestion": "Did the blue-lined crate leave by boat?",
+  "dossier": {
+    "label": "Dock",
+    "values": [
+      3,
+      2,
+      1
+    ],
+    "labels": [
+      "Dock 3",
+      "Dock 2",
+      "Dock 1"
+    ],
+    "low": "lowest-numbered dock",
+    "high": "highest-numbered dock"
+  },
+  "cluePool": [
+    {
+      "icon": "harbour_02",
+      "text": "The lowest-numbered dock has the dot sail.",
+      "rule": {
+        "kind": "lowest",
+        "a": "harbour_02"
+      },
+      "refs": [
+        "harbour_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "harbour_04",
+      "text": "The red pennant goes with the treasure box.",
+      "rule": {
+        "kind": "same",
+        "a": "harbour_04",
+        "b": "harbour_08"
+      },
+      "refs": [
+        "harbour_04",
+        "harbour_08"
+      ],
+      "column": null
+    },
+    {
+      "icon": "harbour_07",
+      "text": "The crab trap owner is left of the dot sail owner.",
+      "rule": {
+        "kind": "left",
+        "a": "harbour_07",
+        "b": "harbour_02"
+      },
+      "refs": [
+        "harbour_07",
+        "harbour_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "harbour_07",
+      "text": "The crab trap and fish pennant belong to opposite end profiles.",
+      "rule": {
+        "kind": "notNext",
+        "a": "harbour_07",
+        "b": "harbour_03"
+      },
+      "refs": [
+        "harbour_07",
+        "harbour_03"
+      ],
+      "column": null
+    },
+    {
+      "icon": "harbour_01",
+      "text": "Boat A does not have the moon sail.",
+      "rule": {
+        "kind": "notAt",
+        "a": "harbour_01",
+        "column": 0
+      },
+      "refs": [
+        "harbour_01"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the dock badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "What belonged to the lowest-numbered dock?",
+    "answer": "Shirt",
+    "icon": "l023_extra_09",
+    "evidence": [
+      "Compare the dock badges.",
+      "Then check that profile’s final confirmed item."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 24,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

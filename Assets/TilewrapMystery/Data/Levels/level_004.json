@@ -1,0 +1,274 @@
+{
+  "id": 4,
+  "title": "Night market",
+  "subtitle": "Familiar clues. Now each swap uses one move.",
+  "subjects": [
+    {
+      "id": "market_0",
+      "name": "Stall A",
+      "column": 0,
+      "rigId": "market_0"
+    },
+    {
+      "id": "market_1",
+      "name": "Stall B",
+      "column": 1,
+      "rigId": "market_1"
+    },
+    {
+      "id": "market_2",
+      "name": "Stall C",
+      "column": 2,
+      "rigId": "market_2"
+    }
+  ],
+  "sets": [
+    {
+      "label": "Canopies",
+      "action": "Reconstruct canopies in any row.",
+      "items": [
+        "market_00",
+        "market_01",
+        "market_02"
+      ],
+      "visibleClues": [
+        {
+          "icon": "market_02",
+          "text": "Stall C has the scalloped canopy.",
+          "rule": {
+            "kind": "at",
+            "a": "market_02",
+            "column": 2
+          },
+          "refs": [
+            "market_02"
+          ],
+          "column": 2
+        },
+        {
+          "icon": "market_00",
+          "text": "Stall A has the striped canopy.",
+          "rule": {
+            "kind": "at",
+            "a": "market_00",
+            "column": 0
+          },
+          "refs": [
+            "market_00"
+          ],
+          "column": 0
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Goods",
+      "action": "Reconstruct goods in any row.",
+      "items": [
+        "market_03",
+        "market_05",
+        "market_04"
+      ],
+      "visibleClues": [
+        {
+          "icon": "market_05",
+          "text": "The toy display goes with the patchwork canopy.",
+          "rule": {
+            "kind": "same",
+            "a": "market_05",
+            "b": "market_01"
+          },
+          "refs": [
+            "market_05",
+            "market_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "market_04",
+          "text": "The bread tray goes with the scalloped canopy.",
+          "rule": {
+            "kind": "same",
+            "a": "market_04",
+            "b": "market_02"
+          },
+          "refs": [
+            "market_04",
+            "market_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Lights",
+      "action": "Reconstruct lights in any row.",
+      "items": [
+        "market_08",
+        "market_07",
+        "market_06"
+      ],
+      "visibleClues": [
+        {
+          "icon": "market_08",
+          "text": "The table lamp goes with the fruit basket.",
+          "rule": {
+            "kind": "same",
+            "a": "market_08",
+            "b": "market_03"
+          },
+          "refs": [
+            "market_08",
+            "market_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "market_07",
+          "text": "The string lights goes with the toy display.",
+          "rule": {
+            "kind": "same",
+            "a": "market_07",
+            "b": "market_05"
+          },
+          "refs": [
+            "market_07",
+            "market_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "items": [
+    {
+      "id": "market_00",
+      "label": "Striped canopy",
+      "sprite": "market_00",
+      "native": true
+    },
+    {
+      "id": "market_01",
+      "label": "Patchwork canopy",
+      "sprite": "market_01",
+      "native": true
+    },
+    {
+      "id": "market_02",
+      "label": "Scalloped canopy",
+      "sprite": "market_02",
+      "native": true
+    },
+    {
+      "id": "market_03",
+      "label": "Fruit basket",
+      "sprite": "market_03",
+      "native": true
+    },
+    {
+      "id": "market_04",
+      "label": "Bread tray",
+      "sprite": "market_04",
+      "native": true
+    },
+    {
+      "id": "market_05",
+      "label": "Toy display",
+      "sprite": "market_05",
+      "native": true
+    },
+    {
+      "id": "market_06",
+      "label": "Round lantern",
+      "sprite": "market_06",
+      "native": true
+    },
+    {
+      "id": "market_07",
+      "label": "String lights",
+      "sprite": "market_07",
+      "native": true
+    },
+    {
+      "id": "market_08",
+      "label": "Table lamp",
+      "sprite": "market_08",
+      "native": true
+    }
+  ],
+  "start": [
+    "market_01",
+    "market_02",
+    "market_00",
+    "market_04",
+    "market_03",
+    "market_05",
+    "market_07",
+    "market_06",
+    "market_08"
+  ],
+  "refills": [],
+  "moveLimit": 20,
+  "orderMode": "staged",
+  "firstClearCoins": 30,
+  "completionText": "A receipt beside the fruit basket points to the breakfast table.",
+  "chapterId": 1,
+  "referenceSolution": [
+    {
+      "a": 1,
+      "b": 2
+    },
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    }
+  ],
+  "referenceMoveCount": 6,
+  "storyQuestion": "",
+  "dossier": null,
+  "cluePool": [],
+  "reasoningTip": "Use the two clues. Each profile gets one item from this set; the last item goes to the remaining profile.",
+  "caseResolution": {
+    "question": "Which stall has the fruit basket?",
+    "answer": "Stall A",
+    "icon": "market_03",
+    "evidence": [
+      "Find the fruit basket in the confirmed display.",
+      "Read the name under its stall."
+    ]
+  },
+  "question": "Which stall has the fruit basket?",
+  "showPartialOwnerFeedback": false,
+  "schemaVersion": 5,
+  "evidenceReveal": "A receipt beside the fruit basket points to the breakfast table.",
+  "nextLead": "Compare the breakfast receipts.",
+  "evidenceIcon": "secret_note",
+  "clueGraphVersion": 2,
+  "difficulty": "practice",
+  "nextLevelId": 5,
+  "rows": 3,
+  "columns": 3,
+  "coaching": [
+    "20 moves left. Every swap uses 1. Undo is free.",
+    "Each swap uses 1 move. Use the confirmed scene to link the next items.",
+    "Each swap uses 1 move. Use the confirmed scene to link the next items."
+  ]
+}

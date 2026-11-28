@@ -94,14 +94,15 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
     // ---------- Coach ----------
 
-    // The line under the board for the current situation (the playtest's defaultCoach). The first
-    // five cases teach one idea each; 6-14 show their reasoning tip.
+    // The line under the board for the current situation: case 1's guided swap, else the case's
+    // coaching line for the set in focus (the pack's, one per set), else general advice.
     private void DefaultCoach(bool flash)
     {
         var level = Game.Level;
         if (Game.State != GameState.Playing || level == null) return;
-        int id = Game.CurrentLevel, focus = Game.FocusSet, moves = Game.MovesUsed;
-        OnCounterTeach(id == 4 && moves == 0 && level.HasMoveLimit);
+        int focus = Game.FocusSet, moves = Game.MovesUsed;
+        // The case whose first line introduces the move counter (case 4) spotlights it until the first swap.
+        OnCounterTeach(moves == 0 && level.HasMoveLimit && level.coaching.Length > 0 && level.coaching[0].StartsWith($"{level.moveLimit} moves left"));
         var label = Game.FocusedSet?.label.ToLowerInvariant() ?? "the next set";
         string text;
         if (level.hasTutorial)
@@ -114,13 +115,15 @@ public class Manager_Flow : Singleton<Manager_Flow>
             }
             else text = $"Now {label}. Read the names; match each item to its profile.";
         }
-        else if (id == 2) text = focus == 2 ? "“Goes with” means the same pet. Look for the teal scarf above." : "Use the names above. Each pet gets one item from this set.";
-        else if (id == 3) text = focus == 2 ? "“Does not” rules out a pairing. Find the sugar star first."
-                               : focus == 1 ? "Match the frosting to the cake bases already confirmed above."
-                               : "Use the two names to find where the cake bases belong.";
-        else if (id == 4) text = moves == 0 ? $"{level.moveLimit} moves left. Every swap uses 1. Undo is free." : "Each swap uses 1 move. Use the confirmed scene to link the next items.";
-        else if (id == 5) text = Game.View.SpawnIndex > 0 ? "New supplies arrived; your completed sets stay earned." : "Use familiar clues. Finish the first set to make room.";
-        else if (id <= 14 && !string.IsNullOrEmpty(level.reasoningTip)) text = level.reasoningTip;
+        else if (focus >= 0 && focus < level.coaching.Length && !string.IsNullOrEmpty(level.coaching[focus]))
+        {
+            // The pack's line for this set. A move-counter introduction ("20 moves left...") only
+            // shows before the first swap; afterwards the next set's line stands in.
+            text = level.coaching[focus];
+            if (moves > 0 && level.HasMoveLimit && text.StartsWith($"{level.moveLimit} moves left") && focus + 1 < level.coaching.Length)
+                text = level.coaching[focus + 1];
+        }
+        else if (!string.IsNullOrEmpty(level.reasoningTip)) text = level.reasoningTip;
         else if (focus >= 0 && focus < 3 && level.cluePool.Length > 0) text = "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.";
         else if (DeliveryRules.Eligible(Game.View, level).Count > 1) text = "Choose either request. Use confirmed scene details as evidence.";
         else text = "Use confirmed items above to identify the next three owners.";
@@ -149,6 +152,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
     private void HandleSwapRejected(Manager_Game.Rejection reason)
     {
+        Manager_Audio.Instance?.PlaySound(SoundType.Invalid);
         switch (reason)
         {
             case Manager_Game.Rejection.Tutorial:
@@ -196,8 +200,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
     {
         if (Game.Model.Status != DeliveryStatus.Playing) return;
         if (_refilledThisMove && !Game.Level.hasTutorial)
-            Coach(Game.CurrentLevel == 5 ? "New supplies arrive at the top. Your completed sets stay earned."
-                                         : $"New items arrived. Next: {Game.FocusedSet?.label.ToLowerInvariant() ?? "the next set"}.");
+            Coach($"New items arrived. Next: {Game.FocusedSet?.label.ToLowerInvariant() ?? "the next set"}.");
         else DefaultCoach(false);
         StartAttentionTimer();
     }
@@ -276,6 +279,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
         if (Game.State != GameState.Playing || Game.Busy || slot < 0 || slot >= indices.Length) return;
         var clue = CurrentClues[indices[slot]];
         var refs = clue.refs ?? new string[0];
+        Manager_Audio.Instance?.PlaySound(SoundType.Clue);
         Board.ClearHint();
         Board.FocusItems(refs);
         int column = clue.rule != null && clue.rule.kind == "at" ? clue.rule.column : -1;
@@ -353,6 +357,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
 
     private void ShowHint(HintText h)
     {
+        Manager_Audio.Instance?.PlaySound(SoundType.Hint);
         Board.ShowHint(h.From, h.To, h.TargetRow);
         Coach(h.Text);
         Log("hint_shown", $"a={h.From}; b={h.To}");
@@ -409,6 +414,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
         var level = Game.Level;
         if (level == null || Game.Busy) return;
         Log("notebook_open", $"tab={(tab == 0 ? "clues" : "case")}");
+        Manager_Audio.Instance?.PlaySound(SoundType.Notebook);
         var view = Game.View;
         var sections = new List<PopUp_Notebook.Section>();
         string intro;
@@ -598,6 +604,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
     {
         int coins = RecordClear(Game.CurrentLevel, Game.Level.firstClearCoins);
         _lastWinWasFirstClear = coins > 0;
+        if (coins > 0) Manager_Audio.Instance?.PlaySound(SoundType.Coins);
         OnHudChanged();
         Log("case_won", $"firstClear={coins > 0}; seconds={_activeSeconds:0}; swaps={Game.MovesUsed}");
         ShowWin(_lastWinWasFirstClear);
@@ -620,7 +627,7 @@ public class Manager_Flow : Singleton<Manager_Flow>
         if (Game.State != GameState.Won) return;
         var level = Game.Level;
         int id = Game.CurrentLevel, next = NextCase(id);
-        bool last = id >= LevelCount;
+        bool last = level.IsFinale || id >= LevelCount;
         var nextCase = Manager_Level.Instance.Load(next);
         var res = level.caseResolution;
         var content = new PopUp_Win.Content

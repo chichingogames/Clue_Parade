@@ -1,0 +1,685 @@
+{
+  "schemaVersion": 5,
+  "id": 18,
+  "sourceTheme": 18,
+  "title": "Camping night",
+  "subtitle": "Which lantern lit the sheltered route?",
+  "question": "What belonged to the earliest camp?",
+  "setupText": "The missing star trail leads here. Which lantern lit the sheltered route?",
+  "completionText": "The borrowed lantern and repair marks point to a workshop helper.",
+  "nextLead": "The dragon nursery kept a clearer print of the mark.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "camping_0",
+      "name": "Camp A",
+      "column": 0,
+      "rigId": "camping_0"
+    },
+    {
+      "id": "camping_1",
+      "name": "Camp B",
+      "column": 1,
+      "rigId": "camping_1"
+    },
+    {
+      "id": "camping_2",
+      "name": "Camp C",
+      "column": 2,
+      "rigId": "camping_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "camping_00",
+      "label": "Orange tent",
+      "sprite": "camping_00",
+      "native": true
+    },
+    {
+      "id": "camping_01",
+      "label": "Blue dome tent",
+      "sprite": "camping_01",
+      "native": true
+    },
+    {
+      "id": "camping_02",
+      "label": "Green teepee",
+      "sprite": "camping_02",
+      "native": true
+    },
+    {
+      "id": "camping_03",
+      "label": "Camp lantern",
+      "sprite": "camping_03",
+      "native": true
+    },
+    {
+      "id": "camping_04",
+      "label": "Kettle",
+      "sprite": "camping_04",
+      "native": true
+    },
+    {
+      "id": "camping_05",
+      "label": "Sleeping bag",
+      "sprite": "camping_05",
+      "native": true
+    },
+    {
+      "id": "camping_06",
+      "label": "Fox",
+      "sprite": "camping_06",
+      "native": true
+    },
+    {
+      "id": "camping_07",
+      "label": "Owl",
+      "sprite": "camping_07",
+      "native": true
+    },
+    {
+      "id": "camping_08",
+      "label": "Hedgehog",
+      "sprite": "camping_08",
+      "native": true
+    },
+    {
+      "id": "l018_extra_00",
+      "label": "White fence",
+      "sprite": "cottages_06",
+      "native": false
+    },
+    {
+      "id": "l018_extra_01",
+      "label": "Mouse",
+      "sprite": "post_07",
+      "native": false
+    },
+    {
+      "id": "l018_extra_02",
+      "label": "Brass key",
+      "sprite": "brass_key",
+      "native": false
+    },
+    {
+      "id": "l018_extra_03",
+      "label": "Wood label",
+      "sprite": "garden_07",
+      "native": false
+    },
+    {
+      "id": "l018_extra_04",
+      "label": "Red letter",
+      "sprite": "post_00",
+      "native": false
+    },
+    {
+      "id": "l018_extra_05",
+      "label": "Secret note",
+      "sprite": "secret_note",
+      "native": false
+    },
+    {
+      "id": "l018_extra_06",
+      "label": "Compass",
+      "sprite": "luggage_03",
+      "native": false
+    },
+    {
+      "id": "l018_extra_07",
+      "label": "Pink daisy",
+      "sprite": "garden_03",
+      "native": false
+    },
+    {
+      "id": "l018_extra_08",
+      "label": "Pocket watch",
+      "sprite": "pocket_watch",
+      "native": false
+    },
+    {
+      "id": "l018_extra_09",
+      "label": "Brown arch door",
+      "sprite": "cottages_05",
+      "native": false
+    },
+    {
+      "id": "l018_extra_10",
+      "label": "Pinecone",
+      "sprite": "luggage_06",
+      "native": false
+    },
+    {
+      "id": "l018_extra_11",
+      "label": "Magnifying glass",
+      "sprite": "magnifier",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Tents",
+      "items": [
+        "camping_00",
+        "camping_02",
+        "camping_01"
+      ],
+      "action": "Reconstruct tents in any row.",
+      "visibleClues": [
+        {
+          "icon": "camping_07",
+          "text": "The latest camp has the owl.",
+          "rule": {
+            "kind": "highest",
+            "a": "camping_07"
+          },
+          "refs": [
+            "camping_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "camping_00",
+          "text": "The orange tent goes with the camp lantern.",
+          "rule": {
+            "kind": "same",
+            "a": "camping_00",
+            "b": "camping_03"
+          },
+          "refs": [
+            "camping_00",
+            "camping_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Gear",
+      "items": [
+        "camping_03",
+        "camping_05",
+        "camping_04"
+      ],
+      "action": "Reconstruct gear in any row.",
+      "visibleClues": [
+        {
+          "icon": "camping_07",
+          "text": "The latest camp has the owl.",
+          "rule": {
+            "kind": "highest",
+            "a": "camping_07"
+          },
+          "refs": [
+            "camping_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "camping_00",
+          "text": "The orange tent goes with the camp lantern.",
+          "rule": {
+            "kind": "same",
+            "a": "camping_00",
+            "b": "camping_03"
+          },
+          "refs": [
+            "camping_00",
+            "camping_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Visitors",
+      "items": [
+        "camping_06",
+        "camping_07",
+        "camping_08"
+      ],
+      "action": "Reconstruct visitors in any row.",
+      "visibleClues": [
+        {
+          "icon": "camping_07",
+          "text": "The latest camp has the owl.",
+          "rule": {
+            "kind": "highest",
+            "a": "camping_07"
+          },
+          "refs": [
+            "camping_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "camping_00",
+          "text": "The orange tent goes with the camp lantern.",
+          "rule": {
+            "kind": "same",
+            "a": "camping_00",
+            "b": "camping_03"
+          },
+          "refs": [
+            "camping_00",
+            "camping_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l018_extra_02",
+        "l018_extra_01",
+        "l018_extra_00"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l018_extra_00",
+          "text": "The white fence goes with the kettle.",
+          "rule": {
+            "kind": "same",
+            "a": "l018_extra_00",
+            "b": "camping_04"
+          },
+          "refs": [
+            "l018_extra_00",
+            "camping_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l018_extra_01",
+          "text": "The mouse and camp lantern have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l018_extra_01",
+            "b": "camping_03"
+          },
+          "refs": [
+            "l018_extra_01",
+            "camping_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l018_extra_03",
+        "l018_extra_05",
+        "l018_extra_04"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l018_extra_03",
+          "text": "The wood label goes with the camp lantern.",
+          "rule": {
+            "kind": "same",
+            "a": "l018_extra_03",
+            "b": "camping_03"
+          },
+          "refs": [
+            "l018_extra_03",
+            "camping_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l018_extra_05",
+          "text": "The secret note and kettle have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l018_extra_05",
+            "b": "camping_04"
+          },
+          "refs": [
+            "l018_extra_05",
+            "camping_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l018_extra_06",
+        "l018_extra_08",
+        "l018_extra_07"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l018_extra_06",
+          "text": "The compass goes with the fox.",
+          "rule": {
+            "kind": "same",
+            "a": "l018_extra_06",
+            "b": "camping_06"
+          },
+          "refs": [
+            "l018_extra_06",
+            "camping_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l018_extra_08",
+          "text": "The pocket watch and hedgehog have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l018_extra_08",
+            "b": "camping_08"
+          },
+          "refs": [
+            "l018_extra_08",
+            "camping_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l018_extra_11",
+        "l018_extra_09",
+        "l018_extra_10"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l018_extra_10",
+          "text": "The pinecone goes with the hedgehog.",
+          "rule": {
+            "kind": "same",
+            "a": "l018_extra_10",
+            "b": "camping_08"
+          },
+          "refs": [
+            "l018_extra_10",
+            "camping_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l018_extra_11",
+          "text": "The magnifying glass and owl have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l018_extra_11",
+            "b": "camping_07"
+          },
+          "refs": [
+            "l018_extra_11",
+            "camping_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "camping_01",
+    "camping_03",
+    "camping_00",
+    "l018_extra_00",
+    "camping_08",
+    "camping_06",
+    "camping_04",
+    "camping_02",
+    "l018_extra_01",
+    "camping_07",
+    "camping_05",
+    "l018_extra_02"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l018_extra_08",
+        "l018_extra_05",
+        "l018_extra_09"
+      ]
+    },
+    {
+      "items": [
+        "l018_extra_11",
+        "l018_extra_04",
+        "l018_extra_07"
+      ]
+    },
+    {
+      "items": [
+        "l018_extra_06",
+        "l018_extra_10",
+        "l018_extra_03"
+      ]
+    }
+  ],
+  "moveLimit": 36,
+  "difficulty": "standard",
+  "firstClearCoins": 30,
+  "designSeed": 862018,
+  "chapterId": 4,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "route_map",
+  "evidenceReveal": "The borrowed lantern and repair marks point to a workshop helper.",
+  "durationTargetSeconds": [
+    100,
+    240
+  ],
+  "referenceSolution": [
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 1,
+      "b": 2
+    },
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 1,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 22,
+  "storyQuestion": "Which lantern lit the sheltered route?",
+  "dossier": {
+    "label": "Arrival",
+    "values": [
+      7,
+      8,
+      6
+    ],
+    "labels": [
+      "19:00",
+      "20:00",
+      "18:00"
+    ],
+    "low": "earliest camp",
+    "high": "latest camp"
+  },
+  "cluePool": [
+    {
+      "icon": "camping_07",
+      "text": "The latest camp has the owl.",
+      "rule": {
+        "kind": "highest",
+        "a": "camping_07"
+      },
+      "refs": [
+        "camping_07"
+      ],
+      "column": null
+    },
+    {
+      "icon": "camping_00",
+      "text": "The orange tent goes with the camp lantern.",
+      "rule": {
+        "kind": "same",
+        "a": "camping_00",
+        "b": "camping_03"
+      },
+      "refs": [
+        "camping_00",
+        "camping_03"
+      ],
+      "column": null
+    },
+    {
+      "icon": "camping_03",
+      "text": "The camp lantern goes with the fox.",
+      "rule": {
+        "kind": "same",
+        "a": "camping_03",
+        "b": "camping_06"
+      },
+      "refs": [
+        "camping_03",
+        "camping_06"
+      ],
+      "column": null
+    },
+    {
+      "icon": "camping_07",
+      "text": "The owl owner is left of the kettle owner.",
+      "rule": {
+        "kind": "left",
+        "a": "camping_07",
+        "b": "camping_04"
+      },
+      "refs": [
+        "camping_07",
+        "camping_04"
+      ],
+      "column": null
+    },
+    {
+      "icon": "camping_01",
+      "text": "The blue dome tent owner arrived before the sleeping bag owner.",
+      "rule": {
+        "kind": "less",
+        "a": "camping_01",
+        "b": "camping_05"
+      },
+      "refs": [
+        "camping_01",
+        "camping_05"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the arrival badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "What belonged to the earliest camp?",
+    "answer": "Pinecone",
+    "icon": "l018_extra_10",
+    "evidence": [
+      "Compare the arrival badges.",
+      "Then check that profile’s final confirmed item."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 19,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

@@ -1,0 +1,535 @@
+{
+  "schemaVersion": 5,
+  "id": 12,
+  "sourceTheme": 11,
+  "title": "Sandcastle bay",
+  "subtitle": "Does the sandy label mean the star went to sea?",
+  "question": "What was paired with the shell turret?",
+  "setupText": "The missing star trail leads here. Does the sandy label mean the star went to sea?",
+  "completionText": "Only the outside label is sandy. The crate itself stayed inland.",
+  "nextLead": "A red ribbon matches the music-stage decorations.",
+  "rows": 3,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "sandcastles_0",
+      "name": "Castle A",
+      "column": 0,
+      "rigId": "sandcastles_0"
+    },
+    {
+      "id": "sandcastles_1",
+      "name": "Castle B",
+      "column": 1,
+      "rigId": "sandcastles_1"
+    },
+    {
+      "id": "sandcastles_2",
+      "name": "Castle C",
+      "column": 2,
+      "rigId": "sandcastles_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "sandcastles_00",
+      "label": "Round tower",
+      "sprite": "sandcastles_00",
+      "native": true
+    },
+    {
+      "id": "sandcastles_01",
+      "label": "Square tower",
+      "sprite": "sandcastles_01",
+      "native": true
+    },
+    {
+      "id": "sandcastles_02",
+      "label": "Shell turret",
+      "sprite": "sandcastles_02",
+      "native": true
+    },
+    {
+      "id": "sandcastles_03",
+      "label": "Crab flag",
+      "sprite": "sandcastles_03",
+      "native": true
+    },
+    {
+      "id": "sandcastles_04",
+      "label": "Sun flag",
+      "sprite": "sandcastles_04",
+      "native": true
+    },
+    {
+      "id": "sandcastles_05",
+      "label": "Fish flag",
+      "sprite": "sandcastles_05",
+      "native": true
+    },
+    {
+      "id": "sandcastles_06",
+      "label": "Pink shell",
+      "sprite": "sandcastles_06",
+      "native": true
+    },
+    {
+      "id": "sandcastles_07",
+      "label": "Rock pool",
+      "sprite": "sandcastles_07",
+      "native": true
+    },
+    {
+      "id": "sandcastles_08",
+      "label": "Starfish",
+      "sprite": "sandcastles_08",
+      "native": true
+    },
+    {
+      "id": "l012_extra_00",
+      "label": "Teddy",
+      "sprite": "floats_06",
+      "native": false
+    },
+    {
+      "id": "l012_extra_01",
+      "label": "Pale sand",
+      "sprite": "terrariums_00",
+      "native": false
+    },
+    {
+      "id": "l012_extra_02",
+      "label": "Brass key",
+      "sprite": "brass_key",
+      "native": false
+    },
+    {
+      "id": "l012_extra_03",
+      "label": "Seaweed",
+      "sprite": "aquariums_03",
+      "native": false
+    },
+    {
+      "id": "l012_extra_04",
+      "label": "Seahorse",
+      "sprite": "aquariums_08",
+      "native": false
+    },
+    {
+      "id": "l012_extra_05",
+      "label": "Blue star tag",
+      "sprite": "blue_tag",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Towers",
+      "items": [
+        "sandcastles_01",
+        "sandcastles_00",
+        "sandcastles_02"
+      ],
+      "action": "Reconstruct towers in any row.",
+      "visibleClues": [
+        {
+          "icon": "sandcastles_01",
+          "text": "Castle A has the square tower.",
+          "rule": {
+            "kind": "at",
+            "a": "sandcastles_01",
+            "column": 0
+          },
+          "refs": [
+            "sandcastles_01"
+          ],
+          "column": 0
+        },
+        {
+          "icon": "sandcastles_00",
+          "text": "The round tower profile is next to the square tower profile.",
+          "rule": {
+            "kind": "next",
+            "a": "sandcastles_00",
+            "b": "sandcastles_01"
+          },
+          "refs": [
+            "sandcastles_00",
+            "sandcastles_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Flags",
+      "items": [
+        "sandcastles_03",
+        "sandcastles_05",
+        "sandcastles_04"
+      ],
+      "action": "Reconstruct flags in any row.",
+      "visibleClues": [
+        {
+          "icon": "sandcastles_01",
+          "text": "Castle A has the square tower.",
+          "rule": {
+            "kind": "at",
+            "a": "sandcastles_01",
+            "column": 0
+          },
+          "refs": [
+            "sandcastles_01"
+          ],
+          "column": 0
+        },
+        {
+          "icon": "sandcastles_00",
+          "text": "The round tower profile is next to the square tower profile.",
+          "rule": {
+            "kind": "next",
+            "a": "sandcastles_00",
+            "b": "sandcastles_01"
+          },
+          "refs": [
+            "sandcastles_00",
+            "sandcastles_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Extras",
+      "items": [
+        "sandcastles_08",
+        "sandcastles_06",
+        "sandcastles_07"
+      ],
+      "action": "Reconstruct extras in any row.",
+      "visibleClues": [
+        {
+          "icon": "sandcastles_01",
+          "text": "Castle A has the square tower.",
+          "rule": {
+            "kind": "at",
+            "a": "sandcastles_01",
+            "column": 0
+          },
+          "refs": [
+            "sandcastles_01"
+          ],
+          "column": 0
+        },
+        {
+          "icon": "sandcastles_00",
+          "text": "The round tower profile is next to the square tower profile.",
+          "rule": {
+            "kind": "next",
+            "a": "sandcastles_00",
+            "b": "sandcastles_01"
+          },
+          "refs": [
+            "sandcastles_00",
+            "sandcastles_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l012_extra_02",
+        "l012_extra_01",
+        "l012_extra_00"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l012_extra_02",
+          "text": "The brass key goes with the starfish.",
+          "rule": {
+            "kind": "same",
+            "a": "l012_extra_02",
+            "b": "sandcastles_08"
+          },
+          "refs": [
+            "l012_extra_02",
+            "sandcastles_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l012_extra_01",
+          "text": "The pale sand goes with the pink shell.",
+          "rule": {
+            "kind": "same",
+            "a": "l012_extra_01",
+            "b": "sandcastles_06"
+          },
+          "refs": [
+            "l012_extra_01",
+            "sandcastles_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l012_extra_03",
+        "l012_extra_04",
+        "l012_extra_05"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l012_extra_04",
+          "text": "The seahorse goes with the pale sand.",
+          "rule": {
+            "kind": "same",
+            "a": "l012_extra_04",
+            "b": "l012_extra_01"
+          },
+          "refs": [
+            "l012_extra_04",
+            "l012_extra_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l012_extra_05",
+          "text": "The blue star tag goes with the teddy.",
+          "rule": {
+            "kind": "same",
+            "a": "l012_extra_05",
+            "b": "l012_extra_00"
+          },
+          "refs": [
+            "l012_extra_05",
+            "l012_extra_00"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "sandcastles_00",
+    "sandcastles_03",
+    "sandcastles_05",
+    "sandcastles_07",
+    "sandcastles_04",
+    "sandcastles_01",
+    "sandcastles_06",
+    "sandcastles_08",
+    "sandcastles_02"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l012_extra_02",
+        "l012_extra_00",
+        "l012_extra_04"
+      ]
+    },
+    {
+      "items": [
+        "l012_extra_05",
+        "l012_extra_03",
+        "l012_extra_01"
+      ]
+    }
+  ],
+  "moveLimit": 24,
+  "difficulty": "practice",
+  "firstClearCoins": 30,
+  "designSeed": 862012,
+  "chapterId": 3,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "courier_ticket",
+  "evidenceReveal": "Only the outside label is sandy. The crate itself stayed inland.",
+  "durationTargetSeconds": [
+    50,
+    150
+  ],
+  "referenceSolution": [
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 0,
+      "b": 3
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    }
+  ],
+  "referenceMoveCount": 12,
+  "storyQuestion": "Does the sandy label mean the star went to sea?",
+  "dossier": {
+    "label": "Height",
+    "values": [
+      5,
+      3,
+      2
+    ],
+    "labels": [
+      "5 m",
+      "3 m",
+      "2 m"
+    ],
+    "low": "shortest castle",
+    "high": "tallest castle"
+  },
+  "cluePool": [
+    {
+      "icon": "sandcastles_01",
+      "text": "Castle A has the square tower.",
+      "rule": {
+        "kind": "at",
+        "a": "sandcastles_01",
+        "column": 0
+      },
+      "refs": [
+        "sandcastles_01"
+      ],
+      "column": 0
+    },
+    {
+      "icon": "sandcastles_00",
+      "text": "The round tower profile is next to the square tower profile.",
+      "rule": {
+        "kind": "next",
+        "a": "sandcastles_00",
+        "b": "sandcastles_01"
+      },
+      "refs": [
+        "sandcastles_00",
+        "sandcastles_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "sandcastles_05",
+      "text": "The fish flag goes with the round tower.",
+      "rule": {
+        "kind": "same",
+        "a": "sandcastles_05",
+        "b": "sandcastles_00"
+      },
+      "refs": [
+        "sandcastles_05",
+        "sandcastles_00"
+      ],
+      "column": null
+    },
+    {
+      "icon": "sandcastles_04",
+      "text": "The sun flag goes with the shell turret.",
+      "rule": {
+        "kind": "same",
+        "a": "sandcastles_04",
+        "b": "sandcastles_02"
+      },
+      "refs": [
+        "sandcastles_04",
+        "sandcastles_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "sandcastles_08",
+      "text": "The starfish goes with the crab flag.",
+      "rule": {
+        "kind": "same",
+        "a": "sandcastles_08",
+        "b": "sandcastles_03"
+      },
+      "refs": [
+        "sandcastles_08",
+        "sandcastles_03"
+      ],
+      "column": null
+    },
+    {
+      "icon": "sandcastles_07",
+      "text": "The rock pool goes with the sun flag.",
+      "rule": {
+        "kind": "same",
+        "a": "sandcastles_07",
+        "b": "sandcastles_04"
+      },
+      "refs": [
+        "sandcastles_07",
+        "sandcastles_04"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Neighbours are the profiles directly beside each other. The two ends are not neighbours.",
+  "caseResolution": {
+    "question": "What was paired with the shell turret?",
+    "answer": "Blue star tag",
+    "icon": "l012_extra_05",
+    "evidence": [
+      "The witness remembers the shell turret.",
+      "The missing object belonged to that same profile."
+    ]
+  },
+  "clueGraphVersion": 2,
+  "nextLevelId": 13,
+  "coaching": [
+    "Neighbours are the profiles directly beside each other. The two ends are not neighbours.",
+    "Neighbours are the profiles directly beside each other. The two ends are not neighbours.",
+    "Neighbours are the profiles directly beside each other. The two ends are not neighbours.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

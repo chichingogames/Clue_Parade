@@ -26,6 +26,7 @@ public static class SceneBuilder
         var managers = BuildManagers();
         BuildBoard(managers);
         BuildCamera();
+        BuildAmbientBackground(managers);
         BuildSound(managers);
         BuildCanvas();
         BuildEventSystem();
@@ -232,6 +233,47 @@ public static class SceneBuilder
         Undo.RegisterCreatedObjectUndo(go, "Build Scene");
         go.transform.SetParent(parent, false);
         return go.transform;
+    }
+
+    // The pack's animated background (TilewrapAmbientBackground.prefab) on its own root canvas in
+    // Screen Space - Camera, 50 units behind the camera and ordered below every sprite: the HUD canvas
+    // is an overlay and the board is world space, so a background inside the HUD canvas would cover
+    // the board. Manager_Board tints it per chapter and hides the static backdrop while it exists.
+    private const string AmbientPrefab = "Assets/TilewrapMystery/Generated/TilewrapAmbientBackground.prefab";
+
+    private static void BuildAmbientBackground(GameObject managers)
+    {
+        var root = GameObject.Find("/Background Canvas");
+        if (root == null)
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(AmbientPrefab);
+            if (prefab == null)
+            {
+                Debug.LogWarning($"[SceneBuilder] {AmbientPrefab} is missing: run Tools > Chichingo > Tilewrap > Build current 30-level content.");
+                return;
+            }
+            root = new GameObject("Background Canvas", typeof(RectTransform), typeof(Canvas));
+            Undo.RegisterCreatedObjectUndo(root, "Build Scene");
+            root.transform.SetAsFirstSibling();
+            var canvas = root.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = Camera.main;
+            canvas.planeDistance = 50f;
+            canvas.sortingOrder = -100;
+            var ambient = (GameObject)PrefabUtility.InstantiatePrefab(prefab, root.transform);
+            var rect = (RectTransform)ambient.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+        }
+        var view = root.GetComponentInChildren<Chichingo.TilewrapMystery.TilewrapAmbientBackground>(true);
+        var board = managers.GetComponentInChildren<Manager_Board>(true);
+        if (view != null && board != null)
+        {
+            var so = new SerializedObject(board);
+            SetIfEmpty(so, "_ambient", view);
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
     }
 
     private static void SetIfEmpty(SerializedObject so, string field, Object value)

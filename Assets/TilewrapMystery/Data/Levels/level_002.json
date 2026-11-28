@@ -1,0 +1,263 @@
+{
+  "id": 2,
+  "title": "Welcome home",
+  "subtitle": "Give the pets their favourite things.",
+  "subjects": [
+    {
+      "id": "pets_biscuit",
+      "name": "Biscuit",
+      "column": 0,
+      "rigId": "pets_biscuit"
+    },
+    {
+      "id": "pets_pip",
+      "name": "Pip",
+      "column": 1,
+      "rigId": "pets_pip"
+    },
+    {
+      "id": "pets_clover",
+      "name": "Clover",
+      "column": 2,
+      "rigId": "pets_clover"
+    }
+  ],
+  "sets": [
+    {
+      "label": "Beds",
+      "action": "Reconstruct beds in any row.",
+      "items": [
+        "pets_03",
+        "pets_04",
+        "pets_05"
+      ],
+      "visibleClues": [
+        {
+          "icon": "pets_04",
+          "text": "Pip has the mint square bed.",
+          "rule": {
+            "kind": "at",
+            "a": "pets_04",
+            "column": 1
+          },
+          "refs": [
+            "pets_04"
+          ],
+          "column": 1
+        },
+        {
+          "icon": "pets_05",
+          "text": "Clover has the peach round bed.",
+          "rule": {
+            "kind": "at",
+            "a": "pets_05",
+            "column": 2
+          },
+          "refs": [
+            "pets_05"
+          ],
+          "column": 2
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Accessories",
+      "action": "Reconstruct accessories in any row.",
+      "items": [
+        "pets_01",
+        "pets_02",
+        "pets_00"
+      ],
+      "visibleClues": [
+        {
+          "icon": "pets_01",
+          "text": "Biscuit has the purple bow.",
+          "rule": {
+            "kind": "at",
+            "a": "pets_01",
+            "column": 0
+          },
+          "refs": [
+            "pets_01"
+          ],
+          "column": 0
+        },
+        {
+          "icon": "pets_00",
+          "text": "Clover has the red bandana.",
+          "rule": {
+            "kind": "at",
+            "a": "pets_00",
+            "column": 2
+          },
+          "refs": [
+            "pets_00"
+          ],
+          "column": 2
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Favourites",
+      "action": "Reconstruct favourites in any row.",
+      "items": [
+        "pets_06",
+        "pets_08",
+        "pets_07"
+      ],
+      "visibleClues": [
+        {
+          "icon": "pets_08",
+          "text": "The carrot goes with the teal scarf.",
+          "rule": {
+            "kind": "same",
+            "a": "pets_08",
+            "b": "pets_02"
+          },
+          "refs": [
+            "pets_08",
+            "pets_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "pets_07",
+          "text": "Clover has the yarn ball.",
+          "rule": {
+            "kind": "at",
+            "a": "pets_07",
+            "column": 2
+          },
+          "refs": [
+            "pets_07"
+          ],
+          "column": 2
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "items": [
+    {
+      "id": "pets_00",
+      "label": "Red bandana",
+      "sprite": "pets_00",
+      "native": true
+    },
+    {
+      "id": "pets_01",
+      "label": "Purple bow",
+      "sprite": "pets_01",
+      "native": true
+    },
+    {
+      "id": "pets_02",
+      "label": "Teal scarf",
+      "sprite": "pets_02",
+      "native": true
+    },
+    {
+      "id": "pets_03",
+      "label": "Blue oval bed",
+      "sprite": "pets_03",
+      "native": true
+    },
+    {
+      "id": "pets_04",
+      "label": "Mint square bed",
+      "sprite": "pets_04",
+      "native": true
+    },
+    {
+      "id": "pets_05",
+      "label": "Peach round bed",
+      "sprite": "pets_05",
+      "native": true
+    },
+    {
+      "id": "pets_06",
+      "label": "Tennis ball",
+      "sprite": "pets_06",
+      "native": true
+    },
+    {
+      "id": "pets_07",
+      "label": "Yarn ball",
+      "sprite": "pets_07",
+      "native": true
+    },
+    {
+      "id": "pets_08",
+      "label": "Carrot",
+      "sprite": "pets_08",
+      "native": true
+    }
+  ],
+  "start": [
+    "pets_04",
+    "pets_03",
+    "pets_05",
+    "pets_01",
+    "pets_00",
+    "pets_02",
+    "pets_08",
+    "pets_07",
+    "pets_06"
+  ],
+  "refills": [],
+  "moveLimit": 0,
+  "orderMode": "staged",
+  "firstClearCoins": 30,
+  "completionText": "A ticket tucked beside the carrot carries a bakery stamp.",
+  "chapterId": 1,
+  "referenceSolution": [
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    }
+  ],
+  "referenceMoveCount": 4,
+  "storyQuestion": "",
+  "dossier": null,
+  "cluePool": [],
+  "caseResolution": {
+    "question": "Who wanted the carrot?",
+    "answer": "Pip",
+    "icon": "pets_08",
+    "evidence": [
+      "The carrot belongs with the teal scarf.",
+      "Check which pet is wearing that scarf."
+    ]
+  },
+  "question": "Who wanted the carrot?",
+  "showPartialOwnerFeedback": false,
+  "schemaVersion": 5,
+  "evidenceReveal": "A ticket tucked beside the carrot carries a bakery stamp.",
+  "nextLead": "Check the bakery order.",
+  "evidenceIcon": "courier_ticket",
+  "clueGraphVersion": 2,
+  "difficulty": "practice",
+  "reasoningTip": "First match the names. For favourites, the carrot goes to the pet already wearing the teal scarf.",
+  "nextLevelId": 3,
+  "rows": 3,
+  "columns": 3,
+  "coaching": [
+    "Use the names above. Each pet gets one item from this set.",
+    "Use the names above. Each pet gets one item from this set.",
+    "“Goes with” means the same pet. Look for the teal scarf above."
+  ]
+}

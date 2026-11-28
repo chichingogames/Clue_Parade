@@ -1,0 +1,630 @@
+{
+  "schemaVersion": 5,
+  "id": 9,
+  "sourceTheme": 9,
+  "title": "Mini garage",
+  "subtitle": "Which vehicle carried the mystery crate?",
+  "question": "Which witness statement is wrong?",
+  "setupText": "The missing star trail leads here. Which vehicle carried the mystery crate?",
+  "completionText": "The crate travelled on a small utility vehicle, not the parade truck.",
+  "nextLead": "Its repair record belongs to the robot workshop.",
+  "rows": 3,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "garage_0",
+      "name": "Vehicle A",
+      "column": 0,
+      "rigId": "garage_0"
+    },
+    {
+      "id": "garage_1",
+      "name": "Vehicle B",
+      "column": 1,
+      "rigId": "garage_1"
+    },
+    {
+      "id": "garage_2",
+      "name": "Vehicle C",
+      "column": 2,
+      "rigId": "garage_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "garage_00",
+      "label": "Road tyres",
+      "sprite": "garage_00",
+      "native": true
+    },
+    {
+      "id": "garage_01",
+      "label": "Chunky tyres",
+      "sprite": "garage_01",
+      "native": true
+    },
+    {
+      "id": "garage_02",
+      "label": "Blue hub wheels",
+      "sprite": "garage_02",
+      "native": true
+    },
+    {
+      "id": "garage_03",
+      "label": "Roof flag",
+      "sprite": "garage_03",
+      "native": true
+    },
+    {
+      "id": "garage_04",
+      "label": "Roof rack",
+      "sprite": "garage_04",
+      "native": true
+    },
+    {
+      "id": "garage_05",
+      "label": "Roof ladder",
+      "sprite": "garage_05",
+      "native": true
+    },
+    {
+      "id": "garage_06",
+      "label": "Toolbox",
+      "sprite": "garage_06",
+      "native": true
+    },
+    {
+      "id": "garage_07",
+      "label": "Wood crate",
+      "sprite": "garage_07",
+      "native": true
+    },
+    {
+      "id": "garage_08",
+      "label": "Medic bag",
+      "sprite": "garage_08",
+      "native": true
+    },
+    {
+      "id": "l009_extra_00",
+      "label": "Blue jet",
+      "sprite": "space_04",
+      "native": false
+    },
+    {
+      "id": "l009_extra_01",
+      "label": "Red pennant",
+      "sprite": "harbour_04",
+      "native": false
+    },
+    {
+      "id": "l009_extra_02",
+      "label": "Delivery log",
+      "sprite": "delivery_log",
+      "native": false
+    },
+    {
+      "id": "l009_extra_03",
+      "label": "Fish pennant",
+      "sprite": "harbour_03",
+      "native": false
+    },
+    {
+      "id": "l009_extra_04",
+      "label": "Fox",
+      "sprite": "camping_06",
+      "native": false
+    },
+    {
+      "id": "l009_extra_05",
+      "label": "Route map",
+      "sprite": "route_map",
+      "native": false
+    },
+    {
+      "id": "l009_extra_06",
+      "label": "Sleeping bag",
+      "sprite": "camping_05",
+      "native": false
+    },
+    {
+      "id": "l009_extra_07",
+      "label": "Orange tent",
+      "sprite": "camping_00",
+      "native": false
+    },
+    {
+      "id": "l009_extra_08",
+      "label": "Red wax seal",
+      "sprite": "wax_seal",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Wheels",
+      "items": [
+        "garage_02",
+        "garage_01",
+        "garage_00"
+      ],
+      "action": "Reconstruct wheels in any row.",
+      "visibleClues": [
+        {
+          "icon": "garage_02",
+          "text": "Vehicle A has the blue hub wheels.",
+          "rule": {
+            "kind": "at",
+            "a": "garage_02",
+            "column": 0
+          },
+          "refs": [
+            "garage_02"
+          ],
+          "column": 0
+        },
+        {
+          "icon": "garage_01",
+          "text": "Vehicle B has the chunky tyres.",
+          "rule": {
+            "kind": "at",
+            "a": "garage_01",
+            "column": 1
+          },
+          "refs": [
+            "garage_01"
+          ],
+          "column": 1
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Roofs",
+      "items": [
+        "garage_05",
+        "garage_03",
+        "garage_04"
+      ],
+      "action": "Reconstruct roofs in any row.",
+      "visibleClues": [
+        {
+          "icon": "garage_02",
+          "text": "Vehicle A has the blue hub wheels.",
+          "rule": {
+            "kind": "at",
+            "a": "garage_02",
+            "column": 0
+          },
+          "refs": [
+            "garage_02"
+          ],
+          "column": 0
+        },
+        {
+          "icon": "garage_01",
+          "text": "Vehicle B has the chunky tyres.",
+          "rule": {
+            "kind": "at",
+            "a": "garage_01",
+            "column": 1
+          },
+          "refs": [
+            "garage_01"
+          ],
+          "column": 1
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Cargo",
+      "items": [
+        "garage_07",
+        "garage_06",
+        "garage_08"
+      ],
+      "action": "Reconstruct cargo in any row.",
+      "visibleClues": [
+        {
+          "icon": "garage_02",
+          "text": "Vehicle A has the blue hub wheels.",
+          "rule": {
+            "kind": "at",
+            "a": "garage_02",
+            "column": 0
+          },
+          "refs": [
+            "garage_02"
+          ],
+          "column": 0
+        },
+        {
+          "icon": "garage_01",
+          "text": "Vehicle B has the chunky tyres.",
+          "rule": {
+            "kind": "at",
+            "a": "garage_01",
+            "column": 1
+          },
+          "refs": [
+            "garage_01"
+          ],
+          "column": 1
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l009_extra_01",
+        "l009_extra_00",
+        "l009_extra_02"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l009_extra_01",
+          "text": "The red pennant goes with the wood crate.",
+          "rule": {
+            "kind": "same",
+            "a": "l009_extra_01",
+            "b": "garage_07"
+          },
+          "refs": [
+            "l009_extra_01",
+            "garage_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l009_extra_00",
+          "text": "The blue jet goes with the toolbox.",
+          "rule": {
+            "kind": "same",
+            "a": "l009_extra_00",
+            "b": "garage_06"
+          },
+          "refs": [
+            "l009_extra_00",
+            "garage_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l009_extra_04",
+        "l009_extra_03",
+        "l009_extra_05"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l009_extra_03",
+          "text": "The fish pennant goes with the blue jet.",
+          "rule": {
+            "kind": "same",
+            "a": "l009_extra_03",
+            "b": "l009_extra_00"
+          },
+          "refs": [
+            "l009_extra_03",
+            "l009_extra_00"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l009_extra_05",
+          "text": "The route map goes with the delivery log.",
+          "rule": {
+            "kind": "same",
+            "a": "l009_extra_05",
+            "b": "l009_extra_02"
+          },
+          "refs": [
+            "l009_extra_05",
+            "l009_extra_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l009_extra_08",
+        "l009_extra_06",
+        "l009_extra_07"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l009_extra_07",
+          "text": "The orange tent goes with the route map.",
+          "rule": {
+            "kind": "same",
+            "a": "l009_extra_07",
+            "b": "l009_extra_05"
+          },
+          "refs": [
+            "l009_extra_07",
+            "l009_extra_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l009_extra_08",
+          "text": "The red wax seal goes with the fox.",
+          "rule": {
+            "kind": "same",
+            "a": "l009_extra_08",
+            "b": "l009_extra_04"
+          },
+          "refs": [
+            "l009_extra_08",
+            "l009_extra_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "garage_08",
+    "garage_07",
+    "garage_00",
+    "garage_04",
+    "garage_02",
+    "garage_05",
+    "garage_01",
+    "garage_06",
+    "garage_03"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l009_extra_01",
+        "l009_extra_08",
+        "l009_extra_04"
+      ]
+    },
+    {
+      "items": [
+        "l009_extra_02",
+        "l009_extra_03",
+        "l009_extra_06"
+      ]
+    },
+    {
+      "items": [
+        "l009_extra_07",
+        "l009_extra_05",
+        "l009_extra_00"
+      ]
+    }
+  ],
+  "moveLimit": 38,
+  "difficulty": "practice",
+  "firstClearCoins": 30,
+  "designSeed": 862009,
+  "chapterId": 2,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "wax_seal",
+  "evidenceReveal": "The crate travelled on a small utility vehicle, not the parade truck.",
+  "durationTargetSeconds": [
+    50,
+    150
+  ],
+  "referenceSolution": [
+    {
+      "a": 2,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 2,
+      "b": 5
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    }
+  ],
+  "referenceMoveCount": 19,
+  "storyQuestion": "Which vehicle carried the mystery crate?",
+  "dossier": {
+    "label": "Speed",
+    "values": [
+      40,
+      20,
+      60
+    ],
+    "labels": [
+      "40 km/h",
+      "20 km/h",
+      "60 km/h"
+    ],
+    "low": "slowest vehicle",
+    "high": "fastest vehicle"
+  },
+  "cluePool": [
+    {
+      "icon": "garage_02",
+      "text": "Vehicle A has the blue hub wheels.",
+      "rule": {
+        "kind": "at",
+        "a": "garage_02",
+        "column": 0
+      },
+      "refs": [
+        "garage_02"
+      ],
+      "column": 0
+    },
+    {
+      "icon": "garage_01",
+      "text": "Vehicle B has the chunky tyres.",
+      "rule": {
+        "kind": "at",
+        "a": "garage_01",
+        "column": 1
+      },
+      "refs": [
+        "garage_01"
+      ],
+      "column": 1
+    },
+    {
+      "icon": "garage_03",
+      "text": "The roof flag goes with the chunky tyres.",
+      "rule": {
+        "kind": "same",
+        "a": "garage_03",
+        "b": "garage_01"
+      },
+      "refs": [
+        "garage_03",
+        "garage_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "garage_04",
+      "text": "The roof rack goes with the road tyres.",
+      "rule": {
+        "kind": "same",
+        "a": "garage_04",
+        "b": "garage_00"
+      },
+      "refs": [
+        "garage_04",
+        "garage_00"
+      ],
+      "column": null
+    },
+    {
+      "icon": "garage_07",
+      "text": "The wood crate goes with the roof ladder.",
+      "rule": {
+        "kind": "same",
+        "a": "garage_07",
+        "b": "garage_05"
+      },
+      "refs": [
+        "garage_07",
+        "garage_05"
+      ],
+      "column": null
+    },
+    {
+      "icon": "garage_08",
+      "text": "The medic bag goes with the roof rack.",
+      "rule": {
+        "kind": "same",
+        "a": "garage_08",
+        "b": "garage_04"
+      },
+      "refs": [
+        "garage_08",
+        "garage_04"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "After building the native parts, choose either available request. Both use familiar links.",
+  "caseResolution": {
+    "question": "Which witness statement is wrong?",
+    "answer": "Road tyres goes with roof ladder.",
+    "icon": null,
+    "evidence": [
+      "Check each witness statement against the finished scene.",
+      "Exactly one statement pairs details from different profiles."
+    ],
+    "statements": [
+      "Blue hub wheels goes with roof ladder.",
+      "Chunky tyres goes with roof flag.",
+      "Road tyres goes with roof ladder."
+    ]
+  },
+  "clueGraphVersion": 2,
+  "nextLevelId": 10,
+  "coaching": [
+    "After building the native parts, choose either available request. Both use familiar links.",
+    "After building the native parts, choose either available request. Both use familiar links.",
+    "After building the native parts, choose either available request. Both use familiar links.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

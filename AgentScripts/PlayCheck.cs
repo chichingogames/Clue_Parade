@@ -27,7 +27,7 @@ public static class PlayCheck
         foreach (var card in Object.FindObjectsByType<UI_SubjectCard>(FindObjectsSortMode.None))
         {
             if (card.transform.parent.name != "Reference") continue;
-            var rig = card.GetComponentsInChildren<RectTransform>(true).FirstOrDefault(t => t.name == "Rig");
+            var rig = card.GetComponentInChildren<Chichingo.TilewrapMystery.TilewrapRigView>(true);
             int on = rig == null ? 0 : rig.GetComponentsInChildren<UnityEngine.UI.Image>(false).Length;
             text.Append($" {card.name}={on}");
         }

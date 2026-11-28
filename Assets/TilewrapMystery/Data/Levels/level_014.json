@@ -1,0 +1,704 @@
+{
+  "schemaVersion": 5,
+  "id": 14,
+  "sourceTheme": 14,
+  "title": "Space garage",
+  "subtitle": "Is the exhibit’s gold star the missing original?",
+  "question": "Which witness statement is wrong?",
+  "setupText": "The missing star trail leads here. Is the exhibit’s gold star the missing original?",
+  "completionText": "The exhibit star is a model. The crate photo shows rain on an uncovered parcel.",
+  "nextLead": "The aquarium staff kept the waterproof handling note.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "space_0",
+      "name": "Craft A",
+      "column": 0,
+      "rigId": "space_0"
+    },
+    {
+      "id": "space_1",
+      "name": "Craft B",
+      "column": 1,
+      "rigId": "space_1"
+    },
+    {
+      "id": "space_2",
+      "name": "Craft C",
+      "column": 2,
+      "rigId": "space_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "space_00",
+      "label": "Round cockpit",
+      "sprite": "space_00",
+      "native": true
+    },
+    {
+      "id": "space_01",
+      "label": "Pointed cockpit",
+      "sprite": "space_01",
+      "native": true
+    },
+    {
+      "id": "space_02",
+      "label": "Wide cockpit",
+      "sprite": "space_02",
+      "native": true
+    },
+    {
+      "id": "space_03",
+      "label": "Red booster",
+      "sprite": "space_03",
+      "native": true
+    },
+    {
+      "id": "space_04",
+      "label": "Blue jet",
+      "sprite": "space_04",
+      "native": true
+    },
+    {
+      "id": "space_05",
+      "label": "Ring engine",
+      "sprite": "space_05",
+      "native": true
+    },
+    {
+      "id": "space_06",
+      "label": "Satellite",
+      "sprite": "space_06",
+      "native": true
+    },
+    {
+      "id": "space_07",
+      "label": "Moon crystal",
+      "sprite": "space_07",
+      "native": true
+    },
+    {
+      "id": "space_08",
+      "label": "Mini rover",
+      "sprite": "space_08",
+      "native": true
+    },
+    {
+      "id": "l014_extra_00",
+      "label": "Roof flag",
+      "sprite": "garage_03",
+      "native": false
+    },
+    {
+      "id": "l014_extra_01",
+      "label": "Green brush",
+      "sprite": "robots_05",
+      "native": false
+    },
+    {
+      "id": "l014_extra_02",
+      "label": "Courier ticket",
+      "sprite": "courier_ticket",
+      "native": false
+    },
+    {
+      "id": "l014_extra_03",
+      "label": "Gold cap",
+      "sprite": "sweetmachines_05",
+      "native": false
+    },
+    {
+      "id": "l014_extra_04",
+      "label": "Chunky tyres",
+      "sprite": "garage_01",
+      "native": false
+    },
+    {
+      "id": "l014_extra_05",
+      "label": "Pocket watch",
+      "sprite": "pocket_watch",
+      "native": false
+    },
+    {
+      "id": "l014_extra_06",
+      "label": "Cork stopper",
+      "sprite": "potions_03",
+      "native": false
+    },
+    {
+      "id": "l014_extra_07",
+      "label": "Blue hub wheels",
+      "sprite": "garage_02",
+      "native": false
+    },
+    {
+      "id": "l014_extra_08",
+      "label": "Secret note",
+      "sprite": "secret_note",
+      "native": false
+    },
+    {
+      "id": "l014_extra_09",
+      "label": "Purple square cell",
+      "sprite": "robots_06",
+      "native": false
+    },
+    {
+      "id": "l014_extra_10",
+      "label": "Star dial",
+      "sprite": "sweetmachines_07",
+      "native": false
+    },
+    {
+      "id": "l014_extra_11",
+      "label": "Route map",
+      "sprite": "route_map",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Cockpits",
+      "items": [
+        "space_00",
+        "space_02",
+        "space_01"
+      ],
+      "action": "Reconstruct cockpits in any row.",
+      "visibleClues": [
+        {
+          "icon": "space_01",
+          "text": "The most-powered craft has the pointed cockpit.",
+          "rule": {
+            "kind": "highest",
+            "a": "space_01"
+          },
+          "refs": [
+            "space_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "space_00",
+          "text": "The round cockpit craft has less power than the wide cockpit craft.",
+          "rule": {
+            "kind": "less",
+            "a": "space_00",
+            "b": "space_02"
+          },
+          "refs": [
+            "space_00",
+            "space_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Engines",
+      "items": [
+        "space_04",
+        "space_03",
+        "space_05"
+      ],
+      "action": "Reconstruct engines in any row.",
+      "visibleClues": [
+        {
+          "icon": "space_01",
+          "text": "The most-powered craft has the pointed cockpit.",
+          "rule": {
+            "kind": "highest",
+            "a": "space_01"
+          },
+          "refs": [
+            "space_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "space_00",
+          "text": "The round cockpit craft has less power than the wide cockpit craft.",
+          "rule": {
+            "kind": "less",
+            "a": "space_00",
+            "b": "space_02"
+          },
+          "refs": [
+            "space_00",
+            "space_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Cargo",
+      "items": [
+        "space_08",
+        "space_06",
+        "space_07"
+      ],
+      "action": "Reconstruct cargo in any row.",
+      "visibleClues": [
+        {
+          "icon": "space_01",
+          "text": "The most-powered craft has the pointed cockpit.",
+          "rule": {
+            "kind": "highest",
+            "a": "space_01"
+          },
+          "refs": [
+            "space_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "space_00",
+          "text": "The round cockpit craft has less power than the wide cockpit craft.",
+          "rule": {
+            "kind": "less",
+            "a": "space_00",
+            "b": "space_02"
+          },
+          "refs": [
+            "space_00",
+            "space_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l014_extra_00",
+        "l014_extra_01",
+        "l014_extra_02"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l014_extra_02",
+          "text": "The courier ticket goes with the moon crystal.",
+          "rule": {
+            "kind": "same",
+            "a": "l014_extra_02",
+            "b": "space_07"
+          },
+          "refs": [
+            "l014_extra_02",
+            "space_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l014_extra_00",
+          "text": "The roof flag goes with the mini rover.",
+          "rule": {
+            "kind": "same",
+            "a": "l014_extra_00",
+            "b": "space_08"
+          },
+          "refs": [
+            "l014_extra_00",
+            "space_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l014_extra_03",
+        "l014_extra_04",
+        "l014_extra_05"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l014_extra_03",
+          "text": "The gold cap goes with the roof flag.",
+          "rule": {
+            "kind": "same",
+            "a": "l014_extra_03",
+            "b": "l014_extra_00"
+          },
+          "refs": [
+            "l014_extra_03",
+            "l014_extra_00"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l014_extra_04",
+          "text": "The chunky tyres goes with the green brush.",
+          "rule": {
+            "kind": "same",
+            "a": "l014_extra_04",
+            "b": "l014_extra_01"
+          },
+          "refs": [
+            "l014_extra_04",
+            "l014_extra_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l014_extra_06",
+        "l014_extra_08",
+        "l014_extra_07"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l014_extra_08",
+          "text": "The secret note goes with the chunky tyres.",
+          "rule": {
+            "kind": "same",
+            "a": "l014_extra_08",
+            "b": "l014_extra_04"
+          },
+          "refs": [
+            "l014_extra_08",
+            "l014_extra_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l014_extra_07",
+          "text": "The blue hub wheels goes with the pocket watch.",
+          "rule": {
+            "kind": "same",
+            "a": "l014_extra_07",
+            "b": "l014_extra_05"
+          },
+          "refs": [
+            "l014_extra_07",
+            "l014_extra_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l014_extra_10",
+        "l014_extra_11",
+        "l014_extra_09"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l014_extra_09",
+          "text": "The purple square cell goes with the blue hub wheels.",
+          "rule": {
+            "kind": "same",
+            "a": "l014_extra_09",
+            "b": "l014_extra_07"
+          },
+          "refs": [
+            "l014_extra_09",
+            "l014_extra_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l014_extra_10",
+          "text": "The star dial goes with the cork stopper.",
+          "rule": {
+            "kind": "same",
+            "a": "l014_extra_10",
+            "b": "l014_extra_06"
+          },
+          "refs": [
+            "l014_extra_10",
+            "l014_extra_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "space_02",
+    "l014_extra_01",
+    "space_04",
+    "space_05",
+    "space_07",
+    "l014_extra_02",
+    "l014_extra_00",
+    "space_03",
+    "space_06",
+    "space_01",
+    "space_08",
+    "space_00"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l014_extra_10",
+        "l014_extra_06",
+        "l014_extra_03"
+      ]
+    },
+    {
+      "items": [
+        "l014_extra_04",
+        "l014_extra_07",
+        "l014_extra_09"
+      ]
+    },
+    {
+      "items": [
+        "l014_extra_05",
+        "l014_extra_08",
+        "l014_extra_11"
+      ]
+    }
+  ],
+  "moveLimit": 44,
+  "difficulty": "practice",
+  "firstClearCoins": 30,
+  "designSeed": 862014,
+  "chapterId": 3,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "flashlight",
+  "evidenceReveal": "The exhibit star is a model. The crate photo shows rain on an uncovered parcel.",
+  "durationTargetSeconds": [
+    50,
+    150
+  ],
+  "referenceSolution": [
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 0,
+      "b": 3
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 22,
+  "storyQuestion": "Is the exhibit’s gold star the missing original?",
+  "dossier": {
+    "label": "Power",
+    "values": [
+      20,
+      50,
+      80
+    ],
+    "labels": [
+      "20%",
+      "50%",
+      "80%"
+    ],
+    "low": "least-powered craft",
+    "high": "most-powered craft"
+  },
+  "cluePool": [
+    {
+      "icon": "space_01",
+      "text": "The most-powered craft has the pointed cockpit.",
+      "rule": {
+        "kind": "highest",
+        "a": "space_01"
+      },
+      "refs": [
+        "space_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "space_00",
+      "text": "The round cockpit craft has less power than the wide cockpit craft.",
+      "rule": {
+        "kind": "less",
+        "a": "space_00",
+        "b": "space_02"
+      },
+      "refs": [
+        "space_00",
+        "space_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "space_04",
+      "text": "The blue jet goes with the round cockpit.",
+      "rule": {
+        "kind": "same",
+        "a": "space_04",
+        "b": "space_00"
+      },
+      "refs": [
+        "space_04",
+        "space_00"
+      ],
+      "column": null
+    },
+    {
+      "icon": "space_03",
+      "text": "The red booster goes with the wide cockpit.",
+      "rule": {
+        "kind": "same",
+        "a": "space_03",
+        "b": "space_02"
+      },
+      "refs": [
+        "space_03",
+        "space_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "space_07",
+      "text": "The moon crystal goes with the ring engine.",
+      "rule": {
+        "kind": "same",
+        "a": "space_07",
+        "b": "space_05"
+      },
+      "refs": [
+        "space_07",
+        "space_05"
+      ],
+      "column": null
+    },
+    {
+      "icon": "space_06",
+      "text": "The satellite goes with the red booster.",
+      "rule": {
+        "kind": "same",
+        "a": "space_06",
+        "b": "space_03"
+      },
+      "refs": [
+        "space_06",
+        "space_03"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Compare the visible power values. More or less power refers to a profile’s badge.",
+  "caseResolution": {
+    "question": "Which witness statement is wrong?",
+    "answer": "Pointed cockpit goes with blue jet.",
+    "icon": null,
+    "evidence": [
+      "Check each witness statement against the finished scene.",
+      "Exactly one statement pairs details from different profiles."
+    ],
+    "statements": [
+      "Round cockpit goes with blue jet.",
+      "Wide cockpit goes with red booster.",
+      "Pointed cockpit goes with blue jet."
+    ]
+  },
+  "clueGraphVersion": 2,
+  "nextLevelId": 15,
+  "coaching": [
+    "Compare the visible power values. More or less power refers to a profile’s badge.",
+    "Compare the visible power values. More or less power refers to a profile’s badge.",
+    "Compare the visible power values. More or less power refers to a profile’s badge.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

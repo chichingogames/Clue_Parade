@@ -1,0 +1,345 @@
+{
+  "id": 5,
+  "title": "Breakfast club",
+  "subtitle": "A new delivery arrives after your first complete set.",
+  "subjects": [
+    {
+      "id": "breakfast_0",
+      "name": "Table A",
+      "column": 0,
+      "rigId": "breakfast_0"
+    },
+    {
+      "id": "breakfast_1",
+      "name": "Table B",
+      "column": 1,
+      "rigId": "breakfast_1"
+    },
+    {
+      "id": "breakfast_2",
+      "name": "Table C",
+      "column": 2,
+      "rigId": "breakfast_2"
+    }
+  ],
+  "sets": [
+    {
+      "label": "Mains",
+      "action": "Reconstruct mains in any row.",
+      "items": [
+        "breakfast_00",
+        "breakfast_02",
+        "breakfast_01"
+      ],
+      "visibleClues": [
+        {
+          "icon": "breakfast_02",
+          "text": "Table B has the croissant.",
+          "rule": {
+            "kind": "at",
+            "a": "breakfast_02",
+            "column": 1
+          },
+          "refs": [
+            "breakfast_02"
+          ],
+          "column": 1
+        },
+        {
+          "icon": "breakfast_01",
+          "text": "Table C has the pancakes.",
+          "rule": {
+            "kind": "at",
+            "a": "breakfast_01",
+            "column": 2
+          },
+          "refs": [
+            "breakfast_01"
+          ],
+          "column": 2
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Drinks",
+      "action": "Reconstruct drinks in any row.",
+      "items": [
+        "breakfast_03",
+        "breakfast_04",
+        "breakfast_05"
+      ],
+      "visibleClues": [
+        {
+          "icon": "breakfast_03",
+          "text": "The orange juice goes with the scrambled eggs.",
+          "rule": {
+            "kind": "same",
+            "a": "breakfast_03",
+            "b": "breakfast_00"
+          },
+          "refs": [
+            "breakfast_03",
+            "breakfast_00"
+          ],
+          "column": null
+        },
+        {
+          "icon": "breakfast_05",
+          "text": "The coffee goes with the pancakes.",
+          "rule": {
+            "kind": "same",
+            "a": "breakfast_05",
+            "b": "breakfast_01"
+          },
+          "refs": [
+            "breakfast_05",
+            "breakfast_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Fruit",
+      "action": "Reconstruct fruit in any row.",
+      "items": [
+        "breakfast_07",
+        "breakfast_06",
+        "breakfast_08"
+      ],
+      "visibleClues": [
+        {
+          "icon": "breakfast_06",
+          "text": "The apple goes with the milk.",
+          "rule": {
+            "kind": "same",
+            "a": "breakfast_06",
+            "b": "breakfast_04"
+          },
+          "refs": [
+            "breakfast_06",
+            "breakfast_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "breakfast_07",
+          "text": "The banana goes with the orange juice.",
+          "rule": {
+            "kind": "same",
+            "a": "breakfast_07",
+            "b": "breakfast_03"
+          },
+          "refs": [
+            "breakfast_07",
+            "breakfast_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Sides",
+      "action": "Reconstruct sides in any row.",
+      "items": [
+        "toast_08",
+        "toast_06",
+        "toast_07"
+      ],
+      "visibleClues": [
+        {
+          "icon": "toast_07",
+          "text": "The tomato soup goes with the grapes.",
+          "rule": {
+            "kind": "same",
+            "a": "toast_07",
+            "b": "breakfast_08"
+          },
+          "refs": [
+            "toast_07",
+            "breakfast_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "toast_06",
+          "text": "The leaf salad goes with the apple.",
+          "rule": {
+            "kind": "same",
+            "a": "toast_06",
+            "b": "breakfast_06"
+          },
+          "refs": [
+            "toast_06",
+            "breakfast_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "items": [
+    {
+      "id": "breakfast_00",
+      "label": "Scrambled eggs",
+      "sprite": "breakfast_00",
+      "native": true
+    },
+    {
+      "id": "breakfast_01",
+      "label": "Pancakes",
+      "sprite": "breakfast_01",
+      "native": true
+    },
+    {
+      "id": "breakfast_02",
+      "label": "Croissant",
+      "sprite": "breakfast_02",
+      "native": true
+    },
+    {
+      "id": "breakfast_03",
+      "label": "Orange juice",
+      "sprite": "breakfast_03",
+      "native": true
+    },
+    {
+      "id": "breakfast_04",
+      "label": "Milk",
+      "sprite": "breakfast_04",
+      "native": true
+    },
+    {
+      "id": "breakfast_05",
+      "label": "Coffee",
+      "sprite": "breakfast_05",
+      "native": true
+    },
+    {
+      "id": "breakfast_06",
+      "label": "Apple",
+      "sprite": "breakfast_06",
+      "native": true
+    },
+    {
+      "id": "breakfast_07",
+      "label": "Banana",
+      "sprite": "breakfast_07",
+      "native": true
+    },
+    {
+      "id": "breakfast_08",
+      "label": "Grapes",
+      "sprite": "breakfast_08",
+      "native": true
+    },
+    {
+      "id": "toast_06",
+      "label": "Leaf salad",
+      "sprite": "toast_06",
+      "native": false
+    },
+    {
+      "id": "toast_07",
+      "label": "Tomato soup",
+      "sprite": "toast_07",
+      "native": false
+    },
+    {
+      "id": "toast_08",
+      "label": "Pickles",
+      "sprite": "toast_08",
+      "native": false
+    }
+  ],
+  "start": [
+    "breakfast_02",
+    "breakfast_01",
+    "breakfast_00",
+    "breakfast_05",
+    "breakfast_03",
+    "breakfast_04",
+    "breakfast_07",
+    "breakfast_08",
+    "breakfast_06"
+  ],
+  "refills": [
+    {
+      "items": [
+        "toast_06",
+        "toast_07",
+        "toast_08"
+      ]
+    }
+  ],
+  "moveLimit": 24,
+  "orderMode": "staged",
+  "firstClearCoins": 30,
+  "completionText": "The festival star never arrived. Someone changed its delivery tag.",
+  "chapterId": 1,
+  "referenceSolution": [
+    {
+      "a": 1,
+      "b": 2
+    },
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    }
+  ],
+  "referenceMoveCount": 7,
+  "storyQuestion": "",
+  "dossier": null,
+  "cluePool": [],
+  "reasoningTip": "Use the two clues. Each profile gets one item from this set; the last item goes to the remaining profile.",
+  "caseResolution": {
+    "question": "What was served with the milk?",
+    "answer": "Leaf salad",
+    "icon": "toast_06",
+    "evidence": [
+      "The leaf salad belongs with the milk.",
+      "Both appear under the same finished table."
+    ]
+  },
+  "question": "What was served with the milk?",
+  "showPartialOwnerFeedback": false,
+  "schemaVersion": 5,
+  "evidenceReveal": "The festival star never arrived. Someone changed its delivery tag.",
+  "nextLead": "Trace the changed tag through the holiday luggage.",
+  "evidenceIcon": "festival_star",
+  "clueGraphVersion": 2,
+  "difficulty": "practice",
+  "nextLevelId": 6,
+  "rows": 3,
+  "columns": 3,
+  "coaching": [
+    "Use familiar clues. Finish the first set to make room.",
+    "New supplies arrived; your completed sets stay earned.",
+    "New supplies arrived; your completed sets stay earned.",
+    "New supplies arrived; your completed sets stay earned."
+  ]
+}

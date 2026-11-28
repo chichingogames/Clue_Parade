@@ -4,23 +4,19 @@ using System.IO;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEditor;
-using Chichingo.TilewrapVaried;
+using Chichingo.TilewrapMystery;
 using UnityEngine;
 
-// Builds the board prefabs on the content pack's art (Assets/TilewrapVaried, see HandoffBuilder) and
+// Builds the board prefabs on the content pack's art (Assets/TilewrapMystery, see HandoffBuilder) and
 // fills Resources/FileRef.asset:
 //   Sprites/Placeholder/Solid.png   generated white square (board mask, dividers)
 //   Prefabs/Gameobjects/Cell, ItemTile
-//   FileRef: prefabs, the content library (TilewrapVaried/Generated, made by the pack's importer),
-//   music (Audio/Music/*.wav, first one) and sounds: TileMatch = the pack's match_1..3 and
-//   LevelComplete = level_win at their content.json gains, the rest Audio/SFX/{sound_type}.wav or
-//   {sound_type}_NN.wav
+//   FileRef: prefabs, the content library (TilewrapMystery/Generated, made by the pack's importer),
+//   music (the pack's mystery_loop) and sounds: the pack's clips at their content.json gains where
+//   PackKeys names one (TileMatch = match_1..3), else Audio/SFX/{sound_type}.wav or {sound_type}_NN.wav
 // Re-runnable: existing prefabs are kept (so prefab edits survive) and FileRef tables are only filled when empty.
 public static class AssetBuilder
 {
-    public const string CasesPath = "Assets/Game Assets/Data/delivery_cases.json";
-    public const string EvidenceFolder = "Assets/Game Assets/Sprites/Evidence";
-
     private const string SpriteFolder = "Assets/Game Assets/Sprites/Placeholder";
     private const string PrefabFolder = "Assets/Game Assets/Prefabs/Gameobjects";
     private const string MusicFolder = "Assets/Game Assets/Audio/Music";
@@ -73,11 +69,11 @@ public static class AssetBuilder
         importer.SaveAndReimport();
     }
 
-    // Music streams (long, compressed); effects (ours and the pack's) decompress on load (short,
-    // played often, no latency).
+    // Music streams (long, compressed); our effects decompress on load (short, played often, no
+    // latency). The pack's own audio keeps the import settings its importer gives it.
     private static void ImportAudio()
     {
-        foreach (string guid in AssetDatabase.FindAssets("t:AudioClip", new[] { MusicFolder, SfxFolder, HandoffBuilder.Root + "/Audio" }))
+        foreach (string guid in AssetDatabase.FindAssets("t:AudioClip", new[] { MusicFolder, SfxFolder }))
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
             var importer = (AudioImporter)AssetImporter.GetAtPath(path);
@@ -191,18 +187,18 @@ public static class AssetBuilder
         SetIfEmpty(so.FindProperty("_cellPrefab"), cell);
         SetIfEmpty(so.FindProperty("_itemTilePrefab"), itemTile);
         var library = AssetDatabase.LoadAssetAtPath<TilewrapContentLibrary>(HandoffBuilder.LibraryPath);
-        if (library == null) Debug.LogWarning($"[AssetBuilder] {HandoffBuilder.LibraryPath} is missing: run Tools > Chichingo > Tilewrap > Build 30-level content.");
+        if (library == null) Debug.LogWarning($"[AssetBuilder] {HandoffBuilder.LibraryPath} is missing: run Tools > Chichingo > Tilewrap > Build current 30-level content.");
         SetIfEmpty(so.FindProperty("_content"), library);
-        var cases = AssetDatabase.LoadAssetAtPath<TextAsset>(CasesPath);
-        if (cases == null) Debug.LogWarning($"[AssetBuilder] {CasesPath} is missing: the 30 cases.");
-        SetIfEmpty(so.FindProperty("_cases"), cases);
-        FillEvidence(so.FindProperty("_evidenceSprites"));
 
         if (so.FindProperty("_music").objectReferenceValue == null)
         {
-            var music = AssetDatabase.FindAssets("t:AudioClip", new[] { MusicFolder });
-            if (music.Length > 0)
-                so.FindProperty("_music").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(AssetDatabase.GUIDToAssetPath(music[0]));
+            var loop = PackClip(library, "mystery_loop", out _);
+            if (loop == null)
+            {
+                var music = AssetDatabase.FindAssets("t:AudioClip", new[] { MusicFolder });
+                if (music.Length > 0) loop = AssetDatabase.LoadAssetAtPath<AudioClip>(AssetDatabase.GUIDToAssetPath(music[0]));
+            }
+            so.FindProperty("_music").objectReferenceValue = loop;
         }
 
         var sounds = so.FindProperty("_sounds");
@@ -229,22 +225,54 @@ public static class AssetBuilder
         EditorUtility.SetDirty(fileRef);
     }
 
-    // The pack's own sounds at their manifest gains: match_1..3 for TileMatch (1, 2, 3+ new
-    // matches), level_win for LevelComplete. Null for other types.
+    // The pack's audio key(s) for each sound (Integration.md's event table); null = our own SFX file.
+    private static string[] PackKeys(SoundType type) => type switch
+    {
+        SoundType.SwipeSettle => new[] { "swap" },
+        SoundType.TileMatch => new[] { "match_1", "match_2", "match_3" },   // 1 set, double, triple+ cascade
+        SoundType.LevelComplete => new[] { "level_win" },
+        SoundType.OutOfMoves => new[] { "soft_fail" },
+        SoundType.Undo => new[] { "undo" },
+        SoundType.Invalid => new[] { "invalid" },
+        SoundType.Clue => new[] { "clue" },
+        SoundType.Notebook => new[] { "notebook" },
+        SoundType.Hint => new[] { "hint" },
+        SoundType.Refill => new[] { "refill" },
+        SoundType.Coins => new[] { "coins" },
+        SoundType.CaseClosed => new[] { "case_closed" },
+        _ => null,
+    };
+
+    // The pack's clips for a sound at their content.json gains, or null.
     private static AudioClip[] PackSounds(SoundType type, TilewrapContentLibrary library, out float[] gains)
     {
         gains = null;
-        string[] keys = type == SoundType.TileMatch ? new[] { "match_1", "match_2", "match_3" }
-                      : type == SoundType.LevelComplete ? new[] { "level_win" } : null;
-        if (keys == null || library == null || library.audio == null) return null;
+        var keys = PackKeys(type);
+        if (keys == null) return null;
         var clips = new List<AudioClip>();
         var volumes = new List<float>();
         foreach (string key in keys)
-            foreach (var entry in library.audio)
-                if (entry.id == key && entry.clip != null) { clips.Add(entry.clip); volumes.Add(entry.volume); }
-        if (clips.Count != keys.Length) return null;
+        {
+            var clip = PackClip(library, key, out float volume);
+            if (clip == null) return null;
+            clips.Add(clip);
+            volumes.Add(volume);
+        }
         gains = volumes.ToArray();
         return clips.ToArray();
+    }
+
+    private static AudioClip PackClip(TilewrapContentLibrary library, string key, out float volume)
+    {
+        volume = 1f;
+        if (library == null || library.contentJson == null) return null;
+        foreach (var record in library.Content.audio)
+        {
+            if (record.key != key) continue;
+            volume = record.volume;
+            return AssetDatabase.LoadAssetAtPath<AudioClip>(record.path);
+        }
+        return null;
     }
 
     // SoundType.Undo -> SFX/undo.wav, or undo_01.wav, undo_02.wav... in name order.
@@ -266,31 +294,6 @@ public static class AssetBuilder
     {
         array.arraySize++;
         return array.GetArrayElementAtIndex(array.arraySize - 1);
-    }
-
-    // The evidence props (art the pack lacks): imported as single sprites (100 px per unit, no
-    // mipmaps), listed in FileRef when its list is empty.
-    private static void FillEvidence(SerializedProperty property)
-    {
-        if (property.arraySize > 0) return;
-        var sprites = new List<Sprite>();
-        foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { EvidenceFolder }))
-        {
-            var path = AssetDatabase.GUIDToAssetPath(guid);
-            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
-            if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single || importer.mipmapEnabled)
-            {
-                importer.textureType = TextureImporterType.Sprite;
-                importer.spriteImportMode = SpriteImportMode.Single;
-                importer.mipmapEnabled = false;
-                importer.alphaIsTransparency = true;
-                importer.SaveAndReimport();
-            }
-            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-            if (sprite != null) sprites.Add(sprite);
-        }
-        property.arraySize = sprites.Count;
-        for (int i = 0; i < sprites.Count; i++) property.GetArrayElementAtIndex(i).objectReferenceValue = sprites[i];
     }
 
     private static void SetIfEmpty(SerializedProperty property, UnityEngine.Object value)

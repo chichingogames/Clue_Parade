@@ -14,22 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FileRef
   _cellPrefab: {fileID: 5812898266030012145, guid: 41738945ffb35d645a18727c82e67f9a, type: 3}
   _itemTilePrefab: {fileID: 8973855979378694257, guid: b494cab78972f0d4baa1031fdba98741, type: 3}
-  _content: {fileID: 11400000, guid: 5ff56c179794caa4da818823c856961f, type: 2}
-  _cases: {fileID: 4900000, guid: 335818ff912f92e4180f891bf0184fa1, type: 3}
-  _evidenceSprites:
-  - {fileID: 21300000, guid: 12b343e6531559743b409accd71128ef, type: 3}
-  - {fileID: 21300000, guid: e826dc34e6f933f4ca440b15d0531b43, type: 3}
-  - {fileID: 21300000, guid: 76b4d01c8597b14458b5aeab9b33a81e, type: 3}
-  - {fileID: 21300000, guid: 43e1790d1e9483b43bece16e088634ce, type: 3}
-  - {fileID: 21300000, guid: 308d64127482a384aaf9ccf0294864ff, type: 3}
-  - {fileID: 21300000, guid: f9329d65ee5455945813b35098530151, type: 3}
-  - {fileID: 21300000, guid: d45310da3526e67438d40d077933f852, type: 3}
-  - {fileID: 21300000, guid: c5cfac4b554efa64c8f36e94d98cdc4d, type: 3}
-  - {fileID: 21300000, guid: 04f9e19f62bb2494ba16f7a974be5afa, type: 3}
-  - {fileID: 21300000, guid: 96a7572fc70c47c4ca577000096a1e8d, type: 3}
-  - {fileID: 21300000, guid: 050a0b25a13c878449a69239fd9190b4, type: 3}
-  - {fileID: 21300000, guid: 7defd40bde035324aa4cdd07a3191e9c, type: 3}
-  _music: {fileID: 8300000, guid: d9b939ba5a2f03e49841571aa0847a79, type: 3}
+  _content: {fileID: 11400000, guid: d420220a2e0c314439fdfcd330e847fb, type: 2}
+  _music: {fileID: 8300000, guid: 086651076662ed645ad64f53f96ce81b, type: 3}
   _sounds:
   - Type: 0
     Clips:
@@ -38,30 +24,32 @@ MonoBehaviour:
     ClipVolumes: []
   - Type: 1
     Clips:
-    - {fileID: 8300000, guid: 00b639e1cd31e7147ae0703c74de79cf, type: 3}
+    - {fileID: 8300000, guid: 62e3c34f651113e49beaab9224e28be2, type: 3}
     Volume: 1
-    ClipVolumes: []
+    ClipVolumes:
+    - 0.8
   - Type: 2
     Clips:
-    - {fileID: 8300000, guid: 03a856c0b4d7951418b1db3cbbfb5600, type: 3}
-    - {fileID: 8300000, guid: 1224cc689d677544fbe23da70badeb9a, type: 3}
-    - {fileID: 8300000, guid: 22e649274b5ba8b4db94195710f07776, type: 3}
+    - {fileID: 8300000, guid: 6f357226e3ce48b48ab2b0d927b93df7, type: 3}
+    - {fileID: 8300000, guid: b6e2b3cfa3b498949b6d5f895c6a6710, type: 3}
+    - {fileID: 8300000, guid: 93af16716ed6fc648bb0ef1cb7d202c8, type: 3}
     Volume: 1
     ClipVolumes:
-    - 0.083651
-    - 0.10004
-    - 0.10004
+    - 0.65
+    - 0.65
+    - 0.65
   - Type: 4
     Clips:
-    - {fileID: 8300000, guid: b4daf6ec06e4cf34dbec6ee64931f69b, type: 3}
+    - {fileID: 8300000, guid: 28d1f646390673440aed3f7a81f8f6e1, type: 3}
     Volume: 1
     ClipVolumes:
-    - 0.10004
+    - 0.8
   - Type: 5
     Clips:
-    - {fileID: 8300000, guid: a530cdb88243e7d4487cac92583baf96, type: 3}
+    - {fileID: 8300000, guid: f62ebdee2fda3d24da669c9db3c995a2, type: 3}
     Volume: 1
-    ClipVolumes: []
+    ClipVolumes:
+    - 0.8
   - Type: 6
     Clips:
     - {fileID: 8300000, guid: ea329cd147d570e42a189b326d30f19d, type: 3}
@@ -69,6 +57,49 @@ MonoBehaviour:
     ClipVolumes: []
   - Type: 7
     Clips:
-    - {fileID: 8300000, guid: 089196f1e93bd524b886d203cfd1be63, type: 3}
+    - {fileID: 8300000, guid: 8d935464dbe7d004695e3539caeec6b4, type: 3}
     Volume: 1
-    ClipVolumes: []
+    ClipVolumes:
+    - 0.8
+  - Type: 8
+    Clips:
+    - {fileID: 8300000, guid: affd9755ff0142d4ca47e31bb7bb577c, type: 3}
+    Volume: 1
+    ClipVolumes:
+    - 0.8
+  - Type: 9
+    Clips:
+    - {fileID: 8300000, guid: 1232c46af08599d4ea5a4e1484681570, type: 3}
+    Volume: 1
+    ClipVolumes:
+    - 0.8
+  - Type: 10
+    Clips:
+    - {fileID: 8300000, guid: e57f435a8ece8bf4b83f8d82250b65fc, type: 3}
+    Volume: 1
+    ClipVolumes:
+    - 0.8
+  - Type: 11
+    Clips:
+    - {fileID: 8300000, guid: bda2abde9f37c534e9655fa1f61d3afb, type: 3}
+    Volume: 1
+    ClipVolumes:
+    - 0.8
+  - Type: 12
+    Clips:
+    - {fileID: 8300000, guid: b120d54832888fa4ebebc5b18f3ba9e5, type: 3}
+    Volume: 1
+    ClipVolumes:
+    - 0.8
+  - Type: 13
+    Clips:
+    - {fileID: 8300000, guid: edd64ece2641f4c42a78b59519b811ba, type: 3}
+    Volume: 1
+    ClipVolumes:
+    - 0.8
+  - Type: 14
+    Clips:
+    - {fileID: 8300000, guid: 39b9b1f87dbbc1e428aa05c9a54ff191, type: 3}
+    Volume: 1
+    ClipVolumes:
+    - 0.8

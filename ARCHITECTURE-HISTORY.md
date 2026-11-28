@@ -4,6 +4,21 @@ Append-only. Newest first. One entry per documentation run.
 
 ---
 
+## 2026-11-29 — branch `any-row` on `4489eeb`
+
+**The v5 content pack** (`Tilewrap_30_Level_Unity_Production_v5`, `Assets/TilewrapMystery`) replaces `TilewrapVaried`,
+`Data/delivery_cases.json` and `Sprites/Evidence`. Level content is identical to the HTML conversion; new are the
+UI skins, the 90 fitted rig prefabs, per-set `coaching[]`, `nextLevelId`, 13 new sounds and the mystery loop, and the
+animated background. Added `Data/levels_01_30.json` (missing from the delivery; the pack's importer reads it).
+`FileRef`, `DeliveryContent`, `UI_SubjectCard` (rig prefabs, three-icon found-objects tray), `AssetBuilder`
+(pack sounds), `SceneBuilder` (background canvas), `Manager_Flow` (coaching lines, sound events), `Manager_Board`
+(cascade-tier match sounds, refill, the winning delivery now plays level_win). `SoundType` +7 values. New saves start
+with 60 coins. **Verified:** the pack importer (all 30 routes), compile clean, 0 missing scene references, Validate
+Levels 30 OK; Play mode: case 1 (guide, invalid sound, win popup with prefab rigs), case 10 (badges, tray, order
+tabs, coaching, level_win + coins).
+
+---
+
 ## 2026-11-29 — branch `any-row` on `136a9e8`
 
 **"Follow the Evidence": 30 deduction cases** (sources: `Tilewrap_Deduction_30_Level_Playtest.html`,

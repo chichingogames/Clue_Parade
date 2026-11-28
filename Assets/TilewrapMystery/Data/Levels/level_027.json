@@ -1,0 +1,685 @@
+{
+  "schemaVersion": 5,
+  "id": 27,
+  "sourceTheme": 27,
+  "title": "Animal post",
+  "subtitle": "Which delivery note sends the crate home?",
+  "question": "What was paired with the sun flag?",
+  "setupText": "The missing star trail leads here. Which delivery note sends the crate home?",
+  "completionText": "The corrected note sends the crate back to the festival launch stage.",
+  "nextLead": "The machine workshop supplies the launch fittings.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "post_0",
+      "name": "Postbox A",
+      "column": 0,
+      "rigId": "post_0"
+    },
+    {
+      "id": "post_1",
+      "name": "Postbox B",
+      "column": 1,
+      "rigId": "post_1"
+    },
+    {
+      "id": "post_2",
+      "name": "Postbox C",
+      "column": 2,
+      "rigId": "post_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "post_00",
+      "label": "Red letter",
+      "sprite": "post_00",
+      "native": true
+    },
+    {
+      "id": "post_01",
+      "label": "Blue parcel",
+      "sprite": "post_01",
+      "native": true
+    },
+    {
+      "id": "post_02",
+      "label": "Purple scroll",
+      "sprite": "post_02",
+      "native": true
+    },
+    {
+      "id": "post_03",
+      "label": "Sun flag",
+      "sprite": "post_03",
+      "native": true
+    },
+    {
+      "id": "post_04",
+      "label": "Paw flag",
+      "sprite": "post_04",
+      "native": true
+    },
+    {
+      "id": "post_05",
+      "label": "Leaf flag",
+      "sprite": "post_05",
+      "native": true
+    },
+    {
+      "id": "post_06",
+      "label": "Penguin",
+      "sprite": "post_06",
+      "native": true
+    },
+    {
+      "id": "post_07",
+      "label": "Mouse",
+      "sprite": "post_07",
+      "native": true
+    },
+    {
+      "id": "post_08",
+      "label": "Little fox",
+      "sprite": "post_08",
+      "native": true
+    },
+    {
+      "id": "l027_extra_00",
+      "label": "Compass",
+      "sprite": "luggage_03",
+      "native": false
+    },
+    {
+      "id": "l027_extra_01",
+      "label": "Purple dome",
+      "sprite": "cottages_02",
+      "native": false
+    },
+    {
+      "id": "l027_extra_02",
+      "label": "Blue star tag",
+      "sprite": "blue_tag",
+      "native": false
+    },
+    {
+      "id": "l027_extra_03",
+      "label": "Blue dome tent",
+      "sprite": "camping_01",
+      "native": false
+    },
+    {
+      "id": "l027_extra_04",
+      "label": "Sleeping bag",
+      "sprite": "camping_05",
+      "native": false
+    },
+    {
+      "id": "l027_extra_05",
+      "label": "Red wax seal",
+      "sprite": "wax_seal",
+      "native": false
+    },
+    {
+      "id": "l027_extra_06",
+      "label": "Seashell",
+      "sprite": "luggage_07",
+      "native": false
+    },
+    {
+      "id": "l027_extra_07",
+      "label": "Orange tent",
+      "sprite": "camping_00",
+      "native": false
+    },
+    {
+      "id": "l027_extra_08",
+      "label": "Magnifying glass",
+      "sprite": "magnifier",
+      "native": false
+    },
+    {
+      "id": "l027_extra_09",
+      "label": "Fruit basket",
+      "sprite": "market_03",
+      "native": false
+    },
+    {
+      "id": "l027_extra_10",
+      "label": "Green round door",
+      "sprite": "cottages_03",
+      "native": false
+    },
+    {
+      "id": "l027_extra_11",
+      "label": "Secret note",
+      "sprite": "secret_note",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Mail",
+      "items": [
+        "post_01",
+        "post_00",
+        "post_02"
+      ],
+      "action": "Reconstruct mail in any row.",
+      "visibleClues": [
+        {
+          "icon": "post_07",
+          "text": "The earliest collection has the mouse.",
+          "rule": {
+            "kind": "lowest",
+            "a": "post_07"
+          },
+          "refs": [
+            "post_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "post_04",
+          "text": "The paw flag and leaf flag belong to opposite end profiles.",
+          "rule": {
+            "kind": "notNext",
+            "a": "post_04",
+            "b": "post_05"
+          },
+          "refs": [
+            "post_04",
+            "post_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Flags",
+      "items": [
+        "post_04",
+        "post_03",
+        "post_05"
+      ],
+      "action": "Reconstruct flags in any row.",
+      "visibleClues": [
+        {
+          "icon": "post_07",
+          "text": "The earliest collection has the mouse.",
+          "rule": {
+            "kind": "lowest",
+            "a": "post_07"
+          },
+          "refs": [
+            "post_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "post_04",
+          "text": "The paw flag and leaf flag belong to opposite end profiles.",
+          "rule": {
+            "kind": "notNext",
+            "a": "post_04",
+            "b": "post_05"
+          },
+          "refs": [
+            "post_04",
+            "post_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Visitors",
+      "items": [
+        "post_08",
+        "post_06",
+        "post_07"
+      ],
+      "action": "Reconstruct visitors in any row.",
+      "visibleClues": [
+        {
+          "icon": "post_07",
+          "text": "The earliest collection has the mouse.",
+          "rule": {
+            "kind": "lowest",
+            "a": "post_07"
+          },
+          "refs": [
+            "post_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "post_04",
+          "text": "The paw flag and leaf flag belong to opposite end profiles.",
+          "rule": {
+            "kind": "notNext",
+            "a": "post_04",
+            "b": "post_05"
+          },
+          "refs": [
+            "post_04",
+            "post_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l027_extra_01",
+        "l027_extra_00",
+        "l027_extra_02"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l027_extra_02",
+          "text": "The blue star tag goes with the mouse.",
+          "rule": {
+            "kind": "same",
+            "a": "l027_extra_02",
+            "b": "post_07"
+          },
+          "refs": [
+            "l027_extra_02",
+            "post_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l027_extra_01",
+          "text": "The purple dome and penguin have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l027_extra_01",
+            "b": "post_06"
+          },
+          "refs": [
+            "l027_extra_01",
+            "post_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l027_extra_05",
+        "l027_extra_03",
+        "l027_extra_04"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l027_extra_04",
+          "text": "The sleeping bag goes with the leaf flag.",
+          "rule": {
+            "kind": "same",
+            "a": "l027_extra_04",
+            "b": "post_05"
+          },
+          "refs": [
+            "l027_extra_04",
+            "post_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l027_extra_03",
+          "text": "The blue dome tent and paw flag have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l027_extra_03",
+            "b": "post_04"
+          },
+          "refs": [
+            "l027_extra_03",
+            "post_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l027_extra_06",
+        "l027_extra_07",
+        "l027_extra_08"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l027_extra_08",
+          "text": "The magnifying glass goes with the mouse.",
+          "rule": {
+            "kind": "same",
+            "a": "l027_extra_08",
+            "b": "post_07"
+          },
+          "refs": [
+            "l027_extra_08",
+            "post_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l027_extra_07",
+          "text": "The orange tent and little fox have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l027_extra_07",
+            "b": "post_08"
+          },
+          "refs": [
+            "l027_extra_07",
+            "post_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l027_extra_11",
+        "l027_extra_10",
+        "l027_extra_09"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l027_extra_10",
+          "text": "The green round door goes with the red letter.",
+          "rule": {
+            "kind": "same",
+            "a": "l027_extra_10",
+            "b": "post_00"
+          },
+          "refs": [
+            "l027_extra_10",
+            "post_00"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l027_extra_11",
+          "text": "The secret note and purple scroll have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l027_extra_11",
+            "b": "post_02"
+          },
+          "refs": [
+            "l027_extra_11",
+            "post_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "post_02",
+    "post_05",
+    "post_08",
+    "post_07",
+    "l027_extra_01",
+    "post_00",
+    "post_01",
+    "l027_extra_02",
+    "l027_extra_00",
+    "post_06",
+    "post_03",
+    "post_04"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l027_extra_10",
+        "l027_extra_03",
+        "l027_extra_08"
+      ]
+    },
+    {
+      "items": [
+        "l027_extra_06",
+        "l027_extra_09",
+        "l027_extra_05"
+      ]
+    },
+    {
+      "items": [
+        "l027_extra_07",
+        "l027_extra_11",
+        "l027_extra_04"
+      ]
+    }
+  ],
+  "moveLimit": 36,
+  "difficulty": "standard",
+  "firstClearCoins": 30,
+  "designSeed": 862027,
+  "chapterId": 6,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "secret_note",
+  "evidenceReveal": "The corrected note sends the crate back to the festival launch stage.",
+  "durationTargetSeconds": [
+    100,
+    240
+  ],
+  "referenceSolution": [
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 1,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 22,
+  "storyQuestion": "Which delivery note sends the crate home?",
+  "dossier": {
+    "label": "Collected",
+    "values": [
+      9,
+      10,
+      8
+    ],
+    "labels": [
+      "09:00",
+      "10:00",
+      "08:00"
+    ],
+    "low": "earliest collection",
+    "high": "latest collection"
+  },
+  "cluePool": [
+    {
+      "icon": "post_07",
+      "text": "The earliest collection has the mouse.",
+      "rule": {
+        "kind": "lowest",
+        "a": "post_07"
+      },
+      "refs": [
+        "post_07"
+      ],
+      "column": null
+    },
+    {
+      "icon": "post_04",
+      "text": "The paw flag and leaf flag belong to opposite end profiles.",
+      "rule": {
+        "kind": "notNext",
+        "a": "post_04",
+        "b": "post_05"
+      },
+      "refs": [
+        "post_04",
+        "post_05"
+      ],
+      "column": null
+    },
+    {
+      "icon": "post_00",
+      "text": "The red letter goes with the penguin.",
+      "rule": {
+        "kind": "same",
+        "a": "post_00",
+        "b": "post_06"
+      },
+      "refs": [
+        "post_00",
+        "post_06"
+      ],
+      "column": null
+    },
+    {
+      "icon": "post_02",
+      "text": "The purple scroll and paw flag have different owners.",
+      "rule": {
+        "kind": "different",
+        "a": "post_02",
+        "b": "post_04"
+      },
+      "refs": [
+        "post_02",
+        "post_04"
+      ],
+      "column": null
+    },
+    {
+      "icon": "post_01",
+      "text": "The blue parcel owner is left of the sun flag owner.",
+      "rule": {
+        "kind": "left",
+        "a": "post_01",
+        "b": "post_03"
+      },
+      "refs": [
+        "post_01",
+        "post_03"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the collected badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "What was paired with the sun flag?",
+    "answer": "Green round door",
+    "icon": "l027_extra_10",
+    "evidence": [
+      "The witness remembers the sun flag.",
+      "The missing object belonged to that same profile."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 28,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

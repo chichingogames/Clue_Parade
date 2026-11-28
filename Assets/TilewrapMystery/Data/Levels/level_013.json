@@ -1,0 +1,703 @@
+{
+  "schemaVersion": 5,
+  "id": 13,
+  "sourceTheme": 12,
+  "title": "Music stage",
+  "subtitle": "Was the red ribbon left by a thief?",
+  "question": "What belonged to the earliest act?",
+  "setupText": "The missing star trail leads here. Was the red ribbon left by a thief?",
+  "completionText": "The ribbon was ordinary festival trim, tied before the parcel went missing.",
+  "nextLead": "A crate photo is filed with the space exhibit.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "music_0",
+      "name": "Act A",
+      "column": 0,
+      "rigId": "music_0"
+    },
+    {
+      "id": "music_1",
+      "name": "Act B",
+      "column": 1,
+      "rigId": "music_1"
+    },
+    {
+      "id": "music_2",
+      "name": "Act C",
+      "column": 2,
+      "rigId": "music_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "music_00",
+      "label": "Red curtains",
+      "sprite": "music_00",
+      "native": true
+    },
+    {
+      "id": "music_01",
+      "label": "Star backdrop",
+      "sprite": "music_01",
+      "native": true
+    },
+    {
+      "id": "music_02",
+      "label": "Bolt backdrop",
+      "sprite": "music_02",
+      "native": true
+    },
+    {
+      "id": "music_03",
+      "label": "Guitar",
+      "sprite": "music_03",
+      "native": true
+    },
+    {
+      "id": "music_04",
+      "label": "Drum kit",
+      "sprite": "music_04",
+      "native": true
+    },
+    {
+      "id": "music_05",
+      "label": "Keyboard",
+      "sprite": "music_05",
+      "native": true
+    },
+    {
+      "id": "music_06",
+      "label": "Floor spotlight",
+      "sprite": "music_06",
+      "native": true
+    },
+    {
+      "id": "music_07",
+      "label": "Disco ball",
+      "sprite": "music_07",
+      "native": true
+    },
+    {
+      "id": "music_08",
+      "label": "Hanging lantern",
+      "sprite": "music_08",
+      "native": true
+    },
+    {
+      "id": "l013_extra_00",
+      "label": "Scalloped canopy",
+      "sprite": "market_02",
+      "native": false
+    },
+    {
+      "id": "l013_extra_01",
+      "label": "Brush pot",
+      "sprite": "artstudio_07",
+      "native": false
+    },
+    {
+      "id": "l013_extra_02",
+      "label": "Pocket watch",
+      "sprite": "pocket_watch",
+      "native": false
+    },
+    {
+      "id": "l013_extra_03",
+      "label": "Lantern string",
+      "sprite": "fireworks_06",
+      "native": false
+    },
+    {
+      "id": "l013_extra_04",
+      "label": "Rainbow arch",
+      "sprite": "floats_02",
+      "native": false
+    },
+    {
+      "id": "l013_extra_05",
+      "label": "Route map",
+      "sprite": "route_map",
+      "native": false
+    },
+    {
+      "id": "l013_extra_06",
+      "label": "Patchwork canopy",
+      "sprite": "market_01",
+      "native": false
+    },
+    {
+      "id": "l013_extra_07",
+      "label": "Golden sun",
+      "sprite": "floats_01",
+      "native": false
+    },
+    {
+      "id": "l013_extra_08",
+      "label": "Blue star tag",
+      "sprite": "blue_tag",
+      "native": false
+    },
+    {
+      "id": "l013_extra_09",
+      "label": "Toy display",
+      "sprite": "market_05",
+      "native": false
+    },
+    {
+      "id": "l013_extra_10",
+      "label": "Spark fountain",
+      "sprite": "fireworks_03",
+      "native": false
+    },
+    {
+      "id": "l013_extra_11",
+      "label": "Brass key",
+      "sprite": "brass_key",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Backdrops",
+      "items": [
+        "music_01",
+        "music_02",
+        "music_00"
+      ],
+      "action": "Reconstruct backdrops in any row.",
+      "visibleClues": [
+        {
+          "icon": "music_01",
+          "text": "Act A has the star backdrop.",
+          "rule": {
+            "kind": "at",
+            "a": "music_01",
+            "column": 0
+          },
+          "refs": [
+            "music_01"
+          ],
+          "column": 0
+        },
+        {
+          "icon": "music_00",
+          "text": "The red curtains is at the opposite end from the star backdrop.",
+          "rule": {
+            "kind": "notNext",
+            "a": "music_00",
+            "b": "music_01"
+          },
+          "refs": [
+            "music_00",
+            "music_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Music",
+      "items": [
+        "music_05",
+        "music_04",
+        "music_03"
+      ],
+      "action": "Reconstruct music in any row.",
+      "visibleClues": [
+        {
+          "icon": "music_01",
+          "text": "Act A has the star backdrop.",
+          "rule": {
+            "kind": "at",
+            "a": "music_01",
+            "column": 0
+          },
+          "refs": [
+            "music_01"
+          ],
+          "column": 0
+        },
+        {
+          "icon": "music_00",
+          "text": "The red curtains is at the opposite end from the star backdrop.",
+          "rule": {
+            "kind": "notNext",
+            "a": "music_00",
+            "b": "music_01"
+          },
+          "refs": [
+            "music_00",
+            "music_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Lights",
+      "items": [
+        "music_08",
+        "music_07",
+        "music_06"
+      ],
+      "action": "Reconstruct lights in any row.",
+      "visibleClues": [
+        {
+          "icon": "music_01",
+          "text": "Act A has the star backdrop.",
+          "rule": {
+            "kind": "at",
+            "a": "music_01",
+            "column": 0
+          },
+          "refs": [
+            "music_01"
+          ],
+          "column": 0
+        },
+        {
+          "icon": "music_00",
+          "text": "The red curtains is at the opposite end from the star backdrop.",
+          "rule": {
+            "kind": "notNext",
+            "a": "music_00",
+            "b": "music_01"
+          },
+          "refs": [
+            "music_00",
+            "music_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l013_extra_00",
+        "l013_extra_02",
+        "l013_extra_01"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l013_extra_02",
+          "text": "The pocket watch goes with the disco ball.",
+          "rule": {
+            "kind": "same",
+            "a": "l013_extra_02",
+            "b": "music_07"
+          },
+          "refs": [
+            "l013_extra_02",
+            "music_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l013_extra_01",
+          "text": "The brush pot goes with the floor spotlight.",
+          "rule": {
+            "kind": "same",
+            "a": "l013_extra_01",
+            "b": "music_06"
+          },
+          "refs": [
+            "l013_extra_01",
+            "music_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l013_extra_04",
+        "l013_extra_03",
+        "l013_extra_05"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l013_extra_05",
+          "text": "The route map goes with the brush pot.",
+          "rule": {
+            "kind": "same",
+            "a": "l013_extra_05",
+            "b": "l013_extra_01"
+          },
+          "refs": [
+            "l013_extra_05",
+            "l013_extra_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l013_extra_04",
+          "text": "The rainbow arch goes with the scalloped canopy.",
+          "rule": {
+            "kind": "same",
+            "a": "l013_extra_04",
+            "b": "l013_extra_00"
+          },
+          "refs": [
+            "l013_extra_04",
+            "l013_extra_00"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l013_extra_07",
+        "l013_extra_06",
+        "l013_extra_08"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l013_extra_07",
+          "text": "The golden sun goes with the rainbow arch.",
+          "rule": {
+            "kind": "same",
+            "a": "l013_extra_07",
+            "b": "l013_extra_04"
+          },
+          "refs": [
+            "l013_extra_07",
+            "l013_extra_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l013_extra_06",
+          "text": "The patchwork canopy goes with the lantern string.",
+          "rule": {
+            "kind": "same",
+            "a": "l013_extra_06",
+            "b": "l013_extra_03"
+          },
+          "refs": [
+            "l013_extra_06",
+            "l013_extra_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l013_extra_10",
+        "l013_extra_09",
+        "l013_extra_11"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l013_extra_09",
+          "text": "The toy display goes with the patchwork canopy.",
+          "rule": {
+            "kind": "same",
+            "a": "l013_extra_09",
+            "b": "l013_extra_06"
+          },
+          "refs": [
+            "l013_extra_09",
+            "l013_extra_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l013_extra_11",
+          "text": "The brass key goes with the blue star tag.",
+          "rule": {
+            "kind": "same",
+            "a": "l013_extra_11",
+            "b": "l013_extra_08"
+          },
+          "refs": [
+            "l013_extra_11",
+            "l013_extra_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "music_05",
+    "music_03",
+    "music_02",
+    "music_04",
+    "music_06",
+    "l013_extra_02",
+    "music_07",
+    "music_00",
+    "l013_extra_01",
+    "music_01",
+    "l013_extra_00",
+    "music_08"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l013_extra_05",
+        "l013_extra_07",
+        "l013_extra_10"
+      ]
+    },
+    {
+      "items": [
+        "l013_extra_11",
+        "l013_extra_06",
+        "l013_extra_03"
+      ]
+    },
+    {
+      "items": [
+        "l013_extra_09",
+        "l013_extra_08",
+        "l013_extra_04"
+      ]
+    }
+  ],
+  "moveLimit": 44,
+  "difficulty": "practice",
+  "firstClearCoins": 30,
+  "designSeed": 862013,
+  "chapterId": 3,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "delivery_log",
+  "evidenceReveal": "The ribbon was ordinary festival trim, tied before the parcel went missing.",
+  "durationTargetSeconds": [
+    50,
+    150
+  ],
+  "referenceSolution": [
+    {
+      "a": 2,
+      "b": 5
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 22,
+  "storyQuestion": "Was the red ribbon left by a thief?",
+  "dossier": {
+    "label": "Starts",
+    "values": [
+      8,
+      9,
+      7
+    ],
+    "labels": [
+      "20:00",
+      "21:00",
+      "19:00"
+    ],
+    "low": "earliest act",
+    "high": "latest act"
+  },
+  "cluePool": [
+    {
+      "icon": "music_01",
+      "text": "Act A has the star backdrop.",
+      "rule": {
+        "kind": "at",
+        "a": "music_01",
+        "column": 0
+      },
+      "refs": [
+        "music_01"
+      ],
+      "column": 0
+    },
+    {
+      "icon": "music_00",
+      "text": "The red curtains is at the opposite end from the star backdrop.",
+      "rule": {
+        "kind": "notNext",
+        "a": "music_00",
+        "b": "music_01"
+      },
+      "refs": [
+        "music_00",
+        "music_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "music_03",
+      "text": "The guitar goes with the red curtains.",
+      "rule": {
+        "kind": "same",
+        "a": "music_03",
+        "b": "music_00"
+      },
+      "refs": [
+        "music_03",
+        "music_00"
+      ],
+      "column": null
+    },
+    {
+      "icon": "music_05",
+      "text": "The keyboard goes with the star backdrop.",
+      "rule": {
+        "kind": "same",
+        "a": "music_05",
+        "b": "music_01"
+      },
+      "refs": [
+        "music_05",
+        "music_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "music_07",
+      "text": "The disco ball goes with the drum kit.",
+      "rule": {
+        "kind": "same",
+        "a": "music_07",
+        "b": "music_04"
+      },
+      "refs": [
+        "music_07",
+        "music_04"
+      ],
+      "column": null
+    },
+    {
+      "icon": "music_08",
+      "text": "The hanging lantern goes with the keyboard.",
+      "rule": {
+        "kind": "same",
+        "a": "music_08",
+        "b": "music_05"
+      },
+      "refs": [
+        "music_08",
+        "music_05"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Opposite ends means the leftmost and rightmost profiles. First use the named anchor.",
+  "caseResolution": {
+    "question": "What belonged to the earliest act?",
+    "answer": "Brass key",
+    "icon": "l013_extra_11",
+    "evidence": [
+      "Compare the starts badges.",
+      "Then check that profile’s final confirmed item."
+    ]
+  },
+  "clueGraphVersion": 2,
+  "nextLevelId": 14,
+  "coaching": [
+    "Opposite ends means the leftmost and rightmost profiles. First use the named anchor.",
+    "Opposite ends means the leftmost and rightmost profiles. First use the named anchor.",
+    "Opposite ends means the leftmost and rightmost profiles. First use the named anchor.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

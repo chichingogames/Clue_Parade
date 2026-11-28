@@ -1,0 +1,795 @@
+{
+  "schemaVersion": 5,
+  "id": 20,
+  "sourceTheme": 20,
+  "title": "Festival floats",
+  "subtitle": "Which helper moved the star crate?",
+  "question": "Which item belongs to the latest float?",
+  "setupText": "The missing star trail leads here. Which helper moved the star crate?",
+  "completionText": "Bolt signed the safety move. He moved the crate to shelter, not out of town.",
+  "nextLead": "A later address correction sent the parcel onward.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "floats_0",
+      "name": "Float A",
+      "column": 0,
+      "rigId": "floats_0"
+    },
+    {
+      "id": "floats_1",
+      "name": "Float B",
+      "column": 1,
+      "rigId": "floats_1"
+    },
+    {
+      "id": "floats_2",
+      "name": "Float C",
+      "column": 2,
+      "rigId": "floats_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "floats_00",
+      "label": "Giant flower",
+      "sprite": "floats_00",
+      "native": true
+    },
+    {
+      "id": "floats_01",
+      "label": "Golden sun",
+      "sprite": "floats_01",
+      "native": true
+    },
+    {
+      "id": "floats_02",
+      "label": "Rainbow arch",
+      "sprite": "floats_02",
+      "native": true
+    },
+    {
+      "id": "floats_03",
+      "label": "Flag bunting",
+      "sprite": "floats_03",
+      "native": true
+    },
+    {
+      "id": "floats_04",
+      "label": "Red ribbon",
+      "sprite": "floats_04",
+      "native": true
+    },
+    {
+      "id": "floats_05",
+      "label": "Balloon bunch",
+      "sprite": "floats_05",
+      "native": true
+    },
+    {
+      "id": "floats_06",
+      "label": "Teddy",
+      "sprite": "floats_06",
+      "native": true
+    },
+    {
+      "id": "floats_07",
+      "label": "Wrapped gift",
+      "sprite": "floats_07",
+      "native": true
+    },
+    {
+      "id": "floats_08",
+      "label": "Picnic basket",
+      "sprite": "floats_08",
+      "native": true
+    },
+    {
+      "id": "l020_extra_00",
+      "label": "Paw flag",
+      "sprite": "post_04",
+      "native": false
+    },
+    {
+      "id": "l020_extra_01",
+      "label": "Teddy bear",
+      "sprite": "gifts_04",
+      "native": false
+    },
+    {
+      "id": "l020_extra_02",
+      "label": "Secret note",
+      "sprite": "secret_note",
+      "native": false
+    },
+    {
+      "id": "l020_extra_03",
+      "label": "Curled horns",
+      "sprite": "dragons_00",
+      "native": false
+    },
+    {
+      "id": "l020_extra_04",
+      "label": "Fruit basket",
+      "sprite": "market_03",
+      "native": false
+    },
+    {
+      "id": "l020_extra_05",
+      "label": "Delivery log",
+      "sprite": "delivery_log",
+      "native": false
+    },
+    {
+      "id": "l020_extra_06",
+      "label": "Flag garland",
+      "sprite": "fireworks_07",
+      "native": false
+    },
+    {
+      "id": "l020_extra_07",
+      "label": "Green leaf wings",
+      "sprite": "dragons_04",
+      "native": false
+    },
+    {
+      "id": "l020_extra_08",
+      "label": "Magnifying glass",
+      "sprite": "magnifier",
+      "native": false
+    },
+    {
+      "id": "l020_extra_09",
+      "label": "Rainbow wheel",
+      "sprite": "fireworks_04",
+      "native": false
+    },
+    {
+      "id": "l020_extra_10",
+      "label": "Gold sparkler",
+      "sprite": "fireworks_05",
+      "native": false
+    },
+    {
+      "id": "l020_extra_11",
+      "label": "Flashlight",
+      "sprite": "flashlight",
+      "native": false
+    },
+    {
+      "id": "l020_extra_12",
+      "label": "Mouse",
+      "sprite": "post_07",
+      "native": false
+    },
+    {
+      "id": "l020_extra_13",
+      "label": "Penguin",
+      "sprite": "post_06",
+      "native": false
+    },
+    {
+      "id": "l020_extra_14",
+      "label": "Route map",
+      "sprite": "route_map",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Displays",
+      "items": [
+        "floats_01",
+        "floats_02",
+        "floats_00"
+      ],
+      "action": "Reconstruct displays in any row.",
+      "visibleClues": [
+        {
+          "icon": "floats_02",
+          "text": "The latest float has the rainbow arch.",
+          "rule": {
+            "kind": "highest",
+            "a": "floats_02"
+          },
+          "refs": [
+            "floats_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "floats_08",
+          "text": "The picnic basket owner is next to the golden sun owner.",
+          "rule": {
+            "kind": "next",
+            "a": "floats_08",
+            "b": "floats_01"
+          },
+          "refs": [
+            "floats_08",
+            "floats_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Trims",
+      "items": [
+        "floats_03",
+        "floats_04",
+        "floats_05"
+      ],
+      "action": "Reconstruct trims in any row.",
+      "visibleClues": [
+        {
+          "icon": "floats_02",
+          "text": "The latest float has the rainbow arch.",
+          "rule": {
+            "kind": "highest",
+            "a": "floats_02"
+          },
+          "refs": [
+            "floats_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "floats_08",
+          "text": "The picnic basket owner is next to the golden sun owner.",
+          "rule": {
+            "kind": "next",
+            "a": "floats_08",
+            "b": "floats_01"
+          },
+          "refs": [
+            "floats_08",
+            "floats_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Gifts",
+      "items": [
+        "floats_07",
+        "floats_08",
+        "floats_06"
+      ],
+      "action": "Reconstruct gifts in any row.",
+      "visibleClues": [
+        {
+          "icon": "floats_02",
+          "text": "The latest float has the rainbow arch.",
+          "rule": {
+            "kind": "highest",
+            "a": "floats_02"
+          },
+          "refs": [
+            "floats_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "floats_08",
+          "text": "The picnic basket owner is next to the golden sun owner.",
+          "rule": {
+            "kind": "next",
+            "a": "floats_08",
+            "b": "floats_01"
+          },
+          "refs": [
+            "floats_08",
+            "floats_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l020_extra_02",
+        "l020_extra_01",
+        "l020_extra_00"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l020_extra_02",
+          "text": "The secret note goes with the wrapped gift.",
+          "rule": {
+            "kind": "same",
+            "a": "l020_extra_02",
+            "b": "floats_07"
+          },
+          "refs": [
+            "l020_extra_02",
+            "floats_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l020_extra_01",
+          "text": "The teddy bear and teddy have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l020_extra_01",
+            "b": "floats_06"
+          },
+          "refs": [
+            "l020_extra_01",
+            "floats_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l020_extra_03",
+        "l020_extra_05",
+        "l020_extra_04"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l020_extra_03",
+          "text": "The curled horns goes with the wrapped gift.",
+          "rule": {
+            "kind": "same",
+            "a": "l020_extra_03",
+            "b": "floats_07"
+          },
+          "refs": [
+            "l020_extra_03",
+            "floats_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l020_extra_04",
+          "text": "The fruit basket and picnic basket have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l020_extra_04",
+            "b": "floats_08"
+          },
+          "refs": [
+            "l020_extra_04",
+            "floats_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l020_extra_08",
+        "l020_extra_06",
+        "l020_extra_07"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l020_extra_08",
+          "text": "The magnifying glass goes with the golden sun.",
+          "rule": {
+            "kind": "same",
+            "a": "l020_extra_08",
+            "b": "floats_01"
+          },
+          "refs": [
+            "l020_extra_08",
+            "floats_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l020_extra_07",
+          "text": "The green leaf wings and rainbow arch have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l020_extra_07",
+            "b": "floats_02"
+          },
+          "refs": [
+            "l020_extra_07",
+            "floats_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l020_extra_09",
+        "l020_extra_10",
+        "l020_extra_11"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l020_extra_11",
+          "text": "The flashlight goes with the balloon bunch.",
+          "rule": {
+            "kind": "same",
+            "a": "l020_extra_11",
+            "b": "floats_05"
+          },
+          "refs": [
+            "l020_extra_11",
+            "floats_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l020_extra_09",
+          "text": "The rainbow wheel and red ribbon have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l020_extra_09",
+            "b": "floats_04"
+          },
+          "refs": [
+            "l020_extra_09",
+            "floats_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Packing list",
+      "items": [
+        "l020_extra_12",
+        "l020_extra_13",
+        "l020_extra_14"
+      ],
+      "action": "Reconstruct packing list in any row.",
+      "visibleClues": [
+        {
+          "icon": "l020_extra_13",
+          "text": "The penguin goes with the red ribbon.",
+          "rule": {
+            "kind": "same",
+            "a": "l020_extra_13",
+            "b": "floats_04"
+          },
+          "refs": [
+            "l020_extra_13",
+            "floats_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l020_extra_14",
+          "text": "The route map and flag bunting have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l020_extra_14",
+            "b": "floats_03"
+          },
+          "refs": [
+            "l020_extra_14",
+            "floats_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "l020_extra_00",
+    "floats_06",
+    "floats_03",
+    "floats_05",
+    "floats_02",
+    "floats_08",
+    "l020_extra_02",
+    "floats_00",
+    "l020_extra_01",
+    "floats_04",
+    "floats_01",
+    "floats_07"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l020_extra_03",
+        "l020_extra_09",
+        "l020_extra_08"
+      ]
+    },
+    {
+      "items": [
+        "l020_extra_05",
+        "l020_extra_10",
+        "l020_extra_06"
+      ]
+    },
+    {
+      "items": [
+        "l020_extra_04",
+        "l020_extra_11",
+        "l020_extra_07"
+      ]
+    },
+    {
+      "items": [
+        "l020_extra_14",
+        "l020_extra_13",
+        "l020_extra_12"
+      ]
+    }
+  ],
+  "moveLimit": 32,
+  "difficulty": "expert",
+  "firstClearCoins": 90,
+  "designSeed": 862020,
+  "chapterId": 4,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "crate_photo",
+  "evidenceReveal": "Bolt signed the safety move. He moved the crate to shelter, not out of town.",
+  "durationTargetSeconds": [
+    180,
+    360
+  ],
+  "deduction": {
+    "question": "Who signed the safety transfer?",
+    "options": [
+      "The parcel courier",
+      "The music-stage helper",
+      "Bolt"
+    ],
+    "answer": 2,
+    "evidence": [
+      "The tool imprint matches Bolt’s workshop kit.",
+      "The float workshop log carries Bolt’s signature."
+    ]
+  },
+  "referenceSolution": [
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 30,
+  "storyQuestion": "Which helper moved the star crate?",
+  "dossier": {
+    "label": "Launch",
+    "values": [
+      7,
+      8,
+      6
+    ],
+    "labels": [
+      "19:00",
+      "20:00",
+      "18:00"
+    ],
+    "low": "earliest float",
+    "high": "latest float"
+  },
+  "cluePool": [
+    {
+      "icon": "floats_02",
+      "text": "The latest float has the rainbow arch.",
+      "rule": {
+        "kind": "highest",
+        "a": "floats_02"
+      },
+      "refs": [
+        "floats_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "floats_08",
+      "text": "The picnic basket owner is next to the golden sun owner.",
+      "rule": {
+        "kind": "next",
+        "a": "floats_08",
+        "b": "floats_01"
+      },
+      "refs": [
+        "floats_08",
+        "floats_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "floats_01",
+      "text": "The golden sun goes with the flag bunting.",
+      "rule": {
+        "kind": "same",
+        "a": "floats_01",
+        "b": "floats_03"
+      },
+      "refs": [
+        "floats_01",
+        "floats_03"
+      ],
+      "column": null
+    },
+    {
+      "icon": "floats_06",
+      "text": "Float A does not have the teddy.",
+      "rule": {
+        "kind": "notAt",
+        "a": "floats_06",
+        "column": 0
+      },
+      "refs": [
+        "floats_06"
+      ],
+      "column": null
+    },
+    {
+      "icon": "floats_04",
+      "text": "The red ribbon owner is left of the giant flower owner.",
+      "rule": {
+        "kind": "left",
+        "a": "floats_04",
+        "b": "floats_00"
+      },
+      "refs": [
+        "floats_04",
+        "floats_00"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the launch badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "Which item belongs to the latest float?",
+    "answer": "Penguin",
+    "icon": "l020_extra_13",
+    "evidence": [
+      "Use the launch badges as evidence.",
+      "Connect the profile to its final confirmed item."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 21,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

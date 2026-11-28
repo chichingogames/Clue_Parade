@@ -1,0 +1,521 @@
+{
+  "schemaVersion": 5,
+  "id": 21,
+  "sourceTheme": 21,
+  "title": "Winter friends",
+  "subtitle": "Is the snowy parcel the real star crate?",
+  "question": "Who had the kettle?",
+  "setupText": "The missing star trail leads here. Is the snowy parcel the real star crate?",
+  "completionText": "The snowy parcel is a decoy gift. Its tag was copied from another box.",
+  "nextLead": "An artist copied the real delivery label before it faded.",
+  "rows": 3,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "snowmen_0",
+      "name": "Friend A",
+      "column": 0,
+      "rigId": "snowmen_0"
+    },
+    {
+      "id": "snowmen_1",
+      "name": "Friend B",
+      "column": 1,
+      "rigId": "snowmen_1"
+    },
+    {
+      "id": "snowmen_2",
+      "name": "Friend C",
+      "column": 2,
+      "rigId": "snowmen_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "snowmen_00",
+      "label": "Top hat",
+      "sprite": "snowmen_00",
+      "native": true
+    },
+    {
+      "id": "snowmen_01",
+      "label": "Pom hat",
+      "sprite": "snowmen_01",
+      "native": true
+    },
+    {
+      "id": "snowmen_02",
+      "label": "Antler hat",
+      "sprite": "snowmen_02",
+      "native": true
+    },
+    {
+      "id": "snowmen_03",
+      "label": "Red plaid scarf",
+      "sprite": "snowmen_03",
+      "native": true
+    },
+    {
+      "id": "snowmen_04",
+      "label": "Blue stripe scarf",
+      "sprite": "snowmen_04",
+      "native": true
+    },
+    {
+      "id": "snowmen_05",
+      "label": "Yellow scarf",
+      "sprite": "snowmen_05",
+      "native": true
+    },
+    {
+      "id": "snowmen_06",
+      "label": "Broom",
+      "sprite": "snowmen_06",
+      "native": true
+    },
+    {
+      "id": "snowmen_07",
+      "label": "Winter lantern",
+      "sprite": "snowmen_07",
+      "native": true
+    },
+    {
+      "id": "snowmen_08",
+      "label": "Present",
+      "sprite": "snowmen_08",
+      "native": true
+    },
+    {
+      "id": "l021_extra_00",
+      "label": "Purple bow",
+      "sprite": "gifts_08",
+      "native": false
+    },
+    {
+      "id": "l021_extra_01",
+      "label": "Camera",
+      "sprite": "luggage_05",
+      "native": false
+    },
+    {
+      "id": "l021_extra_02",
+      "label": "Delivery log",
+      "sprite": "delivery_log",
+      "native": false
+    },
+    {
+      "id": "l021_extra_03",
+      "label": "Teddy bear",
+      "sprite": "gifts_04",
+      "native": false
+    },
+    {
+      "id": "l021_extra_04",
+      "label": "Kettle",
+      "sprite": "camping_04",
+      "native": false
+    },
+    {
+      "id": "l021_extra_05",
+      "label": "Courier ticket",
+      "sprite": "courier_ticket",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Hats",
+      "items": [
+        "snowmen_02",
+        "snowmen_00",
+        "snowmen_01"
+      ],
+      "action": "Reconstruct hats in any row.",
+      "visibleClues": [
+        {
+          "icon": "snowmen_02",
+          "text": "The earliest friend has the antler hat.",
+          "rule": {
+            "kind": "lowest",
+            "a": "snowmen_02"
+          },
+          "refs": [
+            "snowmen_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "snowmen_05",
+          "text": "The yellow scarf and antler hat belong to opposite end profiles.",
+          "rule": {
+            "kind": "notNext",
+            "a": "snowmen_05",
+            "b": "snowmen_02"
+          },
+          "refs": [
+            "snowmen_05",
+            "snowmen_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Scarves",
+      "items": [
+        "snowmen_03",
+        "snowmen_04",
+        "snowmen_05"
+      ],
+      "action": "Reconstruct scarves in any row.",
+      "visibleClues": [
+        {
+          "icon": "snowmen_02",
+          "text": "The earliest friend has the antler hat.",
+          "rule": {
+            "kind": "lowest",
+            "a": "snowmen_02"
+          },
+          "refs": [
+            "snowmen_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "snowmen_05",
+          "text": "The yellow scarf and antler hat belong to opposite end profiles.",
+          "rule": {
+            "kind": "notNext",
+            "a": "snowmen_05",
+            "b": "snowmen_02"
+          },
+          "refs": [
+            "snowmen_05",
+            "snowmen_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Extras",
+      "items": [
+        "snowmen_06",
+        "snowmen_07",
+        "snowmen_08"
+      ],
+      "action": "Reconstruct extras in any row.",
+      "visibleClues": [
+        {
+          "icon": "snowmen_02",
+          "text": "The earliest friend has the antler hat.",
+          "rule": {
+            "kind": "lowest",
+            "a": "snowmen_02"
+          },
+          "refs": [
+            "snowmen_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "snowmen_05",
+          "text": "The yellow scarf and antler hat belong to opposite end profiles.",
+          "rule": {
+            "kind": "notNext",
+            "a": "snowmen_05",
+            "b": "snowmen_02"
+          },
+          "refs": [
+            "snowmen_05",
+            "snowmen_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l021_extra_00",
+        "l021_extra_02",
+        "l021_extra_01"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l021_extra_01",
+          "text": "The camera goes with the yellow scarf.",
+          "rule": {
+            "kind": "same",
+            "a": "l021_extra_01",
+            "b": "snowmen_05"
+          },
+          "refs": [
+            "l021_extra_01",
+            "snowmen_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l021_extra_00",
+          "text": "The purple bow and blue stripe scarf have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l021_extra_00",
+            "b": "snowmen_04"
+          },
+          "refs": [
+            "l021_extra_00",
+            "snowmen_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l021_extra_04",
+        "l021_extra_03",
+        "l021_extra_05"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l021_extra_05",
+          "text": "The courier ticket goes with the present.",
+          "rule": {
+            "kind": "same",
+            "a": "l021_extra_05",
+            "b": "snowmen_08"
+          },
+          "refs": [
+            "l021_extra_05",
+            "snowmen_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l021_extra_03",
+          "text": "The teddy bear and broom have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l021_extra_03",
+            "b": "snowmen_06"
+          },
+          "refs": [
+            "l021_extra_03",
+            "snowmen_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "snowmen_04",
+    "snowmen_08",
+    "snowmen_01",
+    "snowmen_06",
+    "snowmen_02",
+    "snowmen_03",
+    "snowmen_05",
+    "snowmen_07",
+    "snowmen_00"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l021_extra_02",
+        "l021_extra_04",
+        "l021_extra_01"
+      ]
+    },
+    {
+      "items": [
+        "l021_extra_03",
+        "l021_extra_05",
+        "l021_extra_00"
+      ]
+    }
+  ],
+  "moveLimit": 26,
+  "difficulty": "practice",
+  "firstClearCoins": 30,
+  "designSeed": 862021,
+  "chapterId": 5,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "pocket_watch",
+  "evidenceReveal": "The snowy parcel is a decoy gift. Its tag was copied from another box.",
+  "durationTargetSeconds": [
+    100,
+    240
+  ],
+  "referenceSolution": [
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 2,
+      "b": 5
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    }
+  ],
+  "referenceMoveCount": 13,
+  "storyQuestion": "Is the snowy parcel the real star crate?",
+  "dossier": {
+    "label": "Arrival",
+    "values": [
+      10,
+      11,
+      12
+    ],
+    "labels": [
+      "10:00",
+      "11:00",
+      "12:00"
+    ],
+    "low": "earliest friend",
+    "high": "latest friend"
+  },
+  "cluePool": [
+    {
+      "icon": "snowmen_02",
+      "text": "The earliest friend has the antler hat.",
+      "rule": {
+        "kind": "lowest",
+        "a": "snowmen_02"
+      },
+      "refs": [
+        "snowmen_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "snowmen_05",
+      "text": "The yellow scarf and antler hat belong to opposite end profiles.",
+      "rule": {
+        "kind": "notNext",
+        "a": "snowmen_05",
+        "b": "snowmen_02"
+      },
+      "refs": [
+        "snowmen_05",
+        "snowmen_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "snowmen_07",
+      "text": "The winter lantern goes with the blue stripe scarf.",
+      "rule": {
+        "kind": "same",
+        "a": "snowmen_07",
+        "b": "snowmen_04"
+      },
+      "refs": [
+        "snowmen_07",
+        "snowmen_04"
+      ],
+      "column": null
+    },
+    {
+      "icon": "snowmen_07",
+      "text": "The winter lantern and antler hat have different owners.",
+      "rule": {
+        "kind": "different",
+        "a": "snowmen_07",
+        "b": "snowmen_02"
+      },
+      "refs": [
+        "snowmen_07",
+        "snowmen_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "snowmen_00",
+      "text": "The top hat owner is left of the present owner.",
+      "rule": {
+        "kind": "left",
+        "a": "snowmen_00",
+        "b": "snowmen_08"
+      },
+      "refs": [
+        "snowmen_00",
+        "snowmen_08"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the arrival badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "Who had the kettle?",
+    "answer": "Friend A",
+    "icon": "l021_extra_04",
+    "evidence": [
+      "The recovered label mentions the kettle.",
+      "Use the confirmed scene to identify its owner."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 22,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

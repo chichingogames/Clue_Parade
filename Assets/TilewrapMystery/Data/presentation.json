@@ -1,0 +1,568 @@
+{
+  "schemaVersion": 5,
+  "referenceWidth": 1080,
+  "referenceHeight": 1920,
+  "scaleMode": "uniform-fit-safe-area",
+  "backgroundScaleMode": "cover-entire-canvas",
+  "showStockRowLabels": false,
+  "showPartialOwnerFeedback": false,
+  "visibleClueCount": 2,
+  "regions": [
+    {
+      "id": "case",
+      "rect": [
+        60,
+        40,
+        235,
+        106
+      ]
+    },
+    {
+      "id": "menu",
+      "rect": [
+        319,
+        53,
+        76,
+        80
+      ]
+    },
+    {
+      "id": "coins",
+      "rect": [
+        419,
+        40,
+        297,
+        106
+      ]
+    },
+    {
+      "id": "moves",
+      "rect": [
+        740,
+        40,
+        280,
+        108
+      ]
+    },
+    {
+      "id": "title",
+      "rect": [
+        60,
+        166,
+        960,
+        67
+      ]
+    },
+    {
+      "id": "caseQuestion",
+      "rect": [
+        70,
+        237,
+        940,
+        42
+      ]
+    },
+    {
+      "id": "progress",
+      "rect": [
+        60,
+        290,
+        960,
+        35
+      ]
+    },
+    {
+      "id": "requestHeading",
+      "rect": [
+        60,
+        342,
+        960,
+        43
+      ]
+    },
+    {
+      "id": "clueLeft",
+      "rect": [
+        60,
+        399,
+        470,
+        180
+      ]
+    },
+    {
+      "id": "clueRight",
+      "rect": [
+        550,
+        399,
+        470,
+        180
+      ]
+    },
+    {
+      "id": "subjects",
+      "rect": [
+        60,
+        595,
+        960,
+        211
+      ]
+    },
+    {
+      "id": "boardNote",
+      "rect": [
+        60,
+        828,
+        960,
+        35
+      ]
+    },
+    {
+      "id": "board",
+      "rect": [
+        60,
+        878,
+        960,
+        810
+      ]
+    },
+    {
+      "id": "coach",
+      "rect": [
+        60,
+        1712,
+        960,
+        65
+      ]
+    },
+    {
+      "id": "undo",
+      "rect": [
+        60,
+        1796,
+        280,
+        108
+      ]
+    },
+    {
+      "id": "notebook",
+      "rect": [
+        360,
+        1796,
+        360,
+        108
+      ]
+    },
+    {
+      "id": "hint",
+      "rect": [
+        740,
+        1796,
+        280,
+        108
+      ]
+    }
+  ],
+  "text": {
+    "title": 59,
+    "caseQuestion": 29,
+    "clues": 35,
+    "clueMinimum": 26,
+    "profileName": 31,
+    "profileBadge": 34,
+    "tileLabel": 30,
+    "coach": 30,
+    "moves": 49,
+    "actions": 45
+  },
+  "timings": {
+    "swapSeconds": 0.24,
+    "deliverySeconds": 0.46,
+    "fallSeconds": 0.31,
+    "refillSeconds": 0.46,
+    "firstDealSeconds": 0.9,
+    "retryDealSeconds": 0,
+    "hintLoopSeconds": 1.8,
+    "hintAttentionAfterSeconds": 14
+  },
+  "background": {
+    "baseSprite": "background_teal",
+    "layers": [
+      {
+        "sprite": "ambient_arch",
+        "rect": [
+          -180,
+          580,
+          520,
+          1120
+        ],
+        "opacity": 0.1,
+        "dx": 8,
+        "dy": 12,
+        "period": 42,
+        "phase": 0
+      },
+      {
+        "sprite": "ambient_arch",
+        "rect": [
+          330,
+          650,
+          520,
+          1120
+        ],
+        "opacity": 0.09,
+        "dx": -6,
+        "dy": 10,
+        "period": 47,
+        "phase": 1
+      },
+      {
+        "sprite": "ambient_arch",
+        "rect": [
+          840,
+          490,
+          520,
+          1120
+        ],
+        "opacity": 0.11,
+        "dx": 7,
+        "dy": 14,
+        "period": 39,
+        "phase": 2
+      },
+      {
+        "sprite": "ambient_glow",
+        "rect": [
+          -240,
+          -160,
+          900,
+          900
+        ],
+        "opacity": 0.12,
+        "dx": 24,
+        "dy": 16,
+        "period": 34,
+        "phase": 0
+      },
+      {
+        "sprite": "ambient_glow",
+        "rect": [
+          700,
+          1100,
+          650,
+          650
+        ],
+        "opacity": 0.07,
+        "dx": -16,
+        "dy": 20,
+        "period": 41,
+        "phase": 2
+      },
+      {
+        "sprite": "ambient_leaf",
+        "rect": [
+          -84,
+          180,
+          240,
+          120
+        ],
+        "opacity": 0.14,
+        "dx": 4,
+        "dy": 5,
+        "period": 22,
+        "phase": 0
+      },
+      {
+        "sprite": "ambient_leaf",
+        "rect": [
+          960,
+          250,
+          220,
+          110
+        ],
+        "opacity": 0.12,
+        "dx": -4,
+        "dy": 6,
+        "period": 26,
+        "phase": 1
+      },
+      {
+        "sprite": "ambient_mote",
+        "rect": [
+          27,
+          350,
+          12,
+          12
+        ],
+        "opacity": 0.36,
+        "dx": 8,
+        "dy": 18,
+        "period": 16,
+        "phase": 0.0
+      },
+      {
+        "sprite": "ambient_mote",
+        "rect": [
+          1046,
+          610,
+          12,
+          12
+        ],
+        "opacity": 0.36,
+        "dx": 8,
+        "dy": 18,
+        "period": 18,
+        "phase": 1.2
+      },
+      {
+        "sprite": "ambient_mote",
+        "rect": [
+          24,
+          1200,
+          12,
+          12
+        ],
+        "opacity": 0.36,
+        "dx": 8,
+        "dy": 18,
+        "period": 20,
+        "phase": 2.4
+      },
+      {
+        "sprite": "ambient_mote",
+        "rect": [
+          1050,
+          1440,
+          12,
+          12
+        ],
+        "opacity": 0.36,
+        "dx": 8,
+        "dy": 18,
+        "period": 22,
+        "phase": 3.5999999999999996
+      },
+      {
+        "sprite": "ambient_mote",
+        "rect": [
+          32,
+          1750,
+          12,
+          12
+        ],
+        "opacity": 0.36,
+        "dx": 8,
+        "dy": 18,
+        "period": 24,
+        "phase": 4.8
+      },
+      {
+        "sprite": "ambient_mote",
+        "rect": [
+          1040,
+          1840,
+          12,
+          12
+        ],
+        "opacity": 0.36,
+        "dx": 8,
+        "dy": 18,
+        "period": 26,
+        "phase": 6.0
+      }
+    ],
+    "chapterTints": [
+      "#ffffff",
+      "#f1ffff",
+      "#f7fff1",
+      "#f0f5ff",
+      "#fff5ed",
+      "#fffbea"
+    ],
+    "reducedMotionSupported": true
+  },
+  "map": {
+    "width": 1080,
+    "height": 7200,
+    "sectionHeight": 1200,
+    "pathSprite": "map_path",
+    "openSprite": "map_node_open",
+    "currentSprite": "map_node_current",
+    "lockedSprite": "map_node_locked",
+    "expertSprite": "case_node_expert",
+    "nodes": [
+      {
+        "levelId": 1,
+        "x": 540,
+        "y": 7050
+      },
+      {
+        "levelId": 2,
+        "x": 787,
+        "y": 6815
+      },
+      {
+        "levelId": 3,
+        "x": 693,
+        "y": 6580
+      },
+      {
+        "levelId": 4,
+        "x": 387,
+        "y": 6345
+      },
+      {
+        "levelId": 5,
+        "x": 293,
+        "y": 6110
+      },
+      {
+        "levelId": 6,
+        "x": 540,
+        "y": 5875
+      },
+      {
+        "levelId": 7,
+        "x": 787,
+        "y": 5640
+      },
+      {
+        "levelId": 8,
+        "x": 693,
+        "y": 5405
+      },
+      {
+        "levelId": 9,
+        "x": 387,
+        "y": 5170
+      },
+      {
+        "levelId": 10,
+        "x": 293,
+        "y": 4935
+      },
+      {
+        "levelId": 11,
+        "x": 540,
+        "y": 4700
+      },
+      {
+        "levelId": 12,
+        "x": 787,
+        "y": 4465
+      },
+      {
+        "levelId": 13,
+        "x": 693,
+        "y": 4230
+      },
+      {
+        "levelId": 14,
+        "x": 387,
+        "y": 3995
+      },
+      {
+        "levelId": 15,
+        "x": 293,
+        "y": 3760
+      },
+      {
+        "levelId": 16,
+        "x": 540,
+        "y": 3525
+      },
+      {
+        "levelId": 17,
+        "x": 787,
+        "y": 3290
+      },
+      {
+        "levelId": 18,
+        "x": 693,
+        "y": 3055
+      },
+      {
+        "levelId": 19,
+        "x": 387,
+        "y": 2820
+      },
+      {
+        "levelId": 20,
+        "x": 293,
+        "y": 2585
+      },
+      {
+        "levelId": 21,
+        "x": 540,
+        "y": 2350
+      },
+      {
+        "levelId": 22,
+        "x": 787,
+        "y": 2115
+      },
+      {
+        "levelId": 23,
+        "x": 693,
+        "y": 1880
+      },
+      {
+        "levelId": 24,
+        "x": 387,
+        "y": 1645
+      },
+      {
+        "levelId": 25,
+        "x": 293,
+        "y": 1410
+      },
+      {
+        "levelId": 26,
+        "x": 540,
+        "y": 1175
+      },
+      {
+        "levelId": 27,
+        "x": 787,
+        "y": 940
+      },
+      {
+        "levelId": 28,
+        "x": 693,
+        "y": 705
+      },
+      {
+        "levelId": 29,
+        "x": 387,
+        "y": 470
+      },
+      {
+        "levelId": 30,
+        "x": 293,
+        "y": 235
+      }
+    ]
+  },
+  "audio": {
+    "musicEvent": "mystery_loop",
+    "musicDefaultGain": 0.6,
+    "sfxDefaultGain": 0.8,
+    "duckGain": 0.52,
+    "duckSeconds": 1.4,
+    "pauseOnApplicationPause": true
+  },
+  "effects": {
+    "unknownItemsDoNotShowChecks": true,
+    "deliveryUses": [
+      "fx_ring",
+      "fx_star",
+      "check_badge"
+    ],
+    "hintUses": [
+      "tutorial_hand",
+      "tutorial_arrow",
+      "tile_selection",
+      "hint_row"
+    ],
+    "slotArrivalIsCosmetic": true
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "id": 1,
+  "title": "Parade prep",
+  "subtitle": "One clue. One swap. A complete set!",
+  "subjects": [
+    {
+      "id": "crew_mia",
+      "name": "Mia",
+      "column": 0,
+      "rigId": "crew_mia"
+    },
+    {
+      "id": "crew_leo",
+      "name": "Leo",
+      "column": 1,
+      "rigId": "crew_leo"
+    },
+    {
+      "id": "crew_zoe",
+      "name": "Zoe",
+      "column": 2,
+      "rigId": "crew_zoe"
+    }
+  ],
+  "sets": [
+    {
+      "label": "Hats",
+      "action": "Reconstruct hats in any row.",
+      "items": [
+        "crew_00",
+        "crew_01",
+        "crew_02"
+      ],
+      "visibleClues": [
+        {
+          "icon": "crew_01",
+          "text": "Leo has the blue cap.",
+          "rule": {
+            "kind": "at",
+            "a": "crew_01",
+            "column": 1
+          },
+          "refs": [
+            "crew_01"
+          ],
+          "column": 1
+        },
+        {
+          "icon": "crew_00",
+          "text": "Mia has the red cap.",
+          "rule": {
+            "kind": "at",
+            "a": "crew_00",
+            "column": 0
+          },
+          "refs": [
+            "crew_00"
+          ],
+          "column": 0
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Shirts",
+      "action": "Reconstruct shirts in any row.",
+      "items": [
+        "crew_04",
+        "crew_05",
+        "crew_03"
+      ],
+      "visibleClues": [
+        {
+          "icon": "crew_03",
+          "text": "Zoe has the red shirt.",
+          "rule": {
+            "kind": "at",
+            "a": "crew_03",
+            "column": 2
+          },
+          "refs": [
+            "crew_03"
+          ],
+          "column": 2
+        },
+        {
+          "icon": "crew_05",
+          "text": "Leo has the purple shirt.",
+          "rule": {
+            "kind": "at",
+            "a": "crew_05",
+            "column": 1
+          },
+          "refs": [
+            "crew_05"
+          ],
+          "column": 1
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Bags",
+      "action": "Reconstruct bags in any row.",
+      "items": [
+        "crew_08",
+        "crew_07",
+        "crew_06"
+      ],
+      "visibleClues": [
+        {
+          "icon": "crew_08",
+          "text": "Mia has the purple bag.",
+          "rule": {
+            "kind": "at",
+            "a": "crew_08",
+            "column": 0
+          },
+          "refs": [
+            "crew_08"
+          ],
+          "column": 0
+        },
+        {
+          "icon": "crew_07",
+          "text": "Leo has the blue bag.",
+          "rule": {
+            "kind": "at",
+            "a": "crew_07",
+            "column": 1
+          },
+          "refs": [
+            "crew_07"
+          ],
+          "column": 1
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "items": [
+    {
+      "id": "crew_00",
+      "label": "Red cap",
+      "sprite": "crew_00",
+      "native": true
+    },
+    {
+      "id": "crew_01",
+      "label": "Blue cap",
+      "sprite": "crew_01",
+      "native": true
+    },
+    {
+      "id": "crew_02",
+      "label": "Purple cap",
+      "sprite": "crew_02",
+      "native": true
+    },
+    {
+      "id": "crew_03",
+      "label": "Red shirt",
+      "sprite": "crew_03",
+      "native": true
+    },
+    {
+      "id": "crew_04",
+      "label": "Blue shirt",
+      "sprite": "crew_04",
+      "native": true
+    },
+    {
+      "id": "crew_05",
+      "label": "Purple shirt",
+      "sprite": "crew_05",
+      "native": true
+    },
+    {
+      "id": "crew_06",
+      "label": "Red bag",
+      "sprite": "crew_06",
+      "native": true
+    },
+    {
+      "id": "crew_07",
+      "label": "Blue bag",
+      "sprite": "crew_07",
+      "native": true
+    },
+    {
+      "id": "crew_08",
+      "label": "Purple bag",
+      "sprite": "crew_08",
+      "native": true
+    }
+  ],
+  "start": [
+    "crew_00",
+    "crew_02",
+    "crew_01",
+    "crew_05",
+    "crew_04",
+    "crew_03",
+    "crew_08",
+    "crew_06",
+    "crew_07"
+  ],
+  "refills": [],
+  "moveLimit": 0,
+  "orderMode": "staged",
+  "firstClearCoins": 30,
+  "tutorial": {
+    "from": 2,
+    "to": 1,
+    "text": "Leo needs the blue cap. Swipe it left, into his column."
+  },
+  "completionText": "The marked bag leads to a welcome-gift ticket at the pet corner.",
+  "chapterId": 1,
+  "referenceSolution": [
+    {
+      "a": 1,
+      "b": 2
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 7,
+      "b": 8
+    }
+  ],
+  "referenceMoveCount": 3,
+  "storyQuestion": "",
+  "dossier": null,
+  "cluePool": [],
+  "caseResolution": {
+    "question": "Which bag was paired with the blue shirt?",
+    "answer": "Purple bag",
+    "icon": "crew_08",
+    "evidence": [
+      "The damaged delivery tag was on the blue-shirt wearer’s bag.",
+      "Finish the scene to work out which bag it was."
+    ]
+  },
+  "question": "Which bag was paired with the blue shirt?",
+  "showPartialOwnerFeedback": false,
+  "schemaVersion": 5,
+  "evidenceReveal": "The marked bag leads to a welcome-gift ticket at the pet corner.",
+  "nextLead": "Follow the ticket to the pet corner.",
+  "evidenceIcon": "blue_tag",
+  "clueGraphVersion": 2,
+  "difficulty": "practice",
+  "reasoningTip": "Match each named profile to its item. The remaining item belongs to the third profile.",
+  "nextLevelId": 2,
+  "rows": 3,
+  "columns": 3,
+  "coaching": [
+    "Leo needs the blue cap. Swipe it left, into his column.",
+    "Now shirts. Read the names; match each item to its profile.",
+    "Now bags. Read the names; match each item to its profile."
+  ]
+}

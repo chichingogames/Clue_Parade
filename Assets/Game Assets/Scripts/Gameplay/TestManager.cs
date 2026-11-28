@@ -26,7 +26,7 @@ public class TestManager : MonoBehaviour
     #region Inspector
 
     [Header("Level")]
-    [Tooltip("Case that 'Load Level' opens, 1..30 (Assets/TilewrapVaried/Data/Levels/level_NNN.json).")]
+    [Tooltip("Case that 'Load Level' opens, 1..30 (Assets/TilewrapMystery/Data/Levels/level_NNN.json).")]
     [SerializeField, Min(1)] private int _levelNumber = 1;
 
     [Header("Move")]

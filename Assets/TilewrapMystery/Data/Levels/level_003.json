@@ -1,0 +1,270 @@
+{
+  "id": 3,
+  "title": "Birthday bakery",
+  "subtitle": "Finish three cakes. Learn one gentle “does not” clue.",
+  "subjects": [
+    {
+      "id": "cakes_cocoa",
+      "name": "Cake A",
+      "column": 0,
+      "rigId": "cakes_cocoa"
+    },
+    {
+      "id": "cakes_confetti",
+      "name": "Cake B",
+      "column": 1,
+      "rigId": "cakes_confetti"
+    },
+    {
+      "id": "cakes_sunny",
+      "name": "Cake C",
+      "column": 2,
+      "rigId": "cakes_sunny"
+    }
+  ],
+  "sets": [
+    {
+      "label": "Cake bases",
+      "action": "Reconstruct cake bases in any row.",
+      "items": [
+        "cakes_02",
+        "cakes_00",
+        "cakes_01"
+      ],
+      "visibleClues": [
+        {
+          "icon": "cakes_00",
+          "text": "Cake B has the chocolate sponge.",
+          "rule": {
+            "kind": "at",
+            "a": "cakes_00",
+            "column": 1
+          },
+          "refs": [
+            "cakes_00"
+          ],
+          "column": 1
+        },
+        {
+          "icon": "cakes_02",
+          "text": "Cake A has the lemon sponge.",
+          "rule": {
+            "kind": "at",
+            "a": "cakes_02",
+            "column": 0
+          },
+          "refs": [
+            "cakes_02"
+          ],
+          "column": 0
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Frosting",
+      "action": "Reconstruct frosting in any row.",
+      "items": [
+        "cakes_04",
+        "cakes_03",
+        "cakes_05"
+      ],
+      "visibleClues": [
+        {
+          "icon": "cakes_05",
+          "text": "The cream frosting goes with the vanilla sponge.",
+          "rule": {
+            "kind": "same",
+            "a": "cakes_05",
+            "b": "cakes_01"
+          },
+          "refs": [
+            "cakes_05",
+            "cakes_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "cakes_03",
+          "text": "The pink frosting goes with the chocolate sponge.",
+          "rule": {
+            "kind": "same",
+            "a": "cakes_03",
+            "b": "cakes_00"
+          },
+          "refs": [
+            "cakes_03",
+            "cakes_00"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Toppings",
+      "action": "Reconstruct toppings in any row.",
+      "items": [
+        "cakes_06",
+        "cakes_08",
+        "cakes_07"
+      ],
+      "visibleClues": [
+        {
+          "icon": "cakes_08",
+          "text": "The sugar star goes with the pink frosting.",
+          "rule": {
+            "kind": "same",
+            "a": "cakes_08",
+            "b": "cakes_03"
+          },
+          "refs": [
+            "cakes_08",
+            "cakes_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "cakes_06",
+          "text": "The cake with cream frosting does not get strawberries.",
+          "rule": {
+            "kind": "different",
+            "a": "cakes_06",
+            "b": "cakes_05"
+          },
+          "refs": [
+            "cakes_06",
+            "cakes_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "items": [
+    {
+      "id": "cakes_00",
+      "label": "Chocolate sponge",
+      "sprite": "cakes_00",
+      "native": true
+    },
+    {
+      "id": "cakes_01",
+      "label": "Vanilla sponge",
+      "sprite": "cakes_01",
+      "native": true
+    },
+    {
+      "id": "cakes_02",
+      "label": "Lemon sponge",
+      "sprite": "cakes_02",
+      "native": true
+    },
+    {
+      "id": "cakes_03",
+      "label": "Pink frosting",
+      "sprite": "cakes_03",
+      "native": true
+    },
+    {
+      "id": "cakes_04",
+      "label": "Blue frosting",
+      "sprite": "cakes_04",
+      "native": true
+    },
+    {
+      "id": "cakes_05",
+      "label": "Cream frosting",
+      "sprite": "cakes_05",
+      "native": true
+    },
+    {
+      "id": "cakes_06",
+      "label": "Strawberries",
+      "sprite": "cakes_06",
+      "native": true
+    },
+    {
+      "id": "cakes_07",
+      "label": "Rainbow sprinkles",
+      "sprite": "cakes_07",
+      "native": true
+    },
+    {
+      "id": "cakes_08",
+      "label": "Sugar star",
+      "sprite": "cakes_08",
+      "native": true
+    }
+  ],
+  "start": [
+    "cakes_02",
+    "cakes_01",
+    "cakes_00",
+    "cakes_03",
+    "cakes_05",
+    "cakes_04",
+    "cakes_07",
+    "cakes_06",
+    "cakes_08"
+  ],
+  "refills": [],
+  "moveLimit": 0,
+  "orderMode": "staged",
+  "firstClearCoins": 30,
+  "completionText": "A bakery receipt points to a handover at the night market.",
+  "chapterId": 1,
+  "referenceSolution": [
+    {
+      "a": 1,
+      "b": 2
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    }
+  ],
+  "referenceMoveCount": 5,
+  "storyQuestion": "",
+  "dossier": null,
+  "cluePool": [],
+  "reasoningTip": "“Does not” rules out a pairing. Find the sugar star first, then use the remaining choices.",
+  "caseResolution": {
+    "question": "Which cake gets the sugar star?",
+    "answer": "Cake B",
+    "icon": "cakes_08",
+    "evidence": [
+      "The sugar star belongs with pink frosting.",
+      "Find the cake already dressed in pink frosting."
+    ]
+  },
+  "question": "Which cake gets the sugar star?",
+  "showPartialOwnerFeedback": false,
+  "schemaVersion": 5,
+  "evidenceReveal": "A bakery receipt points to a handover at the night market.",
+  "nextLead": "Find the correct night-market stall.",
+  "evidenceIcon": "delivery_log",
+  "clueGraphVersion": 2,
+  "difficulty": "practice",
+  "nextLevelId": 4,
+  "rows": 3,
+  "columns": 3,
+  "coaching": [
+    "Use the two names to find where the cake bases belong.",
+    "Match the frosting to the cake bases already confirmed above.",
+    "“Does not” rules out a pairing. Find the sugar star first."
+  ]
+}

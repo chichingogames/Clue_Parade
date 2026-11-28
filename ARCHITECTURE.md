@@ -10,12 +10,13 @@ See `ARCHITECTURE-HISTORY.md` for what changed and when.
 > and `Tilewrap_Game_Scope_v5.pdf`). This branch replaces the 30-case wrap / swap game; where the sections below
 > describe `BoardState`, `LevelDefinition`, `CaseLevelSource`, `SwapPuzzle`, category tabs, line drags, rig prefabs
 > or the feedback popup, read this instead (`CLAUDE.md`'s Game design section has the rules in full):
-> - **Data:** `Assets/Game Assets/Data/delivery_cases.json` (the playtest's `DELIVERY_CONTENT` without its art,
->   JsonUtility shape) → `DeliveryContent` (economy, chapters, cases) / `DeliveryCase` (`FileRef.Cases`) →
->   `Manager_Level.Load(n)`. A case carries its own **rigs** (layers: sprite, rect, item, order), clues as rules
->   (`DeliveryClue.rule`, `refs`), a shared `cluePool`, a `dossier` (profile badges), `caseResolution`, optional
->   `deduction`, evidence and next lead. Sprites: the pack's content library plus `Sprites/Evidence` (12 props the
->   pack lacks, `FileRef._evidenceSprites`, filled by Build Assets). The pack's rig prefabs are no longer used.
+> - **Data / art (2026-11-29, v5 pack):** `Assets/TilewrapMystery` (`Tilewrap_30_Level_Unity_Production_v5`) replaced
+>   `TilewrapVaried`. Its `TilewrapContentLibrary` (`FileRef.Content`) holds the campaign
+>   (`Data/levels_01_30.json`, assembled from `Data/Levels/*` + chapters / economy because the delivery lacked it) →
+>   `DeliveryContent` (`FileRef.Cases`) → `Manager_Level.Load(n)`; sprites load on demand (`FileRef.Sprite`); subjects
+>   are its 90 fitted `TilewrapRigView` prefabs (`FileRef.Rig`). Scene / prefab / font references were re-pointed to
+>   the same-named files by GUID. Audio: the pack's clips through `Manager_Audio` (`AssetBuilder.PackKeys`); the
+>   animated background on its own camera-space `Background Canvas` (`Manager_Board._ambient`, chapter tint).
 > - **Model:** `DeliveryRules` + `DeliveryState` (pure): boards of 3 columns × 3 or 4 rows, swap neighbours,
 >   any-row deliveries (`AnyPendingSetClears`: any pending set, open requests first; false = only open requests, the
 >   HTML's rule), gravity, refills, staged / choice / hybrid order, continues (`ExtraMoves`, `ContinuesUsed`),

@@ -288,15 +288,15 @@ public static class UIBuilder
             cardSo.FindProperty("_fact").objectReferenceValue = factText;
             fact.gameObject.SetActive(false);
 
-            var packed = Place(body, "Packed", width - 150, cardHeight - 62, 144, 56);
+            var packed = Place(body, "Packed", width - 190, cardHeight - 62, 184, 56);
             AddImage(packed, Sprite("UI/capsule_white"), sliced: true).color = new Color32(0xF8, 0xED, 0xCF, 0xF0);
-            var icons = new Image[2];
+            var icons = new Image[3];                 // the last three found objects, then the count
             for (int i = 0; i < icons.Length; i++)
             {
                 icons[i] = AddImage(Place(packed, $"Icon {i + 1}", 6 + i * 44, 6, 44, 44), Sprite("Items/crew_00"));
                 icons[i].preserveAspect = true;
             }
-            var count = Label(packed, "Count", 94, 0, 46, 56, bold, "+2", 24, Ink, TextAlignmentOptions.Center).GetComponent<TMP_Text>();
+            var count = Label(packed, "Count", 138, 0, 46, 56, bold, "+3", 24, Ink, TextAlignmentOptions.Center).GetComponent<TMP_Text>();
             var iconsProperty = cardSo.FindProperty("_packedIcons");
             iconsProperty.arraySize = icons.Length;
             for (int i = 0; i < icons.Length; i++) iconsProperty.GetArrayElementAtIndex(i).objectReferenceValue = icons[i];

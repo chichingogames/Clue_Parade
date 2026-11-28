@@ -1,0 +1,515 @@
+{
+  "schemaVersion": 5,
+  "id": 16,
+  "sourceTheme": 16,
+  "title": "Cosy cottages",
+  "subtitle": "Who left the note in the wrong mailbox?",
+  "question": "Which home received the lizard?",
+  "setupText": "The missing star trail leads here. Who left the note in the wrong mailbox?",
+  "completionText": "The note reads: dry storage, then return to the festival.",
+  "nextLead": "The delivery time can be checked at the toast bar.",
+  "rows": 3,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "cottages_0",
+      "name": "Home A",
+      "column": 0,
+      "rigId": "cottages_0"
+    },
+    {
+      "id": "cottages_1",
+      "name": "Home B",
+      "column": 1,
+      "rigId": "cottages_1"
+    },
+    {
+      "id": "cottages_2",
+      "name": "Home C",
+      "column": 2,
+      "rigId": "cottages_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "cottages_00",
+      "label": "Blue roof",
+      "sprite": "cottages_00",
+      "native": true
+    },
+    {
+      "id": "cottages_01",
+      "label": "Red tile roof",
+      "sprite": "cottages_01",
+      "native": true
+    },
+    {
+      "id": "cottages_02",
+      "label": "Purple dome",
+      "sprite": "cottages_02",
+      "native": true
+    },
+    {
+      "id": "cottages_03",
+      "label": "Green round door",
+      "sprite": "cottages_03",
+      "native": true
+    },
+    {
+      "id": "cottages_04",
+      "label": "Yellow panel door",
+      "sprite": "cottages_04",
+      "native": true
+    },
+    {
+      "id": "cottages_05",
+      "label": "Brown arch door",
+      "sprite": "cottages_05",
+      "native": true
+    },
+    {
+      "id": "cottages_06",
+      "label": "White fence",
+      "sprite": "cottages_06",
+      "native": true
+    },
+    {
+      "id": "cottages_07",
+      "label": "Flower patch",
+      "sprite": "cottages_07",
+      "native": true
+    },
+    {
+      "id": "cottages_08",
+      "label": "Mailbox",
+      "sprite": "cottages_08",
+      "native": true
+    },
+    {
+      "id": "l016_extra_00",
+      "label": "Tree frog",
+      "sprite": "terrariums_07",
+      "native": false
+    },
+    {
+      "id": "l016_extra_01",
+      "label": "Checkerboard",
+      "sprite": "rooms_04",
+      "native": false
+    },
+    {
+      "id": "l016_extra_02",
+      "label": "Blue star tag",
+      "sprite": "blue_tag",
+      "native": false
+    },
+    {
+      "id": "l016_extra_03",
+      "label": "Pink daisy",
+      "sprite": "garden_03",
+      "native": false
+    },
+    {
+      "id": "l016_extra_04",
+      "label": "Lizard",
+      "sprite": "terrariums_06",
+      "native": false
+    },
+    {
+      "id": "l016_extra_05",
+      "label": "Crate photo",
+      "sprite": "crate_photo",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Roofs",
+      "items": [
+        "cottages_02",
+        "cottages_01",
+        "cottages_00"
+      ],
+      "action": "Reconstruct roofs in any row.",
+      "visibleClues": [
+        {
+          "icon": "cottages_03",
+          "text": "The green round door home is newer than the red tile roof home.",
+          "rule": {
+            "kind": "less",
+            "a": "cottages_03",
+            "b": "cottages_01"
+          },
+          "refs": [
+            "cottages_03",
+            "cottages_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "cottages_01",
+          "text": "The red tile roof goes with the flower patch.",
+          "rule": {
+            "kind": "same",
+            "a": "cottages_01",
+            "b": "cottages_07"
+          },
+          "refs": [
+            "cottages_01",
+            "cottages_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Doors",
+      "items": [
+        "cottages_04",
+        "cottages_05",
+        "cottages_03"
+      ],
+      "action": "Reconstruct doors in any row.",
+      "visibleClues": [
+        {
+          "icon": "cottages_03",
+          "text": "The green round door home is newer than the red tile roof home.",
+          "rule": {
+            "kind": "less",
+            "a": "cottages_03",
+            "b": "cottages_01"
+          },
+          "refs": [
+            "cottages_03",
+            "cottages_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "cottages_01",
+          "text": "The red tile roof goes with the flower patch.",
+          "rule": {
+            "kind": "same",
+            "a": "cottages_01",
+            "b": "cottages_07"
+          },
+          "refs": [
+            "cottages_01",
+            "cottages_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Gardens",
+      "items": [
+        "cottages_06",
+        "cottages_07",
+        "cottages_08"
+      ],
+      "action": "Reconstruct gardens in any row.",
+      "visibleClues": [
+        {
+          "icon": "cottages_03",
+          "text": "The green round door home is newer than the red tile roof home.",
+          "rule": {
+            "kind": "less",
+            "a": "cottages_03",
+            "b": "cottages_01"
+          },
+          "refs": [
+            "cottages_03",
+            "cottages_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "cottages_01",
+          "text": "The red tile roof goes with the flower patch.",
+          "rule": {
+            "kind": "same",
+            "a": "cottages_01",
+            "b": "cottages_07"
+          },
+          "refs": [
+            "cottages_01",
+            "cottages_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l016_extra_02",
+        "l016_extra_01",
+        "l016_extra_00"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l016_extra_02",
+          "text": "The blue star tag goes with the yellow panel door.",
+          "rule": {
+            "kind": "same",
+            "a": "l016_extra_02",
+            "b": "cottages_04"
+          },
+          "refs": [
+            "l016_extra_02",
+            "cottages_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l016_extra_00",
+          "text": "The tree frog and brown arch door have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l016_extra_00",
+            "b": "cottages_05"
+          },
+          "refs": [
+            "l016_extra_00",
+            "cottages_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l016_extra_05",
+        "l016_extra_04",
+        "l016_extra_03"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l016_extra_03",
+          "text": "The pink daisy goes with the green round door.",
+          "rule": {
+            "kind": "same",
+            "a": "l016_extra_03",
+            "b": "cottages_03"
+          },
+          "refs": [
+            "l016_extra_03",
+            "cottages_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l016_extra_05",
+          "text": "The crate photo and brown arch door have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l016_extra_05",
+            "b": "cottages_05"
+          },
+          "refs": [
+            "l016_extra_05",
+            "cottages_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "cottages_01",
+    "cottages_05",
+    "cottages_03",
+    "cottages_08",
+    "cottages_04",
+    "cottages_02",
+    "cottages_06",
+    "cottages_00",
+    "cottages_07"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l016_extra_04",
+        "l016_extra_00",
+        "l016_extra_01"
+      ]
+    },
+    {
+      "items": [
+        "l016_extra_05",
+        "l016_extra_03",
+        "l016_extra_02"
+      ]
+    }
+  ],
+  "moveLimit": 26,
+  "difficulty": "practice",
+  "firstClearCoins": 30,
+  "designSeed": 862016,
+  "chapterId": 4,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "secret_note",
+  "evidenceReveal": "The note reads: dry storage, then return to the festival.",
+  "durationTargetSeconds": [
+    50,
+    150
+  ],
+  "referenceSolution": [
+    {
+      "a": 0,
+      "b": 3
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    }
+  ],
+  "referenceMoveCount": 13,
+  "storyQuestion": "Who left the note in the wrong mailbox?",
+  "dossier": {
+    "label": "Built",
+    "values": [
+      1,
+      8,
+      4
+    ],
+    "labels": [
+      "1 yr ago",
+      "8 yrs ago",
+      "4 yrs ago"
+    ],
+    "low": "newest home",
+    "high": "oldest home"
+  },
+  "cluePool": [
+    {
+      "icon": "cottages_03",
+      "text": "The green round door home is newer than the red tile roof home.",
+      "rule": {
+        "kind": "less",
+        "a": "cottages_03",
+        "b": "cottages_01"
+      },
+      "refs": [
+        "cottages_03",
+        "cottages_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "cottages_01",
+      "text": "The red tile roof goes with the flower patch.",
+      "rule": {
+        "kind": "same",
+        "a": "cottages_01",
+        "b": "cottages_07"
+      },
+      "refs": [
+        "cottages_01",
+        "cottages_07"
+      ],
+      "column": null
+    },
+    {
+      "icon": "cottages_04",
+      "text": "The yellow panel door home is newer than the mailbox home.",
+      "rule": {
+        "kind": "less",
+        "a": "cottages_04",
+        "b": "cottages_08"
+      },
+      "refs": [
+        "cottages_04",
+        "cottages_08"
+      ],
+      "column": null
+    },
+    {
+      "icon": "cottages_07",
+      "text": "The flower patch owner is left of the blue roof owner.",
+      "rule": {
+        "kind": "left",
+        "a": "cottages_07",
+        "b": "cottages_00"
+      },
+      "refs": [
+        "cottages_07",
+        "cottages_00"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the built badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "Which home received the lizard?",
+    "answer": "Home B",
+    "icon": "l016_extra_04",
+    "evidence": [
+      "The recovered label mentions the lizard.",
+      "Use the confirmed scene to identify its owner."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 17,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

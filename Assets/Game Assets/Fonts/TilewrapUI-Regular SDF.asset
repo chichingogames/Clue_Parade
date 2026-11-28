@@ -123,7 +123,7 @@ MonoBehaviour:
     fontStyleModifier: 0
     renderMode: 0
     includeFontFeatures: 0
-  m_SourceFontFile: {fileID: 12800000, guid: d5afab03655d86248ac2892abf33832d, type: 3}
+  m_SourceFontFile: {fileID: 12800000, guid: ec664dfe1195a4b4283dcd109f96e3cc, type: 3}
   m_SourceFontFilePath: 
   m_AtlasPopulationMode: 1
   InternalDynamicOS: 0

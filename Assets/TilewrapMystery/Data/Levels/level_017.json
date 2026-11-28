@@ -1,0 +1,698 @@
+{
+  "schemaVersion": 5,
+  "id": 17,
+  "sourceTheme": 17,
+  "title": "Toast bar",
+  "subtitle": "Which order places the courier on the detour?",
+  "question": "What was paired with the salmon?",
+  "setupText": "The missing star trail leads here. Which order places the courier on the detour?",
+  "completionText": "A meal ticket places the courier on the sheltered road at dusk.",
+  "nextLead": "A lantern was borrowed from the nearby campsite.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "toast_0",
+      "name": "Toast A",
+      "column": 0,
+      "rigId": "toast_0"
+    },
+    {
+      "id": "toast_1",
+      "name": "Toast B",
+      "column": 1,
+      "rigId": "toast_1"
+    },
+    {
+      "id": "toast_2",
+      "name": "Toast C",
+      "column": 2,
+      "rigId": "toast_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "toast_00",
+      "label": "Sourdough toast",
+      "sprite": "toast_00",
+      "native": true
+    },
+    {
+      "id": "toast_01",
+      "label": "Rye toast",
+      "sprite": "toast_01",
+      "native": true
+    },
+    {
+      "id": "toast_02",
+      "label": "Bagel half",
+      "sprite": "toast_02",
+      "native": true
+    },
+    {
+      "id": "toast_03",
+      "label": "Avocado slices",
+      "sprite": "toast_03",
+      "native": true
+    },
+    {
+      "id": "toast_04",
+      "label": "Fried egg",
+      "sprite": "toast_04",
+      "native": true
+    },
+    {
+      "id": "toast_05",
+      "label": "Salmon",
+      "sprite": "toast_05",
+      "native": true
+    },
+    {
+      "id": "toast_06",
+      "label": "Leaf salad",
+      "sprite": "toast_06",
+      "native": true
+    },
+    {
+      "id": "toast_07",
+      "label": "Tomato soup",
+      "sprite": "toast_07",
+      "native": true
+    },
+    {
+      "id": "toast_08",
+      "label": "Pickles",
+      "sprite": "toast_08",
+      "native": true
+    },
+    {
+      "id": "l017_extra_00",
+      "label": "Scrambled eggs",
+      "sprite": "breakfast_00",
+      "native": false
+    },
+    {
+      "id": "l017_extra_01",
+      "label": "Patchwork canopy",
+      "sprite": "market_01",
+      "native": false
+    },
+    {
+      "id": "l017_extra_02",
+      "label": "Red wax seal",
+      "sprite": "wax_seal",
+      "native": false
+    },
+    {
+      "id": "l017_extra_03",
+      "label": "Blue frosting",
+      "sprite": "cakes_04",
+      "native": false
+    },
+    {
+      "id": "l017_extra_04",
+      "label": "Chocolate sponge",
+      "sprite": "cakes_00",
+      "native": false
+    },
+    {
+      "id": "l017_extra_05",
+      "label": "Brass key",
+      "sprite": "brass_key",
+      "native": false
+    },
+    {
+      "id": "l017_extra_06",
+      "label": "Pancakes",
+      "sprite": "breakfast_01",
+      "native": false
+    },
+    {
+      "id": "l017_extra_07",
+      "label": "Toy display",
+      "sprite": "market_05",
+      "native": false
+    },
+    {
+      "id": "l017_extra_08",
+      "label": "Flashlight",
+      "sprite": "flashlight",
+      "native": false
+    },
+    {
+      "id": "l017_extra_09",
+      "label": "Vanilla sponge",
+      "sprite": "cakes_01",
+      "native": false
+    },
+    {
+      "id": "l017_extra_10",
+      "label": "Raspberry sauce",
+      "sprite": "sundaes_05",
+      "native": false
+    },
+    {
+      "id": "l017_extra_11",
+      "label": "Blue star tag",
+      "sprite": "blue_tag",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Bread",
+      "items": [
+        "toast_02",
+        "toast_00",
+        "toast_01"
+      ],
+      "action": "Reconstruct bread in any row.",
+      "visibleClues": [
+        {
+          "icon": "toast_06",
+          "text": "The lowest-numbered order has the leaf salad.",
+          "rule": {
+            "kind": "lowest",
+            "a": "toast_06"
+          },
+          "refs": [
+            "toast_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "toast_00",
+          "text": "The sourdough toast goes with the leaf salad.",
+          "rule": {
+            "kind": "same",
+            "a": "toast_00",
+            "b": "toast_06"
+          },
+          "refs": [
+            "toast_00",
+            "toast_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Toppings",
+      "items": [
+        "toast_05",
+        "toast_04",
+        "toast_03"
+      ],
+      "action": "Reconstruct toppings in any row.",
+      "visibleClues": [
+        {
+          "icon": "toast_06",
+          "text": "The lowest-numbered order has the leaf salad.",
+          "rule": {
+            "kind": "lowest",
+            "a": "toast_06"
+          },
+          "refs": [
+            "toast_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "toast_00",
+          "text": "The sourdough toast goes with the leaf salad.",
+          "rule": {
+            "kind": "same",
+            "a": "toast_00",
+            "b": "toast_06"
+          },
+          "refs": [
+            "toast_00",
+            "toast_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Sides",
+      "items": [
+        "toast_08",
+        "toast_06",
+        "toast_07"
+      ],
+      "action": "Reconstruct sides in any row.",
+      "visibleClues": [
+        {
+          "icon": "toast_06",
+          "text": "The lowest-numbered order has the leaf salad.",
+          "rule": {
+            "kind": "lowest",
+            "a": "toast_06"
+          },
+          "refs": [
+            "toast_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "toast_00",
+          "text": "The sourdough toast goes with the leaf salad.",
+          "rule": {
+            "kind": "same",
+            "a": "toast_00",
+            "b": "toast_06"
+          },
+          "refs": [
+            "toast_00",
+            "toast_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l017_extra_00",
+        "l017_extra_02",
+        "l017_extra_01"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l017_extra_01",
+          "text": "The patchwork canopy goes with the rye toast.",
+          "rule": {
+            "kind": "same",
+            "a": "l017_extra_01",
+            "b": "toast_01"
+          },
+          "refs": [
+            "l017_extra_01",
+            "toast_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l017_extra_00",
+          "text": "The scrambled eggs and sourdough toast have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l017_extra_00",
+            "b": "toast_00"
+          },
+          "refs": [
+            "l017_extra_00",
+            "toast_00"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l017_extra_05",
+        "l017_extra_04",
+        "l017_extra_03"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l017_extra_03",
+          "text": "The blue frosting goes with the rye toast.",
+          "rule": {
+            "kind": "same",
+            "a": "l017_extra_03",
+            "b": "toast_01"
+          },
+          "refs": [
+            "l017_extra_03",
+            "toast_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l017_extra_04",
+          "text": "The chocolate sponge and bagel half have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l017_extra_04",
+            "b": "toast_02"
+          },
+          "refs": [
+            "l017_extra_04",
+            "toast_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l017_extra_07",
+        "l017_extra_06",
+        "l017_extra_08"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l017_extra_07",
+          "text": "The toy display goes with the pickles.",
+          "rule": {
+            "kind": "same",
+            "a": "l017_extra_07",
+            "b": "toast_08"
+          },
+          "refs": [
+            "l017_extra_07",
+            "toast_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l017_extra_08",
+          "text": "The flashlight and leaf salad have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l017_extra_08",
+            "b": "toast_06"
+          },
+          "refs": [
+            "l017_extra_08",
+            "toast_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l017_extra_11",
+        "l017_extra_10",
+        "l017_extra_09"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l017_extra_11",
+          "text": "The blue star tag goes with the bagel half.",
+          "rule": {
+            "kind": "same",
+            "a": "l017_extra_11",
+            "b": "toast_02"
+          },
+          "refs": [
+            "l017_extra_11",
+            "toast_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l017_extra_10",
+          "text": "The raspberry sauce and rye toast have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l017_extra_10",
+            "b": "toast_01"
+          },
+          "refs": [
+            "l017_extra_10",
+            "toast_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "toast_00",
+    "toast_05",
+    "l017_extra_00",
+    "toast_08",
+    "toast_06",
+    "toast_07",
+    "toast_03",
+    "toast_01",
+    "toast_04",
+    "l017_extra_01",
+    "toast_02",
+    "l017_extra_02"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l017_extra_05",
+        "l017_extra_09",
+        "l017_extra_07"
+      ]
+    },
+    {
+      "items": [
+        "l017_extra_10",
+        "l017_extra_08",
+        "l017_extra_04"
+      ]
+    },
+    {
+      "items": [
+        "l017_extra_03",
+        "l017_extra_11",
+        "l017_extra_06"
+      ]
+    }
+  ],
+  "moveLimit": 36,
+  "difficulty": "standard",
+  "firstClearCoins": 30,
+  "designSeed": 862017,
+  "chapterId": 4,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "brass_key",
+  "evidenceReveal": "A meal ticket places the courier on the sheltered road at dusk.",
+  "durationTargetSeconds": [
+    100,
+    240
+  ],
+  "referenceSolution": [
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 0,
+      "b": 3
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 10,
+      "b": 11
+    }
+  ],
+  "referenceMoveCount": 22,
+  "storyQuestion": "Which order places the courier on the detour?",
+  "dossier": {
+    "label": "Order",
+    "values": [
+      24,
+      12,
+      36
+    ],
+    "labels": [
+      "#24",
+      "#12",
+      "#36"
+    ],
+    "low": "lowest-numbered order",
+    "high": "highest-numbered order"
+  },
+  "cluePool": [
+    {
+      "icon": "toast_06",
+      "text": "The lowest-numbered order has the leaf salad.",
+      "rule": {
+        "kind": "lowest",
+        "a": "toast_06"
+      },
+      "refs": [
+        "toast_06"
+      ],
+      "column": null
+    },
+    {
+      "icon": "toast_00",
+      "text": "The sourdough toast goes with the leaf salad.",
+      "rule": {
+        "kind": "same",
+        "a": "toast_00",
+        "b": "toast_06"
+      },
+      "refs": [
+        "toast_00",
+        "toast_06"
+      ],
+      "column": null
+    },
+    {
+      "icon": "toast_08",
+      "text": "The pickles owner is left of the leaf salad owner.",
+      "rule": {
+        "kind": "left",
+        "a": "toast_08",
+        "b": "toast_06"
+      },
+      "refs": [
+        "toast_08",
+        "toast_06"
+      ],
+      "column": null
+    },
+    {
+      "icon": "toast_07",
+      "text": "The tomato soup and salmon have different owners.",
+      "rule": {
+        "kind": "different",
+        "a": "toast_07",
+        "b": "toast_05"
+      },
+      "refs": [
+        "toast_07",
+        "toast_05"
+      ],
+      "column": null
+    },
+    {
+      "icon": "toast_04",
+      "text": "The fried egg owner is next to the pickles owner.",
+      "rule": {
+        "kind": "next",
+        "a": "toast_04",
+        "b": "toast_08"
+      },
+      "refs": [
+        "toast_04",
+        "toast_08"
+      ],
+      "column": null
+    },
+    {
+      "icon": "toast_01",
+      "text": "Toast A does not have the rye toast.",
+      "rule": {
+        "kind": "notAt",
+        "a": "toast_01",
+        "column": 0
+      },
+      "refs": [
+        "toast_01"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the order badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "What was paired with the salmon?",
+    "answer": "Blue star tag",
+    "icon": "l017_extra_11",
+    "evidence": [
+      "The witness remembers the salmon.",
+      "The missing object belonged to that same profile."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 18,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

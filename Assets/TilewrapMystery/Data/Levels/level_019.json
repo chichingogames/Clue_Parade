@@ -1,0 +1,690 @@
+{
+  "schemaVersion": 5,
+  "id": 19,
+  "sourceTheme": 19,
+  "title": "Dragon nursery",
+  "subtitle": "Is the strange mark a dragon’s claw?",
+  "question": "Which witness statement is wrong?",
+  "setupText": "The missing star trail leads here. Is the strange mark a dragon’s claw?",
+  "completionText": "The mark is a tool imprint, not a claw. A square battery outline sits beside it.",
+  "nextLead": "The float workshop has the matching helper’s repair log.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "dragons_0",
+      "name": "Ember",
+      "column": 0,
+      "rigId": "dragons_0"
+    },
+    {
+      "id": "dragons_1",
+      "name": "Breeze",
+      "column": 1,
+      "rigId": "dragons_1"
+    },
+    {
+      "id": "dragons_2",
+      "name": "Sprout",
+      "column": 2,
+      "rigId": "dragons_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "dragons_00",
+      "label": "Curled horns",
+      "sprite": "dragons_00",
+      "native": true
+    },
+    {
+      "id": "dragons_01",
+      "label": "Gold horns",
+      "sprite": "dragons_01",
+      "native": true
+    },
+    {
+      "id": "dragons_02",
+      "label": "Leaf antlers",
+      "sprite": "dragons_02",
+      "native": true
+    },
+    {
+      "id": "dragons_03",
+      "label": "Blue feathers",
+      "sprite": "dragons_03",
+      "native": true
+    },
+    {
+      "id": "dragons_04",
+      "label": "Green leaf wings",
+      "sprite": "dragons_04",
+      "native": true
+    },
+    {
+      "id": "dragons_05",
+      "label": "Red wings",
+      "sprite": "dragons_05",
+      "native": true
+    },
+    {
+      "id": "dragons_06",
+      "label": "Tiny crown",
+      "sprite": "dragons_06",
+      "native": true
+    },
+    {
+      "id": "dragons_07",
+      "label": "Gold cup",
+      "sprite": "dragons_07",
+      "native": true
+    },
+    {
+      "id": "dragons_08",
+      "label": "Green crystal",
+      "sprite": "dragons_08",
+      "native": true
+    },
+    {
+      "id": "l019_extra_00",
+      "label": "Giant flower",
+      "sprite": "floats_00",
+      "native": false
+    },
+    {
+      "id": "l019_extra_01",
+      "label": "Mini rover",
+      "sprite": "space_08",
+      "native": false
+    },
+    {
+      "id": "l019_extra_02",
+      "label": "Flashlight",
+      "sprite": "flashlight",
+      "native": false
+    },
+    {
+      "id": "l019_extra_03",
+      "label": "Red ribbon",
+      "sprite": "floats_04",
+      "native": false
+    },
+    {
+      "id": "l019_extra_04",
+      "label": "Red booster",
+      "sprite": "space_03",
+      "native": false
+    },
+    {
+      "id": "l019_extra_05",
+      "label": "Secret note",
+      "sprite": "secret_note",
+      "native": false
+    },
+    {
+      "id": "l019_extra_06",
+      "label": "Pointed cockpit",
+      "sprite": "space_01",
+      "native": false
+    },
+    {
+      "id": "l019_extra_07",
+      "label": "Green brew",
+      "sprite": "potions_01",
+      "native": false
+    },
+    {
+      "id": "l019_extra_08",
+      "label": "Route map",
+      "sprite": "route_map",
+      "native": false
+    },
+    {
+      "id": "l019_extra_09",
+      "label": "Crystal stopper",
+      "sprite": "potions_04",
+      "native": false
+    },
+    {
+      "id": "l019_extra_10",
+      "label": "Teddy bear",
+      "sprite": "gifts_04",
+      "native": false
+    },
+    {
+      "id": "l019_extra_11",
+      "label": "Blue star tag",
+      "sprite": "blue_tag",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Horns",
+      "items": [
+        "dragons_00",
+        "dragons_02",
+        "dragons_01"
+      ],
+      "action": "Reconstruct horns in any row.",
+      "visibleClues": [
+        {
+          "icon": "dragons_03",
+          "text": "The youngest dragon has the blue feathers.",
+          "rule": {
+            "kind": "lowest",
+            "a": "dragons_03"
+          },
+          "refs": [
+            "dragons_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "dragons_03",
+          "text": "The blue feathers and gold cup have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "dragons_03",
+            "b": "dragons_07"
+          },
+          "refs": [
+            "dragons_03",
+            "dragons_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Wings",
+      "items": [
+        "dragons_04",
+        "dragons_05",
+        "dragons_03"
+      ],
+      "action": "Reconstruct wings in any row.",
+      "visibleClues": [
+        {
+          "icon": "dragons_03",
+          "text": "The youngest dragon has the blue feathers.",
+          "rule": {
+            "kind": "lowest",
+            "a": "dragons_03"
+          },
+          "refs": [
+            "dragons_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "dragons_03",
+          "text": "The blue feathers and gold cup have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "dragons_03",
+            "b": "dragons_07"
+          },
+          "refs": [
+            "dragons_03",
+            "dragons_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Treasures",
+      "items": [
+        "dragons_06",
+        "dragons_07",
+        "dragons_08"
+      ],
+      "action": "Reconstruct treasures in any row.",
+      "visibleClues": [
+        {
+          "icon": "dragons_03",
+          "text": "The youngest dragon has the blue feathers.",
+          "rule": {
+            "kind": "lowest",
+            "a": "dragons_03"
+          },
+          "refs": [
+            "dragons_03"
+          ],
+          "column": null
+        },
+        {
+          "icon": "dragons_03",
+          "text": "The blue feathers and gold cup have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "dragons_03",
+            "b": "dragons_07"
+          },
+          "refs": [
+            "dragons_03",
+            "dragons_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l019_extra_00",
+        "l019_extra_01",
+        "l019_extra_02"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l019_extra_02",
+          "text": "The flashlight goes with the green crystal.",
+          "rule": {
+            "kind": "same",
+            "a": "l019_extra_02",
+            "b": "dragons_08"
+          },
+          "refs": [
+            "l019_extra_02",
+            "dragons_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l019_extra_00",
+          "text": "The giant flower and gold cup have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l019_extra_00",
+            "b": "dragons_07"
+          },
+          "refs": [
+            "l019_extra_00",
+            "dragons_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l019_extra_03",
+        "l019_extra_04",
+        "l019_extra_05"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l019_extra_03",
+          "text": "The red ribbon goes with the green leaf wings.",
+          "rule": {
+            "kind": "same",
+            "a": "l019_extra_03",
+            "b": "dragons_04"
+          },
+          "refs": [
+            "l019_extra_03",
+            "dragons_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l019_extra_05",
+          "text": "The secret note and red wings have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l019_extra_05",
+            "b": "dragons_05"
+          },
+          "refs": [
+            "l019_extra_05",
+            "dragons_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l019_extra_08",
+        "l019_extra_07",
+        "l019_extra_06"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l019_extra_06",
+          "text": "The pointed cockpit goes with the green crystal.",
+          "rule": {
+            "kind": "same",
+            "a": "l019_extra_06",
+            "b": "dragons_08"
+          },
+          "refs": [
+            "l019_extra_06",
+            "dragons_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l019_extra_08",
+          "text": "The route map and gold cup have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l019_extra_08",
+            "b": "dragons_07"
+          },
+          "refs": [
+            "l019_extra_08",
+            "dragons_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l019_extra_09",
+        "l019_extra_11",
+        "l019_extra_10"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l019_extra_11",
+          "text": "The blue star tag goes with the gold cup.",
+          "rule": {
+            "kind": "same",
+            "a": "l019_extra_11",
+            "b": "dragons_07"
+          },
+          "refs": [
+            "l019_extra_11",
+            "dragons_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l019_extra_09",
+          "text": "The crystal stopper and green crystal have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l019_extra_09",
+            "b": "dragons_08"
+          },
+          "refs": [
+            "l019_extra_09",
+            "dragons_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "dragons_01",
+    "dragons_08",
+    "dragons_00",
+    "dragons_03",
+    "dragons_02",
+    "l019_extra_01",
+    "dragons_07",
+    "l019_extra_00",
+    "dragons_05",
+    "dragons_04",
+    "dragons_06",
+    "l019_extra_02"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l019_extra_07",
+        "l019_extra_10",
+        "l019_extra_04"
+      ]
+    },
+    {
+      "items": [
+        "l019_extra_06",
+        "l019_extra_09",
+        "l019_extra_05"
+      ]
+    },
+    {
+      "items": [
+        "l019_extra_08",
+        "l019_extra_03",
+        "l019_extra_11"
+      ]
+    }
+  ],
+  "moveLimit": 36,
+  "difficulty": "standard",
+  "firstClearCoins": 30,
+  "designSeed": 862019,
+  "chapterId": 4,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "blue_tag",
+  "evidenceReveal": "The mark is a tool imprint, not a claw. A square battery outline sits beside it.",
+  "durationTargetSeconds": [
+    100,
+    240
+  ],
+  "referenceSolution": [
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 1,
+      "b": 2
+    },
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 1,
+      "b": 4
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    }
+  ],
+  "referenceMoveCount": 22,
+  "storyQuestion": "Is the strange mark a dragon’s claw?",
+  "dossier": {
+    "label": "Age",
+    "values": [
+      3,
+      5,
+      1
+    ],
+    "labels": [
+      "3 days",
+      "5 days",
+      "1 day"
+    ],
+    "low": "youngest dragon",
+    "high": "oldest dragon"
+  },
+  "cluePool": [
+    {
+      "icon": "dragons_03",
+      "text": "The youngest dragon has the blue feathers.",
+      "rule": {
+        "kind": "lowest",
+        "a": "dragons_03"
+      },
+      "refs": [
+        "dragons_03"
+      ],
+      "column": null
+    },
+    {
+      "icon": "dragons_03",
+      "text": "The blue feathers and gold cup have different owners.",
+      "rule": {
+        "kind": "different",
+        "a": "dragons_03",
+        "b": "dragons_07"
+      },
+      "refs": [
+        "dragons_03",
+        "dragons_07"
+      ],
+      "column": null
+    },
+    {
+      "icon": "dragons_00",
+      "text": "The curled horns goes with the tiny crown.",
+      "rule": {
+        "kind": "same",
+        "a": "dragons_00",
+        "b": "dragons_06"
+      },
+      "refs": [
+        "dragons_00",
+        "dragons_06"
+      ],
+      "column": null
+    },
+    {
+      "icon": "dragons_01",
+      "text": "The gold horns owner is younger than the tiny crown owner.",
+      "rule": {
+        "kind": "less",
+        "a": "dragons_01",
+        "b": "dragons_06"
+      },
+      "refs": [
+        "dragons_01",
+        "dragons_06"
+      ],
+      "column": null
+    },
+    {
+      "icon": "dragons_04",
+      "text": "The green leaf wings owner is left of the gold cup owner.",
+      "rule": {
+        "kind": "left",
+        "a": "dragons_04",
+        "b": "dragons_07"
+      },
+      "refs": [
+        "dragons_04",
+        "dragons_07"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the age badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "Which witness statement is wrong?",
+    "answer": "Gold horns goes with green leaf wings.",
+    "icon": null,
+    "evidence": [
+      "Check each witness statement against the finished scene.",
+      "Exactly one statement pairs details from different profiles."
+    ],
+    "statements": [
+      "Curled horns goes with green leaf wings.",
+      "Leaf antlers goes with red wings.",
+      "Gold horns goes with green leaf wings."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 20,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

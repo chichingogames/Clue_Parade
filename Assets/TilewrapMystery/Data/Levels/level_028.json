@@ -1,0 +1,671 @@
+{
+  "schemaVersion": 5,
+  "id": 28,
+  "sourceTheme": 28,
+  "title": "Sweet machines",
+  "subtitle": "Which fittings belong to the real launch order?",
+  "question": "What belonged to the smallest machine?",
+  "setupText": "The missing star trail leads here. Which fittings belong to the real launch order?",
+  "completionText": "The fittings match the return order, not the duplicate tag.",
+  "nextLead": "The final key and release record are stored at Treasure Cove.",
+  "rows": 4,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "sweetmachines_0",
+      "name": "Machine A",
+      "column": 0,
+      "rigId": "sweetmachines_0"
+    },
+    {
+      "id": "sweetmachines_1",
+      "name": "Machine B",
+      "column": 1,
+      "rigId": "sweetmachines_1"
+    },
+    {
+      "id": "sweetmachines_2",
+      "name": "Machine C",
+      "column": 2,
+      "rigId": "sweetmachines_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "sweetmachines_00",
+      "label": "Gumballs",
+      "sprite": "sweetmachines_00",
+      "native": true
+    },
+    {
+      "id": "sweetmachines_01",
+      "label": "Jelly beans",
+      "sprite": "sweetmachines_01",
+      "native": true
+    },
+    {
+      "id": "sweetmachines_02",
+      "label": "Sugar stars",
+      "sprite": "sweetmachines_02",
+      "native": true
+    },
+    {
+      "id": "sweetmachines_03",
+      "label": "Pink cap",
+      "sprite": "sweetmachines_03",
+      "native": true
+    },
+    {
+      "id": "sweetmachines_04",
+      "label": "Teal cap",
+      "sprite": "sweetmachines_04",
+      "native": true
+    },
+    {
+      "id": "sweetmachines_05",
+      "label": "Gold cap",
+      "sprite": "sweetmachines_05",
+      "native": true
+    },
+    {
+      "id": "sweetmachines_06",
+      "label": "Flower dial",
+      "sprite": "sweetmachines_06",
+      "native": true
+    },
+    {
+      "id": "sweetmachines_07",
+      "label": "Star dial",
+      "sprite": "sweetmachines_07",
+      "native": true
+    },
+    {
+      "id": "sweetmachines_08",
+      "label": "Heart dial",
+      "sprite": "sweetmachines_08",
+      "native": true
+    },
+    {
+      "id": "l028_extra_00",
+      "label": "Green brush",
+      "sprite": "robots_05",
+      "native": false
+    },
+    {
+      "id": "l028_extra_01",
+      "label": "Caramel sauce",
+      "sprite": "sundaes_03",
+      "native": false
+    },
+    {
+      "id": "l028_extra_02",
+      "label": "Courier ticket",
+      "sprite": "courier_ticket",
+      "native": false
+    },
+    {
+      "id": "l028_extra_03",
+      "label": "Raspberry sauce",
+      "sprite": "sundaes_05",
+      "native": false
+    },
+    {
+      "id": "l028_extra_04",
+      "label": "Sugar star",
+      "sprite": "cakes_08",
+      "native": false
+    },
+    {
+      "id": "l028_extra_05",
+      "label": "Route map",
+      "sprite": "route_map",
+      "native": false
+    },
+    {
+      "id": "l028_extra_06",
+      "label": "Blue bow",
+      "sprite": "gifts_07",
+      "native": false
+    },
+    {
+      "id": "l028_extra_07",
+      "label": "Chocolate sauce",
+      "sprite": "sundaes_04",
+      "native": false
+    },
+    {
+      "id": "l028_extra_08",
+      "label": "Magnifying glass",
+      "sprite": "magnifier",
+      "native": false
+    },
+    {
+      "id": "l028_extra_09",
+      "label": "Orange cylinder cell",
+      "sprite": "robots_07",
+      "native": false
+    },
+    {
+      "id": "l028_extra_10",
+      "label": "Pink brew",
+      "sprite": "potions_00",
+      "native": false
+    },
+    {
+      "id": "l028_extra_11",
+      "label": "Secret note",
+      "sprite": "secret_note",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Sweets",
+      "items": [
+        "sweetmachines_01",
+        "sweetmachines_02",
+        "sweetmachines_00"
+      ],
+      "action": "Reconstruct sweets in any row.",
+      "visibleClues": [
+        {
+          "icon": "sweetmachines_01",
+          "text": "The largest machine has the jelly beans.",
+          "rule": {
+            "kind": "highest",
+            "a": "sweetmachines_01"
+          },
+          "refs": [
+            "sweetmachines_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "sweetmachines_05",
+          "text": "The gold cap goes with the jelly beans.",
+          "rule": {
+            "kind": "same",
+            "a": "sweetmachines_05",
+            "b": "sweetmachines_01"
+          },
+          "refs": [
+            "sweetmachines_05",
+            "sweetmachines_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Caps",
+      "items": [
+        "sweetmachines_05",
+        "sweetmachines_03",
+        "sweetmachines_04"
+      ],
+      "action": "Reconstruct caps in any row.",
+      "visibleClues": [
+        {
+          "icon": "sweetmachines_01",
+          "text": "The largest machine has the jelly beans.",
+          "rule": {
+            "kind": "highest",
+            "a": "sweetmachines_01"
+          },
+          "refs": [
+            "sweetmachines_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "sweetmachines_05",
+          "text": "The gold cap goes with the jelly beans.",
+          "rule": {
+            "kind": "same",
+            "a": "sweetmachines_05",
+            "b": "sweetmachines_01"
+          },
+          "refs": [
+            "sweetmachines_05",
+            "sweetmachines_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Dials",
+      "items": [
+        "sweetmachines_07",
+        "sweetmachines_08",
+        "sweetmachines_06"
+      ],
+      "action": "Reconstruct dials in any row.",
+      "visibleClues": [
+        {
+          "icon": "sweetmachines_01",
+          "text": "The largest machine has the jelly beans.",
+          "rule": {
+            "kind": "highest",
+            "a": "sweetmachines_01"
+          },
+          "refs": [
+            "sweetmachines_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "sweetmachines_05",
+          "text": "The gold cap goes with the jelly beans.",
+          "rule": {
+            "kind": "same",
+            "a": "sweetmachines_05",
+            "b": "sweetmachines_01"
+          },
+          "refs": [
+            "sweetmachines_05",
+            "sweetmachines_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l028_extra_01",
+        "l028_extra_00",
+        "l028_extra_02"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l028_extra_01",
+          "text": "The caramel sauce goes with the star dial.",
+          "rule": {
+            "kind": "same",
+            "a": "l028_extra_01",
+            "b": "sweetmachines_07"
+          },
+          "refs": [
+            "l028_extra_01",
+            "sweetmachines_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l028_extra_00",
+          "text": "The green brush and flower dial have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l028_extra_00",
+            "b": "sweetmachines_06"
+          },
+          "refs": [
+            "l028_extra_00",
+            "sweetmachines_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l028_extra_03",
+        "l028_extra_05",
+        "l028_extra_04"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l028_extra_03",
+          "text": "The raspberry sauce goes with the gold cap.",
+          "rule": {
+            "kind": "same",
+            "a": "l028_extra_03",
+            "b": "sweetmachines_05"
+          },
+          "refs": [
+            "l028_extra_03",
+            "sweetmachines_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l028_extra_04",
+          "text": "The sugar star and pink cap have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l028_extra_04",
+            "b": "sweetmachines_03"
+          },
+          "refs": [
+            "l028_extra_04",
+            "sweetmachines_03"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Route check",
+      "items": [
+        "l028_extra_08",
+        "l028_extra_06",
+        "l028_extra_07"
+      ],
+      "action": "Reconstruct route check in any row.",
+      "visibleClues": [
+        {
+          "icon": "l028_extra_06",
+          "text": "The blue bow goes with the heart dial.",
+          "rule": {
+            "kind": "same",
+            "a": "l028_extra_06",
+            "b": "sweetmachines_08"
+          },
+          "refs": [
+            "l028_extra_06",
+            "sweetmachines_08"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l028_extra_08",
+          "text": "The magnifying glass and flower dial have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l028_extra_08",
+            "b": "sweetmachines_06"
+          },
+          "refs": [
+            "l028_extra_08",
+            "sweetmachines_06"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Evidence kit",
+      "items": [
+        "l028_extra_10",
+        "l028_extra_11",
+        "l028_extra_09"
+      ],
+      "action": "Reconstruct evidence kit in any row.",
+      "visibleClues": [
+        {
+          "icon": "l028_extra_10",
+          "text": "The pink brew goes with the star dial.",
+          "rule": {
+            "kind": "same",
+            "a": "l028_extra_10",
+            "b": "sweetmachines_07"
+          },
+          "refs": [
+            "l028_extra_10",
+            "sweetmachines_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l028_extra_09",
+          "text": "The orange cylinder cell and heart dial have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l028_extra_09",
+            "b": "sweetmachines_08"
+          },
+          "refs": [
+            "l028_extra_09",
+            "sweetmachines_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "l028_extra_00",
+    "sweetmachines_00",
+    "sweetmachines_05",
+    "sweetmachines_07",
+    "sweetmachines_03",
+    "sweetmachines_06",
+    "sweetmachines_04",
+    "l028_extra_01",
+    "sweetmachines_08",
+    "l028_extra_02",
+    "sweetmachines_02",
+    "sweetmachines_01"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l028_extra_03",
+        "l028_extra_10",
+        "l028_extra_07"
+      ]
+    },
+    {
+      "items": [
+        "l028_extra_09",
+        "l028_extra_06",
+        "l028_extra_04"
+      ]
+    },
+    {
+      "items": [
+        "l028_extra_05",
+        "l028_extra_08",
+        "l028_extra_11"
+      ]
+    }
+  ],
+  "moveLimit": 36,
+  "difficulty": "standard",
+  "firstClearCoins": 30,
+  "designSeed": 862028,
+  "chapterId": 6,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "brass_key",
+  "evidenceReveal": "The fittings match the return order, not the duplicate tag.",
+  "durationTargetSeconds": [
+    100,
+    240
+  ],
+  "referenceSolution": [
+    {
+      "a": 1,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 7,
+      "b": 10
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 9
+    },
+    {
+      "a": 8,
+      "b": 11
+    },
+    {
+      "a": 9,
+      "b": 10
+    },
+    {
+      "a": 10,
+      "b": 11
+    }
+  ],
+  "referenceMoveCount": 22,
+  "storyQuestion": "Which fittings belong to the real launch order?",
+  "dossier": {
+    "label": "Holds",
+    "values": [
+      30,
+      10,
+      20
+    ],
+    "labels": [
+      "30 sweets",
+      "10 sweets",
+      "20 sweets"
+    ],
+    "low": "smallest machine",
+    "high": "largest machine"
+  },
+  "cluePool": [
+    {
+      "icon": "sweetmachines_01",
+      "text": "The largest machine has the jelly beans.",
+      "rule": {
+        "kind": "highest",
+        "a": "sweetmachines_01"
+      },
+      "refs": [
+        "sweetmachines_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "sweetmachines_05",
+      "text": "The gold cap goes with the jelly beans.",
+      "rule": {
+        "kind": "same",
+        "a": "sweetmachines_05",
+        "b": "sweetmachines_01"
+      },
+      "refs": [
+        "sweetmachines_05",
+        "sweetmachines_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "sweetmachines_07",
+      "text": "The star dial and gumballs belong to opposite end profiles.",
+      "rule": {
+        "kind": "notNext",
+        "a": "sweetmachines_07",
+        "b": "sweetmachines_00"
+      },
+      "refs": [
+        "sweetmachines_07",
+        "sweetmachines_00"
+      ],
+      "column": null
+    },
+    {
+      "icon": "sweetmachines_03",
+      "text": "The pink cap owner is left of the flower dial owner.",
+      "rule": {
+        "kind": "left",
+        "a": "sweetmachines_03",
+        "b": "sweetmachines_06"
+      },
+      "refs": [
+        "sweetmachines_03",
+        "sweetmachines_06"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the holds badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "What belonged to the smallest machine?",
+    "answer": "Secret note",
+    "icon": "l028_extra_11",
+    "evidence": [
+      "Compare the holds badges.",
+      "Then check that profile’s final confirmed item."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 29,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

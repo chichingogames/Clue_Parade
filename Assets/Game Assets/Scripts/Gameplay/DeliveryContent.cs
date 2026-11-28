@@ -2,32 +2,35 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// The 30 deduction cases (Assets/Game Assets/Data/delivery_cases.json, converted from the
-// Tilewrap_Deduction_30_Level_Playtest delivery, "Follow the Evidence"). Item sprites and rig parts
-// are the 30-case content pack's sprites (FileRef.Sprite) plus the evidence props in
-// Sprites/Evidence. Parsed once by FileRef.Cases.
+// The 30 deduction cases of the v5 pack (Assets/TilewrapMystery/Data/levels_01_30.json, the pack's
+// campaign: levels, chapters, economy; read through FileRef.Cases). Sprites and the fitted rig prefabs
+// are the pack's too (FileRef.Sprite / FileRef.Rig). Field names follow the pack's JSON, so JsonUtility
+// reads it directly; flags the JSON leaves out (tutorial, dossier, deduction) are derived in Index().
 //
-// A case: three subjects (one per board column, each drawn from its rig's layers) and a list of
-// sets. A set names one item per column; it is delivered when its three items stand under their
-// owners in ANY row. The board is 3 columns x rows (3 or 4). Clues: a set's two visibleClues, or
-// for the first three sets of a case with a cluePool, the shared pool (paged two at a time). start
-// is the first board (row-major, "" = empty); refills drop in after a delivery, one triple per
-// delivery while they last. orderMode "staged": sets in order; "choice": up to two available sets;
-// "hybrid": the first three in order, then choice.
+// A case: three subjects (one per board column, drawn from their rig) and a list of sets. A set names
+// one item per column; it is delivered when its three items stand under their owners in ANY row. The
+// board is 3 columns x rows (3 or 4). Clues: a set's two visibleClues, or for the first three sets of
+// a case with a cluePool, the shared pool (paged two at a time). start is the first board (row-major,
+// "" = empty); refills drop in after a delivery, one triple per delivery while they last. orderMode
+// "staged": sets in order; "choice": up to two available sets; "hybrid": the first three in order,
+// then choice. coaching: a short coach line per set.
 [Serializable]
 public class DeliveryContent
 {
-    public string version;
+    public string contentId;
     public string title;
-    public string sourcePack;
     public DeliveryEconomy economy;
     public DeliveryChapter[] chapters;
-    public DeliveryCase[] cases;
+    public DeliveryCase[] levels;
+
+    // The content's identity (saved attempts are only resumed against the same content).
+    public string version => contentId;
+    public DeliveryCase[] cases => levels;
 
     public static DeliveryContent Parse(string json)
     {
         var content = JsonUtility.FromJson<DeliveryContent>(json);
-        if (content?.cases == null) throw new FormatException("no cases");
+        if (content?.levels == null || content.levels.Length == 0) throw new FormatException("no levels");
         content.economy ??= new DeliveryEconomy();
         content.chapters ??= new DeliveryChapter[0];
         foreach (var c in content.cases) c.Index();
@@ -75,26 +78,29 @@ public class DeliveryCase
     public int moveLimit;                 // 0 = unlimited
     public int firstClearCoins;
     public int referenceMoveCount;
+    public int nextLevelId;               // 0 after the last case
     public DeliverySubject[] subjects;
-    public DeliveryRig[] rigs;            // by column
     public DeliveryItem[] items;
     public DeliverySet[] sets;
     public DeliveryClue[] cluePool;       // shared clues of the first three sets (may be empty)
     public string[] start;
     public DeliveryRefill[] refills;
     public DeliveryExtraLayer[] extraLayers;
-    public bool hasTutorial;
+    public string[] coaching;             // a coach line per set (by set index)
     public DeliveryTutorial tutorial;     // case 1: the guided first swap
-    public bool hasDossier;
     public DeliveryDossier dossier;       // a badge value per profile (age, price, speed...)
     public DeliveryResolution caseResolution;
-    public bool hasDeduction;
     public DeliveryDeduction deduction;   // milestone cases: a question before the win
+
+    [NonSerialized] public bool hasTutorial;
+    [NonSerialized] public bool hasDossier;
+    [NonSerialized] public bool hasDeduction;
 
     [NonSerialized] private Dictionary<string, DeliveryItem> _items;
 
     public bool HasMoveLimit => moveLimit > 0;
     public bool IsExpert => difficulty == "expert";
+    public bool IsFinale => nextLevelId == 0;
     public int Cells => rows * 3;
 
     public DeliveryItem Item(string id) => id != null && _items.TryGetValue(id, out var item) ? item : null;
@@ -114,7 +120,13 @@ public class DeliveryCase
         refills ??= new DeliveryRefill[0];
         extraLayers ??= new DeliveryExtraLayer[0];
         cluePool ??= new DeliveryClue[0];
-        rigs ??= new DeliveryRig[0];
+        coaching ??= new string[0];
+        caseResolution ??= new DeliveryResolution();
+        caseResolution.evidence ??= new string[0];
+        caseResolution.statements ??= new string[0];
+        hasTutorial = tutorial != null && !string.IsNullOrEmpty(tutorial.text);
+        hasDossier = dossier != null && dossier.labels != null && dossier.labels.Length == 3;
+        hasDeduction = deduction != null && deduction.options != null && deduction.options.Length > 0;
         for (int i = 0; i < start.Length; i++) if (start[i] == "") start[i] = null;
     }
 }
@@ -126,27 +138,6 @@ public class DeliverySubject
     public string name;
     public int column;
     public string rigId;
-}
-
-// A subject's picture: layers stacked by order on a width x height canvas. A layer with an itemId
-// appears once that item is delivered; the others (the base) always show.
-[Serializable]
-public class DeliveryRig
-{
-    public string id;
-    public float width;
-    public float height;
-    public DeliveryRigLayer[] layers;
-}
-
-[Serializable]
-public class DeliveryRigLayer
-{
-    public string sprite;
-    public float[] rect;                  // x, y, w, h in rig pixels, top-left origin
-    public int goalIndex;                 // -1 = base
-    public string itemId;
-    public int order;
 }
 
 [Serializable]
@@ -167,7 +158,6 @@ public class DeliveryClue
     public string text;
     public DeliveryRule rule;
     public string[] refs;
-    public int column;                    // the profile it names, or -1
 }
 
 // kind: at (a in column), notAt, same (a and b share a profile), different, left (a left of b),

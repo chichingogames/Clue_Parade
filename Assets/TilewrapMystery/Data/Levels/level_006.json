@@ -1,0 +1,455 @@
+{
+  "schemaVersion": 5,
+  "id": 6,
+  "sourceTheme": 6,
+  "title": "Holiday packing",
+  "subtitle": "Who changed the star’s delivery tag?",
+  "question": "Which suitcase carried the pocket watch?",
+  "setupText": "The missing star trail leads here. Who changed the star’s delivery tag?",
+  "completionText": "A blue star tag has been tied over an older address.",
+  "nextLead": "A dusting of soil points toward the garden.",
+  "rows": 3,
+  "columns": 3,
+  "orderMode": "staged",
+  "subjects": [
+    {
+      "id": "luggage_0",
+      "name": "Suitcase A",
+      "column": 0,
+      "rigId": "luggage_0"
+    },
+    {
+      "id": "luggage_1",
+      "name": "Suitcase B",
+      "column": 1,
+      "rigId": "luggage_1"
+    },
+    {
+      "id": "luggage_2",
+      "name": "Suitcase C",
+      "column": 2,
+      "rigId": "luggage_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "luggage_00",
+      "label": "Raincoat",
+      "sprite": "luggage_00",
+      "native": true
+    },
+    {
+      "id": "luggage_01",
+      "label": "Swimsuit",
+      "sprite": "luggage_01",
+      "native": true
+    },
+    {
+      "id": "luggage_02",
+      "label": "Shirt",
+      "sprite": "luggage_02",
+      "native": true
+    },
+    {
+      "id": "luggage_03",
+      "label": "Compass",
+      "sprite": "luggage_03",
+      "native": true
+    },
+    {
+      "id": "luggage_04",
+      "label": "Sunglasses",
+      "sprite": "luggage_04",
+      "native": true
+    },
+    {
+      "id": "luggage_05",
+      "label": "Camera",
+      "sprite": "luggage_05",
+      "native": true
+    },
+    {
+      "id": "luggage_06",
+      "label": "Pinecone",
+      "sprite": "luggage_06",
+      "native": true
+    },
+    {
+      "id": "luggage_07",
+      "label": "Seashell",
+      "sprite": "luggage_07",
+      "native": true
+    },
+    {
+      "id": "luggage_08",
+      "label": "Postcard",
+      "sprite": "luggage_08",
+      "native": true
+    },
+    {
+      "id": "l006_extra_00",
+      "label": "Road tyres",
+      "sprite": "garage_00",
+      "native": false
+    },
+    {
+      "id": "l006_extra_01",
+      "label": "Apple",
+      "sprite": "breakfast_06",
+      "native": false
+    },
+    {
+      "id": "l006_extra_02",
+      "label": "Secret note",
+      "sprite": "secret_note",
+      "native": false
+    },
+    {
+      "id": "l006_extra_03",
+      "label": "Little fox",
+      "sprite": "post_08",
+      "native": false
+    },
+    {
+      "id": "l006_extra_04",
+      "label": "Milk",
+      "sprite": "breakfast_04",
+      "native": false
+    },
+    {
+      "id": "l006_extra_05",
+      "label": "Pocket watch",
+      "sprite": "pocket_watch",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Clothes",
+      "items": [
+        "luggage_00",
+        "luggage_01",
+        "luggage_02"
+      ],
+      "action": "Reconstruct clothes in any row.",
+      "visibleClues": [
+        {
+          "icon": "luggage_02",
+          "text": "The earliest departure has the shirt.",
+          "rule": {
+            "kind": "lowest",
+            "a": "luggage_02"
+          },
+          "refs": [
+            "luggage_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "luggage_00",
+          "text": "Suitcase A has the raincoat.",
+          "rule": {
+            "kind": "at",
+            "a": "luggage_00",
+            "column": 0
+          },
+          "refs": [
+            "luggage_00"
+          ],
+          "column": 0
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Gear",
+      "items": [
+        "luggage_05",
+        "luggage_04",
+        "luggage_03"
+      ],
+      "action": "Reconstruct gear in any row.",
+      "visibleClues": [
+        {
+          "icon": "luggage_04",
+          "text": "The sunglasses goes with the swimsuit.",
+          "rule": {
+            "kind": "same",
+            "a": "luggage_04",
+            "b": "luggage_01"
+          },
+          "refs": [
+            "luggage_04",
+            "luggage_01"
+          ],
+          "column": null
+        },
+        {
+          "icon": "luggage_03",
+          "text": "The compass goes with the shirt.",
+          "rule": {
+            "kind": "same",
+            "a": "luggage_03",
+            "b": "luggage_02"
+          },
+          "refs": [
+            "luggage_03",
+            "luggage_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Souvenirs",
+      "items": [
+        "luggage_06",
+        "luggage_07",
+        "luggage_08"
+      ],
+      "action": "Reconstruct souvenirs in any row.",
+      "visibleClues": [
+        {
+          "icon": "luggage_06",
+          "text": "The pinecone goes with the camera.",
+          "rule": {
+            "kind": "same",
+            "a": "luggage_06",
+            "b": "luggage_05"
+          },
+          "refs": [
+            "luggage_06",
+            "luggage_05"
+          ],
+          "column": null
+        },
+        {
+          "icon": "luggage_07",
+          "text": "The seashell goes with the sunglasses.",
+          "rule": {
+            "kind": "same",
+            "a": "luggage_07",
+            "b": "luggage_04"
+          },
+          "refs": [
+            "luggage_07",
+            "luggage_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l006_extra_01",
+        "l006_extra_02",
+        "l006_extra_00"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l006_extra_01",
+          "text": "The apple goes with the pinecone.",
+          "rule": {
+            "kind": "same",
+            "a": "l006_extra_01",
+            "b": "luggage_06"
+          },
+          "refs": [
+            "l006_extra_01",
+            "luggage_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l006_extra_02",
+          "text": "The secret note goes with the seashell.",
+          "rule": {
+            "kind": "same",
+            "a": "l006_extra_02",
+            "b": "luggage_07"
+          },
+          "refs": [
+            "l006_extra_02",
+            "luggage_07"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l006_extra_03",
+        "l006_extra_04",
+        "l006_extra_05"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l006_extra_04",
+          "text": "The milk goes with the secret note.",
+          "rule": {
+            "kind": "same",
+            "a": "l006_extra_04",
+            "b": "l006_extra_02"
+          },
+          "refs": [
+            "l006_extra_04",
+            "l006_extra_02"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l006_extra_05",
+          "text": "The pocket watch goes with the road tyres.",
+          "rule": {
+            "kind": "same",
+            "a": "l006_extra_05",
+            "b": "l006_extra_00"
+          },
+          "refs": [
+            "l006_extra_05",
+            "l006_extra_00"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "luggage_01",
+    "luggage_03",
+    "luggage_02",
+    "luggage_06",
+    "luggage_08",
+    "luggage_04",
+    "luggage_07",
+    "luggage_00",
+    "luggage_05"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l006_extra_04",
+        "l006_extra_01",
+        "l006_extra_00"
+      ]
+    },
+    {
+      "items": [
+        "l006_extra_05",
+        "l006_extra_03",
+        "l006_extra_02"
+      ]
+    }
+  ],
+  "moveLimit": 26,
+  "difficulty": "practice",
+  "firstClearCoins": 30,
+  "designSeed": 862006,
+  "chapterId": 2,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "brass_key",
+  "evidenceReveal": "A blue star tag has been tied over an older address.",
+  "durationTargetSeconds": [
+    50,
+    150
+  ],
+  "referenceSolution": [
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 1,
+      "b": 4
+    },
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 4,
+      "b": 7
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    }
+  ],
+  "referenceMoveCount": 13,
+  "storyQuestion": "Who changed the star’s delivery tag?",
+  "dossier": {
+    "label": "Departs",
+    "values": [
+      10,
+      9,
+      8
+    ],
+    "labels": [
+      "10:00",
+      "09:00",
+      "08:00"
+    ],
+    "low": "earliest departure",
+    "high": "latest departure"
+  },
+  "cluePool": [],
+  "reasoningTip": "Compare the departure times: the smallest time leaves first. Then use the confirmed clothes and gear.",
+  "caseResolution": {
+    "question": "Which suitcase carried the pocket watch?",
+    "answer": "Suitcase C",
+    "icon": "l006_extra_05",
+    "evidence": [
+      "The recovered label mentions the pocket watch.",
+      "Use the confirmed scene to identify its owner."
+    ]
+  },
+  "clueGraphVersion": 2,
+  "nextLevelId": 7,
+  "coaching": [
+    "Compare the departure times: the smallest time leaves first. Then use the confirmed clothes and gear.",
+    "Compare the departure times: the smallest time leaves first. Then use the confirmed clothes and gear.",
+    "Compare the departure times: the smallest time leaves first. Then use the confirmed clothes and gear.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

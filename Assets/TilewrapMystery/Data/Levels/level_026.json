@@ -1,0 +1,520 @@
+{
+  "schemaVersion": 5,
+  "id": 26,
+  "sourceTheme": 26,
+  "title": "Magic shelf",
+  "subtitle": "Which seal opens the release file?",
+  "question": "Which bottle was stored beside the crate photo?",
+  "setupText": "The missing star trail leads here. Which seal opens the release file?",
+  "completionText": "The spiral seal matches the crate’s release file. No magic is needed—just the right record.",
+  "nextLead": "The animal post office holds the final delivery papers.",
+  "rows": 3,
+  "columns": 3,
+  "orderMode": "hybrid",
+  "subjects": [
+    {
+      "id": "potions_0",
+      "name": "Bottle A",
+      "column": 0,
+      "rigId": "potions_0"
+    },
+    {
+      "id": "potions_1",
+      "name": "Bottle B",
+      "column": 1,
+      "rigId": "potions_1"
+    },
+    {
+      "id": "potions_2",
+      "name": "Bottle C",
+      "column": 2,
+      "rigId": "potions_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "potions_00",
+      "label": "Pink brew",
+      "sprite": "potions_00",
+      "native": true
+    },
+    {
+      "id": "potions_01",
+      "label": "Green brew",
+      "sprite": "potions_01",
+      "native": true
+    },
+    {
+      "id": "potions_02",
+      "label": "Blue brew",
+      "sprite": "potions_02",
+      "native": true
+    },
+    {
+      "id": "potions_03",
+      "label": "Cork stopper",
+      "sprite": "potions_03",
+      "native": true
+    },
+    {
+      "id": "potions_04",
+      "label": "Crystal stopper",
+      "sprite": "potions_04",
+      "native": true
+    },
+    {
+      "id": "potions_05",
+      "label": "Gold stopper",
+      "sprite": "potions_05",
+      "native": true
+    },
+    {
+      "id": "potions_06",
+      "label": "Moon charm",
+      "sprite": "potions_06",
+      "native": true
+    },
+    {
+      "id": "potions_07",
+      "label": "Star charm",
+      "sprite": "potions_07",
+      "native": true
+    },
+    {
+      "id": "potions_08",
+      "label": "Leaf charm",
+      "sprite": "potions_08",
+      "native": true
+    },
+    {
+      "id": "l026_extra_00",
+      "label": "Gold horns",
+      "sprite": "dragons_01",
+      "native": false
+    },
+    {
+      "id": "l026_extra_01",
+      "label": "Stripe box",
+      "sprite": "gifts_01",
+      "native": false
+    },
+    {
+      "id": "l026_extra_02",
+      "label": "Flashlight",
+      "sprite": "flashlight",
+      "native": false
+    },
+    {
+      "id": "l026_extra_03",
+      "label": "Pointed cockpit",
+      "sprite": "space_01",
+      "native": false
+    },
+    {
+      "id": "l026_extra_04",
+      "label": "Green leaf wings",
+      "sprite": "dragons_04",
+      "native": false
+    },
+    {
+      "id": "l026_extra_05",
+      "label": "Crate photo",
+      "sprite": "crate_photo",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Brews",
+      "items": [
+        "potions_02",
+        "potions_01",
+        "potions_00"
+      ],
+      "action": "Reconstruct brews in any row.",
+      "visibleClues": [
+        {
+          "icon": "potions_07",
+          "text": "The oldest bottle has the star charm.",
+          "rule": {
+            "kind": "highest",
+            "a": "potions_07"
+          },
+          "refs": [
+            "potions_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "potions_00",
+          "text": "The pink brew owner is next to the crystal stopper owner.",
+          "rule": {
+            "kind": "next",
+            "a": "potions_00",
+            "b": "potions_04"
+          },
+          "refs": [
+            "potions_00",
+            "potions_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Stoppers",
+      "items": [
+        "potions_05",
+        "potions_04",
+        "potions_03"
+      ],
+      "action": "Reconstruct stoppers in any row.",
+      "visibleClues": [
+        {
+          "icon": "potions_07",
+          "text": "The oldest bottle has the star charm.",
+          "rule": {
+            "kind": "highest",
+            "a": "potions_07"
+          },
+          "refs": [
+            "potions_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "potions_00",
+          "text": "The pink brew owner is next to the crystal stopper owner.",
+          "rule": {
+            "kind": "next",
+            "a": "potions_00",
+            "b": "potions_04"
+          },
+          "refs": [
+            "potions_00",
+            "potions_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Charms",
+      "items": [
+        "potions_06",
+        "potions_07",
+        "potions_08"
+      ],
+      "action": "Reconstruct charms in any row.",
+      "visibleClues": [
+        {
+          "icon": "potions_07",
+          "text": "The oldest bottle has the star charm.",
+          "rule": {
+            "kind": "highest",
+            "a": "potions_07"
+          },
+          "refs": [
+            "potions_07"
+          ],
+          "column": null
+        },
+        {
+          "icon": "potions_00",
+          "text": "The pink brew owner is next to the crystal stopper owner.",
+          "rule": {
+            "kind": "next",
+            "a": "potions_00",
+            "b": "potions_04"
+          },
+          "refs": [
+            "potions_00",
+            "potions_04"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked case clues"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l026_extra_02",
+        "l026_extra_00",
+        "l026_extra_01"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l026_extra_00",
+          "text": "The gold horns goes with the crystal stopper.",
+          "rule": {
+            "kind": "same",
+            "a": "l026_extra_00",
+            "b": "potions_04"
+          },
+          "refs": [
+            "l026_extra_00",
+            "potions_04"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l026_extra_01",
+          "text": "The stripe box and gold stopper have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l026_extra_01",
+            "b": "potions_05"
+          },
+          "refs": [
+            "l026_extra_01",
+            "potions_05"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Found objects",
+      "items": [
+        "l026_extra_04",
+        "l026_extra_05",
+        "l026_extra_03"
+      ],
+      "action": "Reconstruct found objects in any row.",
+      "visibleClues": [
+        {
+          "icon": "l026_extra_03",
+          "text": "The pointed cockpit goes with the pink brew.",
+          "rule": {
+            "kind": "same",
+            "a": "l026_extra_03",
+            "b": "potions_00"
+          },
+          "refs": [
+            "l026_extra_03",
+            "potions_00"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l026_extra_04",
+          "text": "The green leaf wings and green brew have different owners.",
+          "rule": {
+            "kind": "different",
+            "a": "l026_extra_04",
+            "b": "potions_01"
+          },
+          "refs": [
+            "l026_extra_04",
+            "potions_01"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "potions_00",
+    "potions_03",
+    "potions_01",
+    "potions_06",
+    "potions_05",
+    "potions_07",
+    "potions_02",
+    "potions_08",
+    "potions_04"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l026_extra_05",
+        "l026_extra_01",
+        "l026_extra_02"
+      ]
+    },
+    {
+      "items": [
+        "l026_extra_00",
+        "l026_extra_03",
+        "l026_extra_04"
+      ]
+    }
+  ],
+  "moveLimit": 26,
+  "difficulty": "practice",
+  "firstClearCoins": 30,
+  "designSeed": 862026,
+  "chapterId": 6,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "crate_photo",
+  "evidenceReveal": "The spiral seal matches the crate’s release file. No magic is needed—just the right record.",
+  "durationTargetSeconds": [
+    100,
+    240
+  ],
+  "referenceSolution": [
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 1,
+      "b": 2
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 0,
+      "b": 3
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    },
+    {
+      "a": 6,
+      "b": 7
+    }
+  ],
+  "referenceMoveCount": 13,
+  "storyQuestion": "Which seal opens the release file?",
+  "dossier": {
+    "label": "Brewed",
+    "values": [
+      1,
+      7,
+      4
+    ],
+    "labels": [
+      "1 day ago",
+      "7 days ago",
+      "4 days ago"
+    ],
+    "low": "newest bottle",
+    "high": "oldest bottle"
+  },
+  "cluePool": [
+    {
+      "icon": "potions_07",
+      "text": "The oldest bottle has the star charm.",
+      "rule": {
+        "kind": "highest",
+        "a": "potions_07"
+      },
+      "refs": [
+        "potions_07"
+      ],
+      "column": null
+    },
+    {
+      "icon": "potions_00",
+      "text": "The pink brew owner is next to the crystal stopper owner.",
+      "rule": {
+        "kind": "next",
+        "a": "potions_00",
+        "b": "potions_04"
+      },
+      "refs": [
+        "potions_00",
+        "potions_04"
+      ],
+      "column": null
+    },
+    {
+      "icon": "potions_04",
+      "text": "The crystal stopper goes with the star charm.",
+      "rule": {
+        "kind": "same",
+        "a": "potions_04",
+        "b": "potions_07"
+      },
+      "refs": [
+        "potions_04",
+        "potions_07"
+      ],
+      "column": null
+    },
+    {
+      "icon": "potions_05",
+      "text": "Bottle C does not have the gold stopper.",
+      "rule": {
+        "kind": "notAt",
+        "a": "potions_05",
+        "column": 2
+      },
+      "refs": [
+        "potions_05"
+      ],
+      "column": null
+    },
+    {
+      "icon": "potions_02",
+      "text": "The blue brew bottle was brewed after the leaf charm bottle.",
+      "rule": {
+        "kind": "less",
+        "a": "potions_02",
+        "b": "potions_08"
+      },
+      "refs": [
+        "potions_02",
+        "potions_08"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Start with the brewed badges to anchor one item. “Goes with” links two properties of the same profile. Combine the case clues; no single card needs to reveal a named owner.",
+  "caseResolution": {
+    "question": "Which bottle was stored beside the crate photo?",
+    "answer": "Bottle B",
+    "icon": "l026_extra_05",
+    "evidence": [
+      "The recovered label mentions the crate photo.",
+      "Use the confirmed scene to identify its owner."
+    ]
+  },
+  "clueGraphVersion": 1,
+  "nextLevelId": 27,
+  "coaching": [
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Combine the case clues. Two stay visible; More clues and Notebook hold the rest.",
+    "Match the confirmed details above to the next requested set.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}

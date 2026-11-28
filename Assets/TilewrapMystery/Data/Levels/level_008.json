@@ -1,0 +1,461 @@
+{
+  "schemaVersion": 5,
+  "id": 8,
+  "sourceTheme": 8,
+  "title": "Ice cream cart",
+  "subtitle": "Was the courier here before the rain?",
+  "question": "What belonged to the cheapest cup?",
+  "setupText": "The missing star trail leads here. Was the courier here before the rain?",
+  "completionText": "The receipt places the courier at the cart before the storm.",
+  "nextLead": "A nearby garage checked the delivery vehicle.",
+  "rows": 3,
+  "columns": 3,
+  "orderMode": "staged",
+  "subjects": [
+    {
+      "id": "sundaes_0",
+      "name": "Cup A",
+      "column": 0,
+      "rigId": "sundaes_0"
+    },
+    {
+      "id": "sundaes_1",
+      "name": "Cup B",
+      "column": 1,
+      "rigId": "sundaes_1"
+    },
+    {
+      "id": "sundaes_2",
+      "name": "Cup C",
+      "column": 2,
+      "rigId": "sundaes_2"
+    }
+  ],
+  "items": [
+    {
+      "id": "sundaes_00",
+      "label": "Chocolate scoop",
+      "sprite": "sundaes_00",
+      "native": true
+    },
+    {
+      "id": "sundaes_01",
+      "label": "Strawberry scoop",
+      "sprite": "sundaes_01",
+      "native": true
+    },
+    {
+      "id": "sundaes_02",
+      "label": "Mint scoop",
+      "sprite": "sundaes_02",
+      "native": true
+    },
+    {
+      "id": "sundaes_03",
+      "label": "Caramel sauce",
+      "sprite": "sundaes_03",
+      "native": true
+    },
+    {
+      "id": "sundaes_04",
+      "label": "Chocolate sauce",
+      "sprite": "sundaes_04",
+      "native": true
+    },
+    {
+      "id": "sundaes_05",
+      "label": "Raspberry sauce",
+      "sprite": "sundaes_05",
+      "native": true
+    },
+    {
+      "id": "sundaes_06",
+      "label": "Cherry",
+      "sprite": "sundaes_06",
+      "native": true
+    },
+    {
+      "id": "sundaes_07",
+      "label": "Wafer",
+      "sprite": "sundaes_07",
+      "native": true
+    },
+    {
+      "id": "sundaes_08",
+      "label": "Marshmallow",
+      "sprite": "sundaes_08",
+      "native": true
+    },
+    {
+      "id": "l008_extra_00",
+      "label": "Strawberries",
+      "sprite": "cakes_06",
+      "native": false
+    },
+    {
+      "id": "l008_extra_01",
+      "label": "Pink frosting",
+      "sprite": "cakes_03",
+      "native": false
+    },
+    {
+      "id": "l008_extra_02",
+      "label": "Pocket watch",
+      "sprite": "pocket_watch",
+      "native": false
+    }
+  ],
+  "sets": [
+    {
+      "label": "Scoops",
+      "items": [
+        "sundaes_01",
+        "sundaes_00",
+        "sundaes_02"
+      ],
+      "action": "Reconstruct scoops in any row.",
+      "visibleClues": [
+        {
+          "icon": "sundaes_00",
+          "text": "Cup B has the chocolate scoop.",
+          "rule": {
+            "kind": "at",
+            "a": "sundaes_00",
+            "column": 1
+          },
+          "refs": [
+            "sundaes_00"
+          ],
+          "column": 1
+        },
+        {
+          "icon": "sundaes_01",
+          "text": "The strawberry scoop profile is left of the mint scoop profile.",
+          "rule": {
+            "kind": "left",
+            "a": "sundaes_01",
+            "b": "sundaes_02"
+          },
+          "refs": [
+            "sundaes_01",
+            "sundaes_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Sauces",
+      "items": [
+        "sundaes_05",
+        "sundaes_03",
+        "sundaes_04"
+      ],
+      "action": "Reconstruct sauces in any row.",
+      "visibleClues": [
+        {
+          "icon": "sundaes_00",
+          "text": "Cup B has the chocolate scoop.",
+          "rule": {
+            "kind": "at",
+            "a": "sundaes_00",
+            "column": 1
+          },
+          "refs": [
+            "sundaes_00"
+          ],
+          "column": 1
+        },
+        {
+          "icon": "sundaes_01",
+          "text": "The strawberry scoop profile is left of the mint scoop profile.",
+          "rule": {
+            "kind": "left",
+            "a": "sundaes_01",
+            "b": "sundaes_02"
+          },
+          "refs": [
+            "sundaes_01",
+            "sundaes_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Toppings",
+      "items": [
+        "sundaes_08",
+        "sundaes_07",
+        "sundaes_06"
+      ],
+      "action": "Reconstruct toppings in any row.",
+      "visibleClues": [
+        {
+          "icon": "sundaes_00",
+          "text": "Cup B has the chocolate scoop.",
+          "rule": {
+            "kind": "at",
+            "a": "sundaes_00",
+            "column": 1
+          },
+          "refs": [
+            "sundaes_00"
+          ],
+          "column": 1
+        },
+        {
+          "icon": "sundaes_01",
+          "text": "The strawberry scoop profile is left of the mint scoop profile.",
+          "rule": {
+            "kind": "left",
+            "a": "sundaes_01",
+            "b": "sundaes_02"
+          },
+          "refs": [
+            "sundaes_01",
+            "sundaes_02"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    },
+    {
+      "label": "Delivery tags",
+      "items": [
+        "l008_extra_01",
+        "l008_extra_00",
+        "l008_extra_02"
+      ],
+      "action": "Reconstruct delivery tags in any row.",
+      "visibleClues": [
+        {
+          "icon": "l008_extra_02",
+          "text": "The pocket watch goes with the cherry.",
+          "rule": {
+            "kind": "same",
+            "a": "l008_extra_02",
+            "b": "sundaes_06"
+          },
+          "refs": [
+            "l008_extra_02",
+            "sundaes_06"
+          ],
+          "column": null
+        },
+        {
+          "icon": "l008_extra_01",
+          "text": "The pink frosting goes with the marshmallow.",
+          "rule": {
+            "kind": "same",
+            "a": "l008_extra_01",
+            "b": "sundaes_08"
+          },
+          "refs": [
+            "l008_extra_01",
+            "sundaes_08"
+          ],
+          "column": null
+        }
+      ],
+      "clueType": "linked evidence"
+    }
+  ],
+  "start": [
+    "sundaes_06",
+    "sundaes_01",
+    "sundaes_05",
+    "sundaes_04",
+    "sundaes_02",
+    "sundaes_07",
+    "sundaes_03",
+    "sundaes_08",
+    "sundaes_00"
+  ],
+  "refills": [
+    {
+      "items": [
+        "l008_extra_01",
+        "l008_extra_00",
+        "l008_extra_02"
+      ]
+    }
+  ],
+  "moveLimit": 20,
+  "difficulty": "practice",
+  "firstClearCoins": 30,
+  "designSeed": 862008,
+  "chapterId": 2,
+  "showPartialOwnerFeedback": false,
+  "evidenceIcon": "blue_tag",
+  "evidenceReveal": "The receipt places the courier at the cart before the storm.",
+  "durationTargetSeconds": [
+    50,
+    150
+  ],
+  "referenceSolution": [
+    {
+      "a": 0,
+      "b": 1
+    },
+    {
+      "a": 0,
+      "b": 3
+    },
+    {
+      "a": 5,
+      "b": 8
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 4,
+      "b": 5
+    },
+    {
+      "a": 3,
+      "b": 6
+    },
+    {
+      "a": 3,
+      "b": 4
+    },
+    {
+      "a": 6,
+      "b": 7
+    },
+    {
+      "a": 7,
+      "b": 8
+    }
+  ],
+  "referenceMoveCount": 10,
+  "storyQuestion": "Was the courier here before the rain?",
+  "dossier": {
+    "label": "Price",
+    "values": [
+      6,
+      4,
+      2
+    ],
+    "labels": [
+      "$6",
+      "$4",
+      "$2"
+    ],
+    "low": "cheapest cup",
+    "high": "priciest cup"
+  },
+  "cluePool": [
+    {
+      "icon": "sundaes_00",
+      "text": "Cup B has the chocolate scoop.",
+      "rule": {
+        "kind": "at",
+        "a": "sundaes_00",
+        "column": 1
+      },
+      "refs": [
+        "sundaes_00"
+      ],
+      "column": 1
+    },
+    {
+      "icon": "sundaes_01",
+      "text": "The strawberry scoop profile is left of the mint scoop profile.",
+      "rule": {
+        "kind": "left",
+        "a": "sundaes_01",
+        "b": "sundaes_02"
+      },
+      "refs": [
+        "sundaes_01",
+        "sundaes_02"
+      ],
+      "column": null
+    },
+    {
+      "icon": "sundaes_05",
+      "text": "The raspberry sauce goes with the strawberry scoop.",
+      "rule": {
+        "kind": "same",
+        "a": "sundaes_05",
+        "b": "sundaes_01"
+      },
+      "refs": [
+        "sundaes_05",
+        "sundaes_01"
+      ],
+      "column": null
+    },
+    {
+      "icon": "sundaes_03",
+      "text": "The caramel sauce goes with the chocolate scoop.",
+      "rule": {
+        "kind": "same",
+        "a": "sundaes_03",
+        "b": "sundaes_00"
+      },
+      "refs": [
+        "sundaes_03",
+        "sundaes_00"
+      ],
+      "column": null
+    },
+    {
+      "icon": "sundaes_06",
+      "text": "The cherry goes with the chocolate sauce.",
+      "rule": {
+        "kind": "same",
+        "a": "sundaes_06",
+        "b": "sundaes_04"
+      },
+      "refs": [
+        "sundaes_06",
+        "sundaes_04"
+      ],
+      "column": null
+    },
+    {
+      "icon": "sundaes_07",
+      "text": "The wafer goes with the caramel sauce.",
+      "rule": {
+        "kind": "same",
+        "a": "sundaes_07",
+        "b": "sundaes_03"
+      },
+      "refs": [
+        "sundaes_07",
+        "sundaes_03"
+      ],
+      "column": null
+    }
+  ],
+  "reasoningTip": "Left and right refer to the fixed profiles above, not the moving tiles.",
+  "caseResolution": {
+    "question": "What belonged to the cheapest cup?",
+    "answer": "Pocket watch",
+    "icon": "l008_extra_02",
+    "evidence": [
+      "Compare the price badges.",
+      "Then check that profile’s final confirmed item."
+    ]
+  },
+  "clueGraphVersion": 2,
+  "nextLevelId": 9,
+  "coaching": [
+    "Left and right refer to the fixed profiles above, not the moving tiles.",
+    "Left and right refer to the fixed profiles above, not the moving tiles.",
+    "Left and right refer to the fixed profiles above, not the moving tiles.",
+    "Match the confirmed details above to the next requested set."
+  ]
+}
