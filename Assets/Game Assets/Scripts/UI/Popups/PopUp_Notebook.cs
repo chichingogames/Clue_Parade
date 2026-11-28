@@ -3,41 +3,58 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// "Notebook": all nine facts as a grid, the subject names over the columns and each category with
-// its three items (the same picture and name as the board) under the subject they belong to. A
-// small check marks an item that is in place now; a fact stays readable after a mismatch. Opening
-// it never costs a move; closing keeps the board.
+// "Your notebook": every set of the case in order, each with its status (Delivered / Active /
+// Upcoming; the request in focus highlighted) and all three facts (the two shown clues first,
+// then the third). Built with as many sections and facts as the largest case needs; unused ones
+// hide. Opening it never costs a move; closing keeps the board.
 public class PopUp_Notebook : BasePopUp
 {
-    public struct Entry
+    public struct Section
     {
-        public Sprite Icon;
         public string Label;
-        public bool Matched;
+        public string Status;
+        public bool Current;
+        public (Sprite icon, string text)[] Facts;
     }
 
-    [Tooltip("Subject names over the columns, left to right.")]
-    [SerializeField] private TMP_Text[] _names = new TMP_Text[0];
-    [Tooltip("Category headings, top to bottom.")]
-    [SerializeField] private TMP_Text[] _headings = new TMP_Text[0];
-    [Tooltip("Row-major, one per board cell.")]
-    [SerializeField] private Image[] _icons = new Image[0];
-    [SerializeField] private TMP_Text[] _labels = new TMP_Text[0];
-    [SerializeField] private GameObject[] _checks = new GameObject[0];
+    [Serializable]
+    public struct SectionView
+    {
+        public GameObject Root;
+        public Image Surface;
+        public TMP_Text Label;
+        public TMP_Text Status;
+        public Image[] Icons;
+        public TMP_Text[] Texts;
+    }
+
+    [SerializeField] private SectionView[] _sections = new SectionView[0];
+    [SerializeField] private Color _normal = new Color32(0xFF, 0xF8, 0xE9, 0xFF);
+    [SerializeField] private Color _current = new Color32(0xFF, 0xF1, 0xBE, 0xFF);
     [SerializeField] private Button _backButton;
 
-    public void Setup(string[] names, string[] categories, Entry[] entries, string rules, Action onBack)
+    public void Setup(string rules, Section[] sections, Action onBack)
     {
-        SetTexts("", "Notebook", rules);
-        for (int i = 0; i < _names.Length; i++) _names[i].text = i < names.Length ? names[i] : "";
-        for (int i = 0; i < _headings.Length; i++) _headings[i].text = i < categories.Length ? categories[i].ToUpperInvariant() : "";
-        for (int i = 0; i < _icons.Length; i++)
+        SetTexts("EVERY CLUE, IN ONE PLACE", "Your notebook", rules);
+        for (int i = 0; i < _sections.Length; i++)
         {
-            bool has = i < entries.Length;
-            _icons[i].gameObject.SetActive(has && entries[i].Icon != null);
-            if (has) _icons[i].sprite = entries[i].Icon;
-            _labels[i].text = has ? entries[i].Label : "";
-            _checks[i].SetActive(has && entries[i].Matched);
+            var view = _sections[i];
+            bool has = i < sections.Length;
+            view.Root.SetActive(has);
+            if (!has) continue;
+            var section = sections[i];
+            view.Label.text = section.Label;
+            view.Status.text = section.Status.ToUpperInvariant();
+            view.Surface.color = section.Current ? _current : _normal;
+            for (int f = 0; f < view.Texts.Length; f++)
+            {
+                bool fact = f < section.Facts.Length;
+                view.Texts[f].transform.parent.gameObject.SetActive(fact);
+                if (!fact) continue;
+                view.Icons[f].sprite = section.Facts[f].icon;
+                view.Icons[f].gameObject.SetActive(section.Facts[f].icon != null);
+                view.Texts[f].text = section.Facts[f].text;
+            }
         }
         Bind(_backButton, onBack);
     }

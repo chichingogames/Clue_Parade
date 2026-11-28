@@ -1,0 +1,1249 @@
+{
+  "version": "any-row-two-clues-v2",
+  "sourcePack": "Tilewrap_30_Level_Unity_Production",
+  "cases": [
+    {
+      "id": 1,
+      "title": "Parade prep",
+      "subtitle": "Get the crew ready, one set at a time.",
+      "subjects": [
+        {
+          "id": "crew_mia",
+          "name": "Mia",
+          "column": 0,
+          "rigId": "crew_mia"
+        },
+        {
+          "id": "crew_leo",
+          "name": "Leo",
+          "column": 1,
+          "rigId": "crew_leo"
+        },
+        {
+          "id": "crew_zoe",
+          "name": "Zoe",
+          "column": 2,
+          "rigId": "crew_zoe"
+        }
+      ],
+      "sets": [
+        {
+          "label": "Hats",
+          "action": "Deliver their hats.",
+          "items": [
+            "crew_00",
+            "crew_01",
+            "crew_02"
+          ],
+          "clues": [
+            "Mia gets the red cap.",
+            "Leo gets the blue cap.",
+            "Zoe gets the purple cap."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "crew_00",
+              "text": "Mia gets the red cap.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "crew_02",
+              "text": "Zoe gets the purple cap.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Shirts",
+          "action": "Deliver their shirts.",
+          "items": [
+            "crew_03",
+            "crew_04",
+            "crew_05"
+          ],
+          "clues": [
+            "Mia gets the red shirt.",
+            "Leo gets the blue shirt.",
+            "Zoe gets the purple shirt."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "crew_03",
+              "text": "Mia gets the red shirt.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "crew_05",
+              "text": "Zoe gets the purple shirt.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Bags",
+          "action": "Deliver their bags.",
+          "items": [
+            "crew_06",
+            "crew_07",
+            "crew_08"
+          ],
+          "clues": [
+            "Mia gets the red bag.",
+            "Leo gets the blue bag.",
+            "Zoe gets the purple bag."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "crew_06",
+              "text": "Mia gets the red bag.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "crew_08",
+              "text": "Zoe gets the purple bag.",
+              "referenceItem": ""
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "id": "crew_00",
+          "label": "Red cap",
+          "sprite": "crew_00"
+        },
+        {
+          "id": "crew_01",
+          "label": "Blue cap",
+          "sprite": "crew_01"
+        },
+        {
+          "id": "crew_02",
+          "label": "Purple cap",
+          "sprite": "crew_02"
+        },
+        {
+          "id": "crew_03",
+          "label": "Red shirt",
+          "sprite": "crew_03"
+        },
+        {
+          "id": "crew_04",
+          "label": "Blue shirt",
+          "sprite": "crew_04"
+        },
+        {
+          "id": "crew_05",
+          "label": "Purple shirt",
+          "sprite": "crew_05"
+        },
+        {
+          "id": "crew_06",
+          "label": "Red bag",
+          "sprite": "crew_06"
+        },
+        {
+          "id": "crew_07",
+          "label": "Blue bag",
+          "sprite": "crew_07"
+        },
+        {
+          "id": "crew_08",
+          "label": "Purple bag",
+          "sprite": "crew_08"
+        }
+      ],
+      "start": [
+        "crew_00",
+        "crew_02",
+        "crew_01",
+        "crew_04",
+        "crew_03",
+        "crew_05",
+        "crew_07",
+        "crew_06",
+        "crew_08"
+      ],
+      "refills": [],
+      "moveLimit": 0,
+      "orderMode": "staged",
+      "firstClearCoins": 30,
+      "extraLayers": [],
+      "hasTutorial": true,
+      "tutorial": {
+        "from": 1,
+        "to": 2,
+        "text": "Swap the purple cap right. A complete top row clears too!"
+      },
+      "completionText": "The crew is dressed and ready to go."
+    },
+    {
+      "id": 2,
+      "title": "Welcome home",
+      "subtitle": "Make a cosy corner for three new friends.",
+      "subjects": [
+        {
+          "id": "pets_biscuit",
+          "name": "Biscuit",
+          "column": 0,
+          "rigId": "pets_biscuit"
+        },
+        {
+          "id": "pets_pip",
+          "name": "Pip",
+          "column": 1,
+          "rigId": "pets_pip"
+        },
+        {
+          "id": "pets_clover",
+          "name": "Clover",
+          "column": 2,
+          "rigId": "pets_clover"
+        }
+      ],
+      "sets": [
+        {
+          "label": "Beds",
+          "action": "Deliver their cosy beds.",
+          "items": [
+            "pets_03",
+            "pets_04",
+            "pets_05"
+          ],
+          "clues": [
+            "Biscuit gets the blue oval bed.",
+            "Pip gets the mint square bed.",
+            "Clover gets the peach round bed."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "pets_03",
+              "text": "Biscuit gets the blue oval bed.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "pets_05",
+              "text": "Clover gets the peach round bed.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Accessories",
+          "action": "Deliver their accessories.",
+          "items": [
+            "pets_00",
+            "pets_01",
+            "pets_02"
+          ],
+          "clues": [
+            "Biscuit gets the red bandana.",
+            "Pip gets the purple bow.",
+            "Clover gets the teal scarf."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "pets_00",
+              "text": "Biscuit gets the red bandana.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "pets_02",
+              "text": "Clover gets the teal scarf.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Favourites",
+          "action": "Deliver their favourite things.",
+          "items": [
+            "pets_06",
+            "pets_07",
+            "pets_08"
+          ],
+          "clues": [
+            "Biscuit gets the tennis ball.",
+            "Pip gets the yarn ball.",
+            "Clover gets the carrot."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "pets_06",
+              "text": "Biscuit gets the tennis ball.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "pets_08",
+              "text": "Clover gets the carrot.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Welcome gifts",
+          "action": "Deliver their welcome gifts.",
+          "items": [
+            "gifts_05",
+            "gifts_04",
+            "gifts_03"
+          ],
+          "clues": [
+            "Biscuit gets the toy duck.",
+            "Pip gets the teddy bear.",
+            "Clover gets the toy robot."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "gifts_05",
+              "text": "Biscuit gets the toy duck.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "gifts_03",
+              "text": "Clover gets the toy robot.",
+              "referenceItem": ""
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "id": "pets_00",
+          "label": "Red bandana",
+          "sprite": "pets_00"
+        },
+        {
+          "id": "pets_01",
+          "label": "Purple bow",
+          "sprite": "pets_01"
+        },
+        {
+          "id": "pets_02",
+          "label": "Teal scarf",
+          "sprite": "pets_02"
+        },
+        {
+          "id": "pets_03",
+          "label": "Blue oval bed",
+          "sprite": "pets_03"
+        },
+        {
+          "id": "pets_04",
+          "label": "Mint square bed",
+          "sprite": "pets_04"
+        },
+        {
+          "id": "pets_05",
+          "label": "Peach round bed",
+          "sprite": "pets_05"
+        },
+        {
+          "id": "pets_06",
+          "label": "Tennis ball",
+          "sprite": "pets_06"
+        },
+        {
+          "id": "pets_07",
+          "label": "Yarn ball",
+          "sprite": "pets_07"
+        },
+        {
+          "id": "pets_08",
+          "label": "Carrot",
+          "sprite": "pets_08"
+        },
+        {
+          "id": "gifts_03",
+          "label": "Toy robot",
+          "sprite": "gifts_03"
+        },
+        {
+          "id": "gifts_04",
+          "label": "Teddy bear",
+          "sprite": "gifts_04"
+        },
+        {
+          "id": "gifts_05",
+          "label": "Toy duck",
+          "sprite": "gifts_05"
+        }
+      ],
+      "start": [
+        "pets_08",
+        "pets_06",
+        "pets_07",
+        "pets_03",
+        "pets_05",
+        "pets_04",
+        "pets_01",
+        "pets_00",
+        "pets_02"
+      ],
+      "refills": [
+        {
+          "items": [
+            "gifts_04",
+            "gifts_03",
+            "gifts_05"
+          ]
+        }
+      ],
+      "moveLimit": 0,
+      "orderMode": "staged",
+      "firstClearCoins": 30,
+      "extraLayers": [
+        {
+          "id": "gifts_05",
+          "column": 0,
+          "rect": [
+            70,
+            750,
+            220,
+            240
+          ],
+          "order": 35
+        },
+        {
+          "id": "gifts_04",
+          "column": 1,
+          "rect": [
+            70,
+            750,
+            220,
+            240
+          ],
+          "order": 35
+        },
+        {
+          "id": "gifts_03",
+          "column": 2,
+          "rect": [
+            70,
+            750,
+            220,
+            240
+          ],
+          "order": 35
+        }
+      ],
+      "hasTutorial": false,
+      "tutorial": {
+        "from": 0,
+        "to": 0,
+        "text": ""
+      },
+      "completionText": "Every new friend has a cosy place and a welcome gift."
+    },
+    {
+      "id": 3,
+      "title": "Birthday bakery",
+      "subtitle": "Finish three party tables, from cake to gifts.",
+      "subjects": [
+        {
+          "id": "cakes_cocoa",
+          "name": "Cocoa",
+          "column": 0,
+          "rigId": "cakes_cocoa"
+        },
+        {
+          "id": "cakes_confetti",
+          "name": "Confetti",
+          "column": 1,
+          "rigId": "cakes_confetti"
+        },
+        {
+          "id": "cakes_sunny",
+          "name": "Sunny",
+          "column": 2,
+          "rigId": "cakes_sunny"
+        }
+      ],
+      "sets": [
+        {
+          "label": "Cake bases",
+          "action": "Deliver their cake bases.",
+          "items": [
+            "cakes_00",
+            "cakes_01",
+            "cakes_02"
+          ],
+          "clues": [
+            "Cocoa gets the chocolate sponge.",
+            "Confetti gets the vanilla sponge.",
+            "Sunny gets the lemon sponge."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "cakes_00",
+              "text": "Cocoa gets the chocolate sponge.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "cakes_02",
+              "text": "Sunny gets the lemon sponge.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Frosting",
+          "action": "Deliver their frosting.",
+          "items": [
+            "cakes_03",
+            "cakes_04",
+            "cakes_05"
+          ],
+          "clues": [
+            "Cocoa gets the pink frosting.",
+            "Confetti gets the blue frosting.",
+            "Sunny gets the cream frosting."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "cakes_03",
+              "text": "Cocoa gets the pink frosting.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "cakes_05",
+              "text": "Sunny gets the cream frosting.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Toppings",
+          "action": "Deliver their toppings.",
+          "items": [
+            "cakes_06",
+            "cakes_07",
+            "cakes_08"
+          ],
+          "clues": [
+            "Cocoa gets the strawberries.",
+            "Confetti gets the rainbow sprinkles.",
+            "Sunny gets the sugar star."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "cakes_06",
+              "text": "Cocoa gets the strawberries.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "cakes_08",
+              "text": "Sunny gets the sugar star.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Party drinks",
+          "action": "Deliver their party drinks.",
+          "items": [
+            "breakfast_05",
+            "breakfast_04",
+            "breakfast_03"
+          ],
+          "clues": [
+            "Cocoa gets the coffee.",
+            "Confetti gets the milk.",
+            "Sunny gets the orange juice."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "breakfast_05",
+              "text": "Cocoa gets the coffee.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "breakfast_03",
+              "text": "Sunny gets the orange juice.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Party favours",
+          "action": "Deliver their party favours.",
+          "items": [
+            "gifts_04",
+            "gifts_03",
+            "gifts_05"
+          ],
+          "clues": [
+            "Cocoa gets the teddy bear.",
+            "Confetti gets the toy robot.",
+            "Sunny gets the toy duck."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "gifts_04",
+              "text": "Cocoa gets the teddy bear.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "gifts_05",
+              "text": "Sunny gets the toy duck.",
+              "referenceItem": ""
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "id": "cakes_00",
+          "label": "Chocolate sponge",
+          "sprite": "cakes_00"
+        },
+        {
+          "id": "cakes_01",
+          "label": "Vanilla sponge",
+          "sprite": "cakes_01"
+        },
+        {
+          "id": "cakes_02",
+          "label": "Lemon sponge",
+          "sprite": "cakes_02"
+        },
+        {
+          "id": "cakes_03",
+          "label": "Pink frosting",
+          "sprite": "cakes_03"
+        },
+        {
+          "id": "cakes_04",
+          "label": "Blue frosting",
+          "sprite": "cakes_04"
+        },
+        {
+          "id": "cakes_05",
+          "label": "Cream frosting",
+          "sprite": "cakes_05"
+        },
+        {
+          "id": "cakes_06",
+          "label": "Strawberries",
+          "sprite": "cakes_06"
+        },
+        {
+          "id": "cakes_07",
+          "label": "Rainbow sprinkles",
+          "sprite": "cakes_07"
+        },
+        {
+          "id": "cakes_08",
+          "label": "Sugar star",
+          "sprite": "cakes_08"
+        },
+        {
+          "id": "breakfast_03",
+          "label": "Orange juice",
+          "sprite": "breakfast_03"
+        },
+        {
+          "id": "breakfast_04",
+          "label": "Milk",
+          "sprite": "breakfast_04"
+        },
+        {
+          "id": "breakfast_05",
+          "label": "Coffee",
+          "sprite": "breakfast_05"
+        },
+        {
+          "id": "gifts_03",
+          "label": "Toy robot",
+          "sprite": "gifts_03"
+        },
+        {
+          "id": "gifts_04",
+          "label": "Teddy bear",
+          "sprite": "gifts_04"
+        },
+        {
+          "id": "gifts_05",
+          "label": "Toy duck",
+          "sprite": "gifts_05"
+        }
+      ],
+      "start": [
+        "cakes_07",
+        "cakes_04",
+        "cakes_08",
+        "cakes_06",
+        "cakes_03",
+        "cakes_02",
+        "cakes_00",
+        "cakes_01",
+        "cakes_05"
+      ],
+      "refills": [
+        {
+          "items": [
+            "breakfast_04",
+            "breakfast_05",
+            "breakfast_03"
+          ]
+        },
+        {
+          "items": [
+            "gifts_05",
+            "gifts_04",
+            "gifts_03"
+          ]
+        }
+      ],
+      "moveLimit": 0,
+      "orderMode": "staged",
+      "firstClearCoins": 30,
+      "extraLayers": [
+        {
+          "id": "breakfast_05",
+          "column": 0,
+          "rect": [
+            790,
+            605,
+            230,
+            320
+          ],
+          "order": 40
+        },
+        {
+          "id": "breakfast_04",
+          "column": 1,
+          "rect": [
+            790,
+            605,
+            230,
+            320
+          ],
+          "order": 40
+        },
+        {
+          "id": "breakfast_03",
+          "column": 2,
+          "rect": [
+            790,
+            605,
+            230,
+            320
+          ],
+          "order": 40
+        },
+        {
+          "id": "gifts_04",
+          "column": 0,
+          "rect": [
+            5,
+            675,
+            230,
+            300
+          ],
+          "order": 45
+        },
+        {
+          "id": "gifts_03",
+          "column": 1,
+          "rect": [
+            5,
+            675,
+            230,
+            300
+          ],
+          "order": 45
+        },
+        {
+          "id": "gifts_05",
+          "column": 2,
+          "rect": [
+            5,
+            675,
+            230,
+            300
+          ],
+          "order": 45
+        }
+      ],
+      "hasTutorial": false,
+      "tutorial": {
+        "from": 0,
+        "to": 0,
+        "text": ""
+      },
+      "completionText": "Three cakes, drinks and party favours. Everything is ready!"
+    },
+    {
+      "id": 4,
+      "title": "Night market",
+      "subtitle": "Read the scene you have already built.",
+      "subjects": [
+        {
+          "id": "market_0",
+          "name": "Lantern stall",
+          "column": 0,
+          "rigId": "market_0"
+        },
+        {
+          "id": "market_1",
+          "name": "Kite stall",
+          "column": 1,
+          "rigId": "market_1"
+        },
+        {
+          "id": "market_2",
+          "name": "Star stall",
+          "column": 2,
+          "rigId": "market_2"
+        }
+      ],
+      "sets": [
+        {
+          "label": "Canopies",
+          "action": "Match their canopies.",
+          "items": [
+            "market_00",
+            "market_01",
+            "market_02"
+          ],
+          "clues": [
+            "Lantern stall gets the striped canopy.",
+            "Kite stall gets the patchwork canopy.",
+            "Star stall gets the scalloped canopy."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "market_00",
+              "text": "Lantern stall gets the striped canopy.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "market_02",
+              "text": "Star stall gets the scalloped canopy.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Goods",
+          "action": "Match their goods.",
+          "items": [
+            "market_03",
+            "market_04",
+            "market_05"
+          ],
+          "clues": [
+            "Lantern stall gets the fruit basket.",
+            "Kite stall gets the bread tray.",
+            "Star stall gets the toy display."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "market_03",
+              "text": "Lantern stall gets the fruit basket.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "market_05",
+              "text": "Star stall gets the toy display.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Lights",
+          "action": "Match their lights.",
+          "items": [
+            "market_06",
+            "market_07",
+            "market_08"
+          ],
+          "clues": [
+            "Lantern stall gets the round lantern.",
+            "Kite stall gets the string lights.",
+            "Star stall gets the table lamp."
+          ],
+          "visibleClues": [
+            {
+              "column": 1,
+              "icon": "market_04",
+              "text": "The stall selling bread gets the string lights.",
+              "referenceItem": "market_04"
+            },
+            {
+              "column": 2,
+              "icon": "market_05",
+              "text": "The toy stall needs the table lamp.",
+              "referenceItem": "market_05"
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "id": "market_00",
+          "label": "Striped canopy",
+          "sprite": "market_00"
+        },
+        {
+          "id": "market_01",
+          "label": "Patchwork canopy",
+          "sprite": "market_01"
+        },
+        {
+          "id": "market_02",
+          "label": "Scalloped canopy",
+          "sprite": "market_02"
+        },
+        {
+          "id": "market_03",
+          "label": "Fruit basket",
+          "sprite": "market_03"
+        },
+        {
+          "id": "market_04",
+          "label": "Bread tray",
+          "sprite": "market_04"
+        },
+        {
+          "id": "market_05",
+          "label": "Toy display",
+          "sprite": "market_05"
+        },
+        {
+          "id": "market_06",
+          "label": "Round lantern",
+          "sprite": "market_06"
+        },
+        {
+          "id": "market_07",
+          "label": "String lights",
+          "sprite": "market_07"
+        },
+        {
+          "id": "market_08",
+          "label": "Table lamp",
+          "sprite": "market_08"
+        }
+      ],
+      "start": [
+        "market_04",
+        "market_03",
+        "market_05",
+        "market_00",
+        "market_02",
+        "market_01",
+        "market_08",
+        "market_06",
+        "market_07"
+      ],
+      "refills": [],
+      "moveLimit": 20,
+      "orderMode": "staged",
+      "firstClearCoins": 30,
+      "extraLayers": [],
+      "hasTutorial": false,
+      "tutorial": {
+        "from": 0,
+        "to": 0,
+        "text": ""
+      },
+      "completionText": "Every stall is stocked and glowing for the evening."
+    },
+    {
+      "id": 5,
+      "title": "Breakfast club",
+      "subtitle": "Choose which request to finish first.",
+      "subjects": [
+        {
+          "id": "breakfast_0",
+          "name": "Early bird",
+          "column": 0,
+          "rigId": "breakfast_0"
+        },
+        {
+          "id": "breakfast_1",
+          "name": "Sweet start",
+          "column": 1,
+          "rigId": "breakfast_1"
+        },
+        {
+          "id": "breakfast_2",
+          "name": "Slow morning",
+          "column": 2,
+          "rigId": "breakfast_2"
+        }
+      ],
+      "sets": [
+        {
+          "label": "Mains",
+          "action": "Match their mains.",
+          "items": [
+            "breakfast_00",
+            "breakfast_01",
+            "breakfast_02"
+          ],
+          "clues": [
+            "Early bird gets the scrambled eggs.",
+            "Sweet start gets the pancakes.",
+            "Slow morning gets the croissant."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "breakfast_00",
+              "text": "Early bird gets the scrambled eggs.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "breakfast_02",
+              "text": "Slow morning gets the croissant.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Drinks",
+          "action": "Match their drinks.",
+          "items": [
+            "breakfast_03",
+            "breakfast_04",
+            "breakfast_05"
+          ],
+          "clues": [
+            "Early bird gets the orange juice.",
+            "Sweet start gets the milk.",
+            "Slow morning gets the coffee."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "breakfast_03",
+              "text": "Early bird gets the orange juice.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "breakfast_05",
+              "text": "Slow morning gets the coffee.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Fruit",
+          "action": "Match their fruit.",
+          "items": [
+            "breakfast_06",
+            "breakfast_07",
+            "breakfast_08"
+          ],
+          "clues": [
+            "Early bird gets the apple.",
+            "Sweet start gets the banana.",
+            "Slow morning gets the grapes."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "breakfast_06",
+              "text": "Early bird gets the apple.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "breakfast_08",
+              "text": "Slow morning gets the grapes.",
+              "referenceItem": ""
+            }
+          ]
+        },
+        {
+          "label": "Sides",
+          "action": "Match their sides.",
+          "items": [
+            "toast_06",
+            "toast_07",
+            "toast_08"
+          ],
+          "clues": [
+            "Early bird gets the leaf salad.",
+            "Sweet start gets the tomato soup.",
+            "Slow morning gets the pickles."
+          ],
+          "visibleClues": [
+            {
+              "column": 0,
+              "icon": "toast_06",
+              "text": "Early bird gets the leaf salad.",
+              "referenceItem": ""
+            },
+            {
+              "column": 2,
+              "icon": "toast_08",
+              "text": "Slow morning gets the pickles.",
+              "referenceItem": ""
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "id": "breakfast_00",
+          "label": "Scrambled eggs",
+          "sprite": "breakfast_00"
+        },
+        {
+          "id": "breakfast_01",
+          "label": "Pancakes",
+          "sprite": "breakfast_01"
+        },
+        {
+          "id": "breakfast_02",
+          "label": "Croissant",
+          "sprite": "breakfast_02"
+        },
+        {
+          "id": "breakfast_03",
+          "label": "Orange juice",
+          "sprite": "breakfast_03"
+        },
+        {
+          "id": "breakfast_04",
+          "label": "Milk",
+          "sprite": "breakfast_04"
+        },
+        {
+          "id": "breakfast_05",
+          "label": "Coffee",
+          "sprite": "breakfast_05"
+        },
+        {
+          "id": "breakfast_06",
+          "label": "Apple",
+          "sprite": "breakfast_06"
+        },
+        {
+          "id": "breakfast_07",
+          "label": "Banana",
+          "sprite": "breakfast_07"
+        },
+        {
+          "id": "breakfast_08",
+          "label": "Grapes",
+          "sprite": "breakfast_08"
+        },
+        {
+          "id": "toast_06",
+          "label": "Leaf salad",
+          "sprite": "toast_06"
+        },
+        {
+          "id": "toast_07",
+          "label": "Tomato soup",
+          "sprite": "toast_07"
+        },
+        {
+          "id": "toast_08",
+          "label": "Pickles",
+          "sprite": "toast_08"
+        }
+      ],
+      "start": [
+        "breakfast_00",
+        "breakfast_02",
+        "breakfast_01",
+        "breakfast_03",
+        "breakfast_05",
+        "breakfast_04",
+        "breakfast_07",
+        "breakfast_06",
+        "breakfast_08"
+      ],
+      "refills": [
+        {
+          "items": [
+            "toast_08",
+            "toast_06",
+            "toast_07"
+          ]
+        }
+      ],
+      "moveLimit": 24,
+      "orderMode": "choice",
+      "firstClearCoins": 30,
+      "extraLayers": [
+        {
+          "id": "toast_06",
+          "column": 0,
+          "rect": [
+            10,
+            680,
+            290,
+            280
+          ],
+          "order": 40
+        },
+        {
+          "id": "toast_07",
+          "column": 1,
+          "rect": [
+            10,
+            680,
+            290,
+            280
+          ],
+          "order": 40
+        },
+        {
+          "id": "toast_08",
+          "column": 2,
+          "rect": [
+            10,
+            680,
+            290,
+            280
+          ],
+          "order": 40
+        }
+      ],
+      "hasTutorial": false,
+      "tutorial": {
+        "from": 0,
+        "to": 0,
+        "text": ""
+      },
+      "completionText": "Every breakfast tray is ready to serve."
+    }
+  ]
+}

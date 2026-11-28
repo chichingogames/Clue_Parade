@@ -18,6 +18,8 @@ using UnityEngine;
 // Re-runnable: existing prefabs are kept (so prefab edits survive) and FileRef tables are only filled when empty.
 public static class AssetBuilder
 {
+    public const string CasesPath = "Assets/Game Assets/Data/delivery_cases.json";
+
     private const string SpriteFolder = "Assets/Game Assets/Sprites/Placeholder";
     private const string PrefabFolder = "Assets/Game Assets/Prefabs/Gameobjects";
     private const string MusicFolder = "Assets/Game Assets/Audio/Music";
@@ -170,7 +172,7 @@ public static class AssetBuilder
         so.FindProperty("_size").vector2Value = CellSize;
         so.FindProperty("_itemBox").vector2Value = ReferenceLayout.ItemArtBox;
         so.ApplyModifiedPropertiesWithoutUndo();
-        tile.Setup(new TileData(0), item.sprite, "Red cap");
+        tile.Setup("crew_00", item.sprite, "Red cap");
         tile.name = "ItemTile";
         return SavePrefab<ItemTile>(root, path);
     }
@@ -218,6 +220,9 @@ public static class AssetBuilder
         var library = AssetDatabase.LoadAssetAtPath<TilewrapContentLibrary>(HandoffBuilder.LibraryPath);
         if (library == null) Debug.LogWarning($"[AssetBuilder] {HandoffBuilder.LibraryPath} is missing: run Tools > Chichingo > Tilewrap > Build 30-level content.");
         SetIfEmpty(so.FindProperty("_content"), library);
+        var cases = AssetDatabase.LoadAssetAtPath<TextAsset>(CasesPath);
+        if (cases == null) Debug.LogWarning($"[AssetBuilder] {CasesPath} is missing: the any-row cases.");
+        SetIfEmpty(so.FindProperty("_cases"), cases);
 
         if (so.FindProperty("_music").objectReferenceValue == null)
         {

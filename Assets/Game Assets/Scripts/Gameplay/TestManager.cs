@@ -2,8 +2,8 @@ using Sortify;
 using UnityEngine;
 
 /// <summary>
-/// A cheat panel for testing: jump between levels, force a win or a loss, make swaps and play
-/// a shortest solve, all from Inspector buttons.
+/// A cheat panel for testing: jump between cases, force a win or a loss, make swaps and play
+/// the hint route to the win, all from Inspector buttons.
 /// </summary>
 /// <remarks>
 /// <b>Everything in here is editor-only.</b> The class still compiles into a player as an empty
@@ -117,14 +117,14 @@ public class TestManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Restarts the level and plays a shortest solve (SwapPuzzle) one swap at a time, through the
-    /// same path as a drag: swaps are counted and the win lands on the last one.
+    /// Restarts the case and follows the hint (DeliveryRules.Hint) one swap at a time, through the
+    /// same path as a tap: swaps are counted, sets delivered and the win lands on the last one.
     /// </summary>
     /// <remarks>
-    /// Each swap waits for <see cref="Manager_Board.OnBoardSettled"/> from the one before, since
-    /// <see cref="Manager_Game.ApplyMove"/> refuses a move while a pair is still sliding.
+    /// Each swap waits for <see cref="Manager_Game.OnMoveResolved"/> from the one before, since
+    /// <see cref="Manager_Game.ApplyMove"/> refuses a move while the board is busy.
     /// </remarks>
-    [Button("Play Shortest Solve (real win)")]
+    [Button("Play Hint Route (real win)")]
     private void PlaySolution()
     {
         if (!Ready(out Manager_Game game)) return;
@@ -132,7 +132,7 @@ public class TestManager : MonoBehaviour
         game.RestartLevel();
 
         _solving = true;
-        Manager_Board.Instance.OnBoardSettled += NextSolutionMove;
+        game.OnMoveResolved += NextSolutionMove;
         NextSolutionMove();
     }
 
@@ -143,14 +143,14 @@ public class TestManager : MonoBehaviour
 
         int dRow = _swapDirection == SwapDirection.Up ? -1 : _swapDirection == SwapDirection.Down ? 1 : 0;
         int dCol = _swapDirection == SwapDirection.Left ? -1 : _swapDirection == SwapDirection.Right ? 1 : 0;
-        var move = SwapMove.Between(_swapRow, _swapColumn, dRow, dCol, game.Level.Size);
-        if (move == null)
+        int row = _swapRow + dRow, col = _swapColumn + dCol;
+        if (_swapRow > 2 || _swapColumn > 2 || row < 0 || row > 2 || col < 0 || col > 2)
         {
-            Debug.LogWarning($"[TestManager] ({_swapRow},{_swapColumn}) has no neighbour {_swapDirection} on a {game.Level.Size}x{game.Level.Size} board.");
+            Debug.LogWarning($"[TestManager] ({_swapRow},{_swapColumn}) has no neighbour {_swapDirection}.");
             return;
         }
-        if (!game.ApplyMove(move))
-            Debug.LogWarning($"[TestManager] swap refused: state is {game.State}, or a pair is still moving.");
+        if (!game.ApplyMove(_swapRow * 3 + _swapColumn, row * 3 + col))
+            Debug.LogWarning($"[TestManager] swap refused: state is {game.State}, the board is busy, both cells are empty, or case 1 wants its guided swap.");
     }
 
     [Button("Log State")]
@@ -159,23 +159,18 @@ public class TestManager : MonoBehaviour
         if (!Ready(out Manager_Game game)) return;
 
         var level = game.Level;
-        var board = Manager_Board.Instance.State;
-        string moves = level.HasMoveLimit ? $"{game.MovesUsed}/{level.MoveLimit} moves" : $"{game.MovesUsed} moves (unlimited)";
-
-        // One line per row: [ok] = the tile is home, * = complete row, > = the selected category's row.
+        var model = game.Model;
+        string moves = level.HasMoveLimit ? $"{game.MovesUsed}/{level.moveLimit} swaps" : $"{game.MovesUsed} swaps (unlimited)";
         var rows = new System.Text.StringBuilder();
-        for (int r = 0; r < board.Size; r++)
+        for (int r = 0; r < 3; r++)
         {
-            string mark = board.IsRowComplete(r) ? "*" : r == Manager_Board.Instance.SelectedRow ? ">" : " ";
-            rows.Append($"\n {mark} {level.Categories[r],-10}");
-            for (int c = 0; c < board.Size; c++)
-                rows.Append(board.IsHome(r, c) ? "[ok] " : "[  ] ").Append(level.ItemFor(board[r, c]).Label).Append("   ");
+            rows.Append("\n ");
+            for (int c = 0; c < 3; c++) rows.Append($"{level.Item(model.Board[r * 3 + c])?.label ?? "-",-18}");
         }
-
         var save = OfflineData.Instance;
-        Debug.Log($"[TestManager] save: current {save.CurrentLevel}, passed {save.PassedLevels}, sound {(save.IsSoundOn ? "on" : "off")}");
-        Debug.Log($"[TestManager] case {game.CurrentLevel} \"{level.Title}\" ({level.Difficulty}) | {game.State} | " +
-                  $"{board.MatchedCount}/{board.CellCount} matched | {moves}, minimum {level.MinimumMoves}{rows}");
+        Debug.Log($"[TestManager] save: current {save.CurrentLevel}, completed [{string.Join(",", save.CompletedLevels)}], coins {save.Coins}");
+        Debug.Log($"[TestManager] case {game.CurrentLevel} \"{level.title}\" | {game.State} | {model.Stage}/{level.sets.Length} sets | " +
+                  $"focus {game.FocusedSet?.label ?? "-"} | {moves}{rows}");
     }
 
     #endregion
@@ -233,15 +228,17 @@ public class TestManager : MonoBehaviour
     private void NextSolutionMove()
     {
         var game = Manager_Game.Instance;
-        if (!_solving || game == null || game.State != GameState.Playing
-            || !SwapPuzzle.TryNextMove(Manager_Board.Instance.State.TileIds(), out var move))
+        DeliveryHint hint = null;
+        if (_solving && game != null && game.State == GameState.Playing)
+            hint = game.RequiredSwap is { } t ? new DeliveryHint { From = t.from, To = t.to } : DeliveryRules.Hint(game.Model, game.Level, game.FocusSet);
+        if (hint == null)
         {
             StopSolution();
             return;
         }
-        if (!game.ApplyMove(move))
+        if (!game.ApplyMove(hint.From, hint.To))
         {
-            Debug.LogWarning("[TestManager] solve stopped: the board was busy.");
+            Debug.LogWarning("[TestManager] route stopped: the board was busy.");
             StopSolution();
         }
     }
@@ -249,7 +246,7 @@ public class TestManager : MonoBehaviour
     private void StopSolution()
     {
         _solving = false;
-        if (Manager_Board.Instance != null) Manager_Board.Instance.OnBoardSettled -= NextSolutionMove;
+        if (Manager_Game.Instance != null) Manager_Game.Instance.OnMoveResolved -= NextSolutionMove;
     }
 
     private void OnDisable() => StopSolution();

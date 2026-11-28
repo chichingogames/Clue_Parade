@@ -6,9 +6,10 @@ using UnityEngine;
 // The one place assets are assigned. Managers ask FileRef.Instance instead of holding prefab fields.
 // Filled by ShiftSort > Build Assets (AssetBuilder).
 //
-// The content (30 cases, their item and UI sprites, the 90 registered subject rigs, the campaign
-// map and the hint table) is the content pack's TilewrapContentLibrary, made by
-// Tools > Chichingo > Tilewrap > Build 30-level content (Assets/TilewrapVaried/Generated).
+// The cases are the any-row delivery cases (_cases: Assets/Game Assets/Data/delivery_cases.json,
+// DeliveryContent). Their item and UI sprites and the registered subject rigs come from the content
+// pack's TilewrapContentLibrary, made by Tools > Chichingo > Tilewrap > Build 30-level content
+// (Assets/TilewrapVaried/Generated).
 [AssetPath("FileRef")]
 [CreateAssetMenu(fileName = "FileRef", menuName = "ScriptableObjects/FileRef")]
 public class FileRef : ScriptableSingleton<FileRef>
@@ -31,6 +32,8 @@ public class FileRef : ScriptableSingleton<FileRef>
     [Header("Content")]
     [Tooltip("Assets/TilewrapVaried/Generated/TilewrapContentLibrary.asset")]
     [SerializeField] private TilewrapContentLibrary _content;
+    [Tooltip("Assets/Game Assets/Data/delivery_cases.json: the any-row cases (DeliveryContent).")]
+    [SerializeField] private TextAsset _cases;
 
     [Header("Audio")]
     [SerializeField] private AudioClip _music;
@@ -43,7 +46,7 @@ public class FileRef : ScriptableSingleton<FileRef>
 
     private Dictionary<string, Sprite> _spriteMap;
     private Dictionary<string, TilewrapRigView> _rigMap;
-    private CampaignData _campaign;
+    private DeliveryContent _caseContent;
 
     // A content sprite by its key ("luggage_00", "fx_star", "map_node_open"), or null.
     public Sprite Sprite(string key)
@@ -69,19 +72,17 @@ public class FileRef : ScriptableSingleton<FileRef>
         return id != null && _rigMap.TryGetValue(id, out var rig) ? rig : null;
     }
 
-    // The campaign: chapters, the map's node positions and sections, the ending text.
-    public CampaignData Campaign
+    // The any-row cases, parsed once (null, logged, when the file is missing or broken).
+    public DeliveryContent Cases
     {
         get
         {
-            if (_campaign == null && _content != null && _content.campaign != null)
-                _campaign = JsonUtility.FromJson<CampaignData>(_content.campaign.text);
-            return _campaign;
+            if (_caseContent != null || _cases == null) return _caseContent;
+            try { _caseContent = DeliveryContent.Parse(_cases.text); }
+            catch (Exception e) { Debug.LogError($"[FileRef] {_cases.name}: {e.Message}", this); }
+            return _caseContent;
         }
     }
-
-    // Shortest-path distances of all 362,880 3x3 arrangements (TilewrapWrapPuzzle.TryNextMove).
-    public byte[] HintDistances => _content != null && _content.hintDistances != null ? _content.hintDistances.bytes : null;
 
     // False (and no error) when the sound has no clips: a missing sound is silence, not a crash.
     public bool TryGetSound(SoundType type, out SoundData data)
@@ -100,7 +101,7 @@ public class FileRef : ScriptableSingleton<FileRef>
     {
         _spriteMap = null;
         _rigMap = null;
-        _campaign = null;
+        _caseContent = null;
     }
 
     [ContextMenu("Validate references")]
@@ -110,10 +111,11 @@ public class FileRef : ScriptableSingleton<FileRef>
         if (_cellPrefab == null) { Debug.LogError("[FileRef] Cell prefab missing.", this); problems++; }
         if (_itemTilePrefab == null) { Debug.LogError("[FileRef] ItemTile prefab missing.", this); problems++; }
         if (_content == null) { Debug.LogError("[FileRef] Content library missing. Run Tools > Chichingo > Tilewrap > Build 30-level content.", this); problems++; }
+        if (Cases == null) { Debug.LogError("[FileRef] Cases missing: assign Assets/Game Assets/Data/delivery_cases.json.", this); problems++; }
         if (_music == null) Debug.LogWarning("[FileRef] No music clip.", this);
         foreach (SoundType type in Enum.GetValues(typeof(SoundType)))
             if (type != SoundType.LineComplete && !TryGetSound(type, out _)) Debug.LogWarning($"[FileRef] No clip for sound {type}.", this);
 
-        if (problems == 0) Debug.Log($"[FileRef] OK. {_content.levels.Length} cases, {_content.rigs.Length} rigs, {_content.sprites.Length} sprites.", this);
+        if (problems == 0) Debug.Log($"[FileRef] OK. {Cases.cases.Length} cases, {_content.rigs.Length} rigs, {_content.sprites.Length} sprites.", this);
     }
 }

@@ -1,35 +1,35 @@
 using UnityEditor;
 using UnityEngine;
 
-// Checks every case in FileRef's content library: it converts (structure, bindings), every item
-// sprite and subject rig exists, it doesn't start solved, its swap minimum (SwapPuzzle) fits the
-// move limit, and the cases are numbered 1..N with nextLevelId leading to the next one (0 only on
-// the last). The pack's own solution and minimum are for row / column wraps and are not checked.
+// Checks every any-row case in FileRef.Cases: three subjects with rigs, every item sprite, each set
+// names three known items and two clues, the inventory adds up (start + refills = every item once),
+// and following the hint from the start delivers every set (DeliveryRules.Solve), within the move
+// limit when there is one.
 public static class LevelValidator
 {
     [MenuItem("ShiftSort/Validate Levels")]
     public static string Validate()
     {
-        var content = FileRef.Instance.Content;
-        if (content == null || content.levels == null)
+        var content = FileRef.Instance.Cases;
+        if (content == null)
         {
-            Debug.LogError("[LevelValidator] FileRef has no content library. Run ShiftSort > Build Assets.");
+            Debug.LogError("[LevelValidator] FileRef has no cases. Assign Assets/Game Assets/Data/delivery_cases.json.");
             return "no content";
         }
 
         int ok = 0, failed = 0;
-        var source = new CaseLevelSource(FileRef.Instance);
-        if (source.Count != content.levels.Length)
-            Debug.LogWarning($"[LevelValidator] {content.levels.Length} case files, but only 1..{source.Count} are numbered without a gap.");
-
-        foreach (var file in content.levels)
+        foreach (var level in content.cases)
         {
-            string error = Check(file, source.Count);
-            if (error == null) ok++;
+            string error = Check(level, out string note);
+            if (error == null)
+            {
+                ok++;
+                Debug.Log($"[LevelValidator] case {level.id} \"{level.title}\": OK ({note}).");
+            }
             else
             {
                 failed++;
-                Debug.LogError($"[LevelValidator] {AssetDatabase.GetAssetPath(file)}: {error}", file);
+                Debug.LogError($"[LevelValidator] case {level.id} \"{level.title}\": {error}");
             }
         }
 
@@ -39,21 +39,36 @@ public static class LevelValidator
         return summary;
     }
 
-    private static string Check(TextAsset file, int count)
+    private static string Check(DeliveryCase level, out string note)
     {
-        if (!CaseLevelSource.TryConvert(file, out var level, out string error)) return error;
-        if (!CaseLevelSource.TryCheckArt(level, FileRef.Instance, out error)) return error;
-
-        bool last = level.Number == count;
-        if (last ? level.NextLevelId != 0 : level.NextLevelId != level.Number + 1)
-            return $"nextLevelId {level.NextLevelId} (expected {(last ? 0 : level.Number + 1)})";
-
-        var board = new BoardState(level);
-        if (board.IsSolved) return "the board starts solved";
-        int distance = SwapPuzzle.Distance(board.TileIds());
-        if (distance != level.MinimumMoves) return $"minimum {level.MinimumMoves} swaps, the solver says {distance}";
-        if (level.HasMoveLimit && level.MoveLimit < level.MinimumMoves)
-            return $"move limit {level.MoveLimit} is below the {level.MinimumMoves}-swap minimum";
+        note = "";
+        var fileRef = FileRef.Instance;
+        if (level.subjects.Length != 3) return "needs three subjects";
+        foreach (var subject in level.subjects)
+            if (fileRef.Rig(subject.rigId) == null) return $"rig '{subject.rigId}' is not in the content library";
+        foreach (var item in level.items)
+            if (fileRef.Sprite(item.sprite) == null) return $"item sprite '{item.sprite}' is not in the content library";
+        if (level.start == null || level.start.Length != 9) return "start must have 9 cells";
+        foreach (var set in level.sets)
+        {
+            if (set.items.Length != 3 || set.clues.Length != 3) return $"set '{set.label}' needs three items and three clues";
+            foreach (var id in set.items) if (level.Item(id) == null) return $"set '{set.label}' names unknown item '{id}'";
+            if (set.visibleClues.Length != 2) return $"set '{set.label}' should show two clues";
+        }
+        try
+        {
+            var start = DeliveryRules.Create(level);
+            DeliveryRules.CheckInvariant(start, level);
+            if (DeliveryRules.Ready(start, level).HasValue) return "a set is already delivered at the start";
+            var route = DeliveryRules.Solve(level);
+            if (level.HasMoveLimit && route.Count > level.moveLimit)
+                return $"the hint route takes {route.Count} swaps, the limit is {level.moveLimit}";
+            note = $"hint route {route.Count} swaps{(level.HasMoveLimit ? $", limit {level.moveLimit}" : "")}";
+        }
+        catch (System.Exception e)
+        {
+            return e.Message;
+        }
         return null;
     }
 }

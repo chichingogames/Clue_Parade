@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // Play mode checks for the onboarding flow (Manager_Flow + popups). Use with PlayCheck.Swipe.
-//   Status()            case, state, moves, matched, open popup, guide, save
+//   Status()            case, state, moves, sets delivered, open popup, guide, coach line, save
 //   Tap("Win/Next Button")  invokes a popup button: PopUp_{name}/Holder/{button}
 //   Hud("Hint Button")  invokes a HUD button under InGame/Reference
 public static class FlowCheck
@@ -11,16 +11,15 @@ public static class FlowCheck
     public static string Status()
     {
         var game = Manager_Game.Instance;
-        var board = Manager_Board.Instance.State;
         var open = System.Enum.GetValues(typeof(PopupName)).Cast<PopupName>()
             .Where(n => Manager_PopUp.Instance.IsOpen(n)).Select(n => n.ToString());
         var save = OfflineData.Instance;
         var guide = GameObject.Find("/GamePlay/Board/Guide");
-        return $"case {game.CurrentLevel} '{game.Level?.Title}' {game.State} moves {game.MovesUsed}/{game.Level?.MoveLimit} " +
-               $"matched {board?.MatchedCount}/9 popups [{string.Join(",", open)}] paused {game.IsPaused} input {Manager_Input.Instance.AcceptInput} " +
-               $"guide {(guide != null && guide.activeSelf)} " +
-               $"| save completed [{string.Join(",", save.CompletedLevels)}] coins {save.Coins} current {save.CurrentLevel} " +
-               $"feedback {save.FeedbackGoal}/{save.FeedbackWrap}/{save.FeedbackDifficulty} events {PlaytestLog.Events.Count}";
+        var coach = GameObject.Find("/Canvas/Container/InGame/Reference/Coach")?.GetComponent<TMPro.TMP_Text>();
+        return $"case {game.CurrentLevel} '{game.Level?.title}' {game.State} moves {game.MovesUsed}/{game.Level?.moveLimit} " +
+               $"delivered {game.Model?.Stage}/{game.Level?.sets.Length} popups [{string.Join(",", open)}] paused {game.IsPaused} " +
+               $"input {Manager_Input.Instance.AcceptInput} guide {(guide != null && guide.activeSelf)} coach '{coach?.text}' " +
+               $"| save completed [{string.Join(",", save.CompletedLevels)}] coins {save.Coins} current {save.CurrentLevel} events {PlaytestLog.Events.Count}";
     }
 
     public static string Tap(string popupAndButton)

@@ -5,11 +5,12 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Builds the HUD under Canvas/Container/InGame/Reference (see UI_InGame) on the content pack's
-// 1080x1920 layout (Assets/TilewrapVaried/Data/ui_layout.json regions and geometry: every x, y, w, h
-// below is in its top-left-origin pixels: level, menu, difficulty, moves, title, goal, clueHeading,
-// clues, subjects, subjectNames, categories, controlNote, progress, actions), with the pack's UI
-// sprites and fonts, and the loading screen. The board itself is world space (SceneBuilder).
+// Builds the HUD under Canvas/Container/InGame/Reference (see UI_InGame) on the 1080x1920 reference
+// layout, following Tilewrap_Any_Row_5_Case_Playtest: case pill, menu, coins, moves; title,
+// progress and pips; the request line, order tabs and two clue cards; the subjects over the board's
+// columns; the board note and the coach line; Undo / Notebook / Hint; the delivery banner. Every
+// x, y, w, h below is in top-left-origin reference pixels. The pack's UI sprites and fonts; the
+// loading screen too. The board itself is world space (SceneBuilder).
 // Re-runnable: the HUD is built only when InGame has no UI_InGame yet. To rebuild it, delete
 // InGame/Reference and the UI_InGame component, then run again. The helpers are shared with PopUpBuilder.
 public static class UIBuilder
@@ -21,10 +22,13 @@ public static class UIBuilder
     private static readonly Color PaleCream = new Color32(0xEC, 0xF7, 0xE9, 0xFF);
     private static readonly Color NoteColor = new Color32(0xE6, 0xF2, 0xE6, 0xFF);
     private static readonly Color BrandColor = new Color32(0xB4, 0xDD, 0xD4, 0xFF);
+    private static readonly Color WalletColor = new Color32(0x11, 0x65, 0x65, 0xFF);
 
-    // geometry: subject cards 280 wide over 290 px columns (board x 170), art inset [17, 5, 246, 200].
-    private const float BoardLeft = 170f;
+    // The board is centred: x 105..975, y 800..1670 (ReferenceLayout.BoardCenter); subject cards 280
+    // wide over its 290 px columns, art inset [17, 5, 246, 200].
+    private const float BoardLeft = 105f;
     private const float Cell = 290f;
+    private const int MaxSets = 5;
 
     [MenuItem("ShiftSort/Build UI")]
     public static void Build()
@@ -54,12 +58,13 @@ public static class UIBuilder
 
         BuildTopBar(root, so, bold, regular, intro);
         BuildTitle(root, so, bold, regular, intro);
-        BuildClues(root, so, bold, regular, intro);
+        BuildRequest(root, so, bold, regular, intro);
         BuildSubjects(root, so, bold, intro);
-        BuildCategories(root, so, bold, intro);
-        BuildProgress(root, so, bold, regular, intro);
+        BuildUnderBoard(root, so, bold, regular, intro);
         BuildButtons(root, so, bold, intro);
+        BuildBanner(root, so, bold);
         BuildToast(root, so, regular);
+        Set(so, "_flightLayer", root);
 
         var items = so.FindProperty("_introItems");
         items.arraySize = intro.Count;
@@ -72,14 +77,14 @@ public static class UIBuilder
 
     // ---------- HUD sections ----------
 
-    // level (40, 30, 280, 85), menu (340, 45, 64, 64), difficulty (470, 45, 210, 62), moves (760, 25, 280, 107).
+    // case pill (40, 30, 280, 85), menu (340, 45, 64, 64), coins (470, 35, 210, 80), moves (760, 25, 280, 107).
     private static void BuildTopBar(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
                                     List<RectTransform> intro)
     {
         var level = Place(root, "Level Button", 40, 30, 280, 85);
         var levelSurface = AddImage(level, Sprite("UI/capsule_white"), sliced: true);
         levelSurface.color = Cream;
-        var levelText = Label(level, "Label", 0, 0, 280, 85, bold, "Level 1", 40, Ink, TextAlignmentOptions.Center);
+        var levelText = Label(level, "Label", 0, 0, 280, 85, bold, "Case 1 / 5", 40, Ink, TextAlignmentOptions.Center);
         Set(so, "_levelButton", MakeButton(level, levelSurface));
         Set(so, "_levelText", levelText.GetComponent<TMP_Text>());
 
@@ -90,10 +95,11 @@ public static class UIBuilder
         menuIcon.preserveAspect = true;
         Set(so, "_menuButton", MakeButton(menu, menuSurface));
 
-        var hard = Place(root, "Hard Badge", 470, 45, 210, 62);
-        AddImage(hard, Sprite("UI/capsule_white"), sliced: true).color = Gold;
-        Label(hard, "Label", 0, 0, 210, 62, bold, "Hard", 32, Ink, TextAlignmentOptions.Center);
-        Set(so, "_hardBadge", hard.gameObject);
+        var wallet = Place(root, "Wallet", 470, 35, 210, 80);
+        AddImage(wallet, Sprite("UI/capsule_white"), sliced: true).color = WalletColor;
+        AddImage(Place(wallet, "Coin", 26, 13, 50, 54), Sprite("UI/icon_coin")).preserveAspect = true;
+        var coins = Label(wallet, "Coins", 84, 0, 110, 80, bold, "0", 44, Cream, TextAlignmentOptions.MidlineLeft);
+        Set(so, "_coinsText", coins.GetComponent<TMP_Text>());
 
         var moves = Place(root, "Moves Panel", 760, 25, 280, 107);
         var movesImage = AddImage(moves, Sprite("UI/panel_moves"), sliced: true);
@@ -111,73 +117,98 @@ public static class UIBuilder
 
         intro.Add(level);
         intro.Add(menu);
-        intro.Add(hard);
+        intro.Add(wallet);
         intro.Add(moves);
     }
 
-    // title (40, 150, 1000, 74) and goal (40, 235, 1000, 44).
+    // title (40, 150, 1000, 74); progress (40, 232, 600, 48) with a pip per set on the right (69 x 17, 12 apart).
     private static void BuildTitle(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
                                    List<RectTransform> intro)
     {
-        var title = Label(root, "Title", 40, 150, 1000, 74, bold, "Ready for the parade", 60, Cream, TextAlignmentOptions.Center);
+        var title = Label(root, "Title", 40, 150, 1000, 74, bold, "Parade prep", 60, Cream, TextAlignmentOptions.Center);
         var titleText = title.GetComponent<TMP_Text>();
         titleText.enableAutoSizing = true;
         titleText.fontSizeMin = 40f;
         titleText.fontSizeMax = 60f;
-        var goal = Label(root, "Goal", 40, 235, 1000, 44, regular, "Match all 9 items using the clues.", 34, PaleCream, TextAlignmentOptions.Center);
+        var progress = Label(root, "Progress", 40, 232, 600, 48, regular, "0 of 3 sets delivered", 32, PaleCream, TextAlignmentOptions.MidlineLeft);
         Set(so, "_title", titleText);
-        Set(so, "_goal", goal.GetComponent<TMP_Text>());
+        Set(so, "_progressText", progress.GetComponent<TMP_Text>());
+
+        var pipsRect = Place(root, "Pips", 1040 - (MaxSets * 69 + (MaxSets - 1) * 12), 247, MaxSets * 69 + (MaxSets - 1) * 12, 17);
+        var pips = so.FindProperty("_pips");
+        pips.arraySize = MaxSets;
+        for (int i = 0; i < MaxSets; i++)
+        {
+            var pip = AddImage(Place(pipsRect, $"Pip {i + 1}", i * 81, 0, 69, 17), Sprite("UI/capsule_white"), sliced: true);
+            pip.pixelsPerUnitMultiplier = 6f;
+            pips.GetArrayElementAtIndex(i).objectReferenceValue = pip;
+        }
         intro.Add(title);
-        intro.Add(goal);
+        intro.Add(progress);
+        intro.Add(pipsRect);
     }
 
-    // clueHeading (40, 285, 1000, 38): "CLUES" and "All facts in Notebook"; clues (40, 330, 1000, 165):
-    // two cards 490 wide, 20 apart; icon [14, 24, 105, 105] and text [132, 21, 335, 130] inside a card.
-    private static void BuildClues(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
-                                   List<RectTransform> intro)
+    // request (40, 290, 560, 46) and "SET 1 / 3" (640, 290, 400, 46), or two order tabs
+    // (600 / 825, 284, 215, 58); two clue cards (40 / 550, 345, 490, 150): icon [14, 20, 100, 110],
+    // text [126, 12, 350, 126], the "SCENE CLUE" tag bottom right.
+    private static void BuildRequest(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
+                                     List<RectTransform> intro)
     {
-        var heading = Label(root, "Clue Heading", 40, 285, 500, 38, bold, "CLUES", 25, Cream, TextAlignmentOptions.MidlineLeft);
-        heading.GetComponent<TMP_Text>().characterSpacing = 6f;
-        var all = Place(root, "All Facts Button", 640, 281, 400, 46);
-        var allSurface = AddImage(all, Sprite("UI/capsule_white"), sliced: true);
-        allSurface.color = new Color(1f, 1f, 1f, 0f);
-        Label(all, "Label", 0, 0, 400, 46, regular, "All facts in Notebook", 25, Cream, TextAlignmentOptions.MidlineRight);
-        Set(so, "_allFactsButton", MakeButton(all, allSurface));
-        Set(so, "_cluePanel", Sprite("UI/panel_clue"));
-        Set(so, "_cluePanelMatched", Sprite("UI/panel_clue_matched"));
-        intro.Add(heading);
-        intro.Add(all);
+        var request = Label(root, "Request", 40, 290, 560, 46, bold, "CLUES · HATS", 36, Cream, TextAlignmentOptions.MidlineLeft);
+        var requestText = request.GetComponent<TMP_Text>();
+        requestText.enableAutoSizing = true;
+        requestText.fontSizeMin = 26f;
+        requestText.fontSizeMax = 36f;
+        var position = Label(root, "Set Position", 640, 290, 400, 46, regular, "SET 1 / 3", 26, Cream, TextAlignmentOptions.MidlineRight);
+        position.GetComponent<TMP_Text>().characterSpacing = 6f;
+        Set(so, "_requestText", requestText);
+        Set(so, "_setPosition", position.GetComponent<TMP_Text>());
+        intro.Add(request);
+        intro.Add(position);
+
+        var tabs = so.FindProperty("_orderTabs");
+        tabs.arraySize = 2;
+        for (int i = 0; i < 2; i++)
+        {
+            var tab = Place(root, $"Order Tab {i + 1}", 600 + i * 225, 284, 215, 58);
+            var surface = AddImage(tab, Sprite("UI/capsule_white"), sliced: true);
+            var text = Label(tab, "Label", 10, 0, 195, 58, bold, "Mains", 30, Cream, TextAlignmentOptions.Center).GetComponent<TMP_Text>();
+            text.enableAutoSizing = true;
+            text.fontSizeMin = 20f;
+            text.fontSizeMax = 30f;
+            tabs.GetArrayElementAtIndex(i).objectReferenceValue = MakeButton(tab, surface);
+            tab.gameObject.SetActive(false);
+        }
 
         float[] xs = { 40, 550 };
         var clues = so.FindProperty("_clues");
         clues.arraySize = xs.Length;
         for (int i = 0; i < xs.Length; i++)
         {
-            var card = Place(root, $"Clue {i + 1}", xs[i], 330, 490, 165);
+            var card = Place(root, $"Clue {i + 1}", xs[i], 345, 490, 150);
             var panel = AddImage(card, Sprite("UI/panel_clue"), sliced: true);
-            var icon = AddImage(Place(card, "Icon", 14, 24, 105, 105), Sprite("Items/crew_00"));
+            var icon = AddImage(Place(card, "Icon", 14, 20, 100, 110), Sprite("Items/crew_00"));
             icon.preserveAspect = true;
-            var text = Label(card, "Text", 132, 21, 335, 130, bold, "Mia wears the red cap.", 34, Ink,
+            var text = Label(card, "Text", 126, 12, 350, 126, bold, "Mia gets the red cap.", 32, Ink,
                              TextAlignmentOptions.MidlineLeft).GetComponent<TMP_Text>();
             text.textWrappingMode = TextWrappingModes.Normal;
             text.enableAutoSizing = true;          // longer facts shrink to stay inside the card
-            text.fontSizeMin = 26f;
-            text.fontSizeMax = 34f;
-            var check = AddImage(Place(card, "Check", 446, -10, 52, 52), Sprite("UI/check_badge"));
+            text.fontSizeMin = 22f;
+            text.fontSizeMax = 32f;
+            var tag = Label(card, "Scene Tag", 280, 120, 196, 26, bold, "SCENE CLUE", 18, Teal, TextAlignmentOptions.MidlineRight);
+            tag.GetComponent<TMP_Text>().characterSpacing = 4f;
 
             var slot = clues.GetArrayElementAtIndex(i);
-            slot.FindPropertyRelative("Root").objectReferenceValue = card.gameObject;
-            slot.FindPropertyRelative("Panel").objectReferenceValue = panel;
+            slot.FindPropertyRelative("Button").objectReferenceValue = MakeButton(card, panel);
             slot.FindPropertyRelative("Icon").objectReferenceValue = icon;
             slot.FindPropertyRelative("Text").objectReferenceValue = text;
-            slot.FindPropertyRelative("Check").objectReferenceValue = check.gameObject;
+            slot.FindPropertyRelative("SceneTag").objectReferenceValue = tag.gameObject;
             intro.Add(card);
         }
     }
 
-    // subjects (170, 515, 870, 213) and subjectNames (170, 728, 870, 54): one white card per column
-    // (280 wide, centred on its 290 px column) holding the subject's rig in the art inset, and its
-    // name tab under it.
+    // subjects (105, 515, 870, 267): one white card per column (280 wide, centred on its 290 px
+    // column) holding the subject's rig in the art inset, and its name tab under it.
     private static void BuildSubjects(RectTransform root, SerializedObject so, TMP_FontAsset bold, List<RectTransform> intro)
     {
         var subjects = so.FindProperty("_subjects");
@@ -220,45 +251,23 @@ public static class UIBuilder
         return card;
     }
 
-    // categories (15, 800, 140, 870): one tab per row, centred on it, flush against the board frame.
-    private static void BuildCategories(RectTransform root, SerializedObject so, TMP_FontAsset bold, List<RectTransform> intro)
+    // board note (40, 1680, 1000, 40) and the coach line (40, 1722, 1000, 62).
+    private static void BuildUnderBoard(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
+                                        List<RectTransform> intro)
     {
-        var tabs = so.FindProperty("_categories");
-        tabs.arraySize = 3;
-        for (int r = 0; r < 3; r++)
-        {
-            float centre = 800f + Cell * (r + 0.5f);
-            var rect = Place(root, $"Category {r + 1}", 15, centre - 52f, 146, 104);
-            var image = AddImage(rect, Sprite("UI/tab_category"), sliced: true);
-            var label = Label(rect, "Label", 8, 0, 126, 104, bold, "Hats", 29, Ink, TextAlignmentOptions.Center).GetComponent<TMP_Text>();
-            label.enableAutoSizing = true;         // categoryMin 21 .. categoryMax 29
-            label.fontSizeMin = 21f;
-            label.fontSizeMax = 29f;
-            var button = MakeButton(rect, image);
-
-            var tab = Undo.AddComponent<UI_CategoryTab>(rect.gameObject);
-            var tabSo = new SerializedObject(tab);
-            tabSo.FindProperty("_button").objectReferenceValue = button;
-            tabSo.FindProperty("_tab").objectReferenceValue = image;
-            tabSo.FindProperty("_label").objectReferenceValue = label;
-            tabSo.FindProperty("_normal").objectReferenceValue = Sprite("UI/tab_category");
-            tabSo.FindProperty("_active").objectReferenceValue = Sprite("UI/tab_category_active");
-            tabSo.ApplyModifiedPropertiesWithoutUndo();
-            tabs.GetArrayElementAtIndex(r).objectReferenceValue = tab;
-            intro.Add(rect);
-        }
-    }
-
-    // controlNote (40, 1680, 1000, 40) and progress (40, 1725, 1000, 44): "6/9 matched".
-    private static void BuildProgress(RectTransform root, SerializedObject so, TMP_FontAsset bold, TMP_FontAsset regular,
-                                      List<RectTransform> intro)
-    {
-        var note = Label(root, "Control Note", 40, 1680, 1000, 40, regular, "Drag a tile onto a neighbour to swap them.", 25, NoteColor,
-                         TextAlignmentOptions.Center);
-        var progress = Label(root, "Progress", 40, 1725, 1000, 44, bold, "6/9 matched", 34, Cream, TextAlignmentOptions.Center);
-        Set(so, "_progressText", progress.GetComponent<TMP_Text>());
+        var note = Label(root, "Board Note", 40, 1680, 1000, 40, regular,
+                         "Each item under its owner. <color=#FFE083><b>Any row clears.</b></color>", 28, NoteColor, TextAlignmentOptions.Center);
+        var coach = Label(root, "Coach", 40, 1722, 1000, 62, regular, "Line up the requested items under their owners in any row.", 30,
+                          Cream, TextAlignmentOptions.Center);
+        var coachText = coach.GetComponent<TMP_Text>();
+        coachText.textWrappingMode = TextWrappingModes.Normal;
+        coachText.enableAutoSizing = true;
+        coachText.fontSizeMin = 22f;
+        coachText.fontSizeMax = 30f;
+        Set(so, "_coachText", coachText);
+        Set(so, "_coach", coach);
         intro.Add(note);
-        intro.Add(progress);
+        intro.Add(coach);
     }
 
     // actions (40, 1790, 1000, 110): Undo, Notebook (wider), Hint (gold), 20 px apart.
@@ -287,6 +296,21 @@ public static class UIBuilder
         label.fontSizeMin = 28f;
         label.fontSizeMax = 39f;
         return MakeButton(rect, image);
+    }
+
+    // "Hats delivered!" (140, row centre - 50, 800, 100), hidden until a delivery; UI_InGame moves it
+    // to the delivered row.
+    private static void BuildBanner(RectTransform root, SerializedObject so, TMP_FontAsset bold)
+    {
+        var banner = Place(root, "Delivery Banner", 140, 895, 800, 100);
+        var surface = AddImage(banner, Sprite("UI/panel_clue"), sliced: true);
+        surface.color = new Color32(0xFF, 0xF3, 0xD9, 0xF5);
+        AddImage(Place(banner, "Border", -4, -4, 808, 108), Sprite("UI/panel_clue_matched"), sliced: true).color = Gold;
+        banner.Find("Border").SetAsFirstSibling();
+        var text = Label(banner, "Text", 20, 0, 760, 100, bold, "Hats delivered!", 43, Ink, TextAlignmentOptions.Center);
+        Set(so, "_banner", banner);
+        Set(so, "_bannerText", text.GetComponent<TMP_Text>());
+        banner.gameObject.SetActive(false);
     }
 
     // A dark capsule over the board's lower half, hidden until UI_Toast.Show. It lives in

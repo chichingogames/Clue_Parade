@@ -4,6 +4,19 @@ Append-only. Newest first. One entry per documentation run.
 
 ---
 
+## 2026-11-28 — branch `any-row` on `7de3f53`
+
+**"Any row, two clues" replaces the 30-case game** (source: `Tilewrap_Any_Row_5_Case_Playtest.html`). Five cases in
+`Data/delivery_cases.json`; new `DeliveryContent`, `DeliveryRules` (port of the playtest's DeliveryCore), `PopUp_Cases`;
+rewritten `Manager_Game`, `Manager_Board`, `Manager_Flow`, `UI_InGame`, `UI_SubjectCard`, `ItemTile`, `PopUp_Hint`,
+`PopUp_Notebook`, the HUD and popup builders, the validator and the Tester. Removed: `BoardState`, `LevelDefinition`,
+`CaseLevelSource`, `SwapPuzzle`, `PopUp_Map`, `UI_CategoryTab`, `TileData`. **Verified** in the Editor: compile clean,
+Validate Levels 5 OK (hint route wins each case within its limit); Play mode: case 1 guided swap (wrong swap refused),
+case 2 hint route to the win (refills, extras on the win popup), case 5 order tabs + tap-tap delivery in the middle row
+with a refill, notebook, hint, case list, case 4 clue focus.
+
+---
+
 ## 2026-11-28 — branch `swap-mechanic` on `047db43`
 
 **Neighbour swaps replace row / column wraps; tutorial disabled.** New `SwapPuzzle` (BFS over 9! boards, `SwapMove`);

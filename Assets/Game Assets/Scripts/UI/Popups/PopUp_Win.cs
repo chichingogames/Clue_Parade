@@ -4,16 +4,18 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// "Case complete!": the completion line, the three subjects finished (the same rigs as the board,
-// every part fitted), the first-clear reward (or that it was collected before), a named preview of
-// the next case ("UP NEXT"), Next case, and Choose a case (the map). After the last case: "All 30
-// cases complete!" and the map. It has no close button: the player always leaves through an action.
+// "Case complete!": the completion line, the three subjects finished (the same rigs as the HUD,
+// every part and extra delivered), the first-clear reward (or that it was collected before), the
+// stats line (sets delivered, swaps used), a named preview of the next case ("UP NEXT"), Next case,
+// and Choose a case. After the last case: Finish playtest. It has no close button: the player
+// always leaves through an action.
 public class PopUp_Win : BasePopUp
 {
     public struct Subject
     {
         public TilewrapRigView Rig;
         public string Name;
+        public UI_SubjectCard.Extra[] Extras;
     }
 
     [SerializeField] private UI_SubjectCard[] _subjects = new UI_SubjectCard[0];
@@ -33,7 +35,7 @@ public class PopUp_Win : BasePopUp
         for (int i = 0; i < _subjects.Length; i++)
         {
             if (subjects == null || i >= subjects.Length) { _subjects[i].Hide(); continue; }
-            _subjects[i].Show(subjects[i].Rig, subjects[i].Name);
+            _subjects[i].Show(subjects[i].Rig, subjects[i].Name, subjects[i].Extras);
             _subjects[i].ShowCompleted();
         }
         _reward.text = reward;

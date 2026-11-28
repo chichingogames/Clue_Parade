@@ -15,6 +15,7 @@ MonoBehaviour:
   _cellPrefab: {fileID: 5812898266030012145, guid: 41738945ffb35d645a18727c82e67f9a, type: 3}
   _itemTilePrefab: {fileID: 8973855979378694257, guid: b494cab78972f0d4baa1031fdba98741, type: 3}
   _content: {fileID: 11400000, guid: 5ff56c179794caa4da818823c856961f, type: 2}
+  _cases: {fileID: 4900000, guid: 335818ff912f92e4180f891bf0184fa1, type: 3}
   _music: {fileID: 8300000, guid: d9b939ba5a2f03e49841571aa0847a79, type: 3}
   _sounds:
   - Type: 0

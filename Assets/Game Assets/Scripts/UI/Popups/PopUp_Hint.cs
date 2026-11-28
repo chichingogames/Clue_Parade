@@ -3,32 +3,29 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// "Hint": first the plain clue fact (bulb + the item's picture + the sentence) for the selected
-// category's first unsatisfied item, then the next swap from the CURRENT board in words ("Swap the
-// Raincoat and the Sun hat." and which way to drag). "Show the next swipe" closes it and draws the
-// guide on the board; "I'll try it" just closes. Opening it costs no move.
+// "A helpful next swap": the two tiles to swap (the item and its neighbour, or "Empty space"), the
+// instruction ("Swipe the purple cap right."), why it helps, "Show me on the board" (closes it; the
+// flow draws the guide) and "I'll try it" (just closes). Opening it costs no move.
 public class PopUp_Hint : BasePopUp
 {
-    [SerializeField] private Image _clueIcon;
-    [SerializeField] private TMP_Text _clueText;
-    [SerializeField] private TMP_Text _swipeText;
-    [SerializeField] private TMP_Text _wrapText;
+    [SerializeField] private Image _itemIcon;
+    [SerializeField] private Image _otherIcon;
+    [Tooltip("\"Empty space\", shown instead of _otherIcon when the neighbour cell is empty.")]
+    [SerializeField] private GameObject _emptyLabel;
+    [SerializeField] private TMP_Text _instruction;
     [SerializeField] private Button _showButton;
     [SerializeField] private Button _tryButton;
 
-    // swipe null: nothing to guide (hides the swipe lines and the show button).
-    public void Setup(Sprite icon, string clue, string swipe, string wrap, Action onShowSwipe, Action onTry)
+    // other null: the neighbour cell is empty.
+    public void Setup(Sprite item, Sprite other, string instruction, string why, Action onShow, Action onTry)
     {
-        SetTexts("", "Hint", "");
-        _clueIcon.sprite = icon;
-        _clueIcon.gameObject.SetActive(icon != null);
-        _clueText.text = clue;
-        bool hasSwipe = !string.IsNullOrEmpty(swipe);
-        _swipeText.gameObject.SetActive(hasSwipe);
-        _wrapText.gameObject.SetActive(hasSwipe && !string.IsNullOrEmpty(wrap));
-        _swipeText.text = swipe ?? "";
-        _wrapText.text = wrap ?? "";
-        Bind(_showButton, null, null, hasSwipe ? onShowSwipe : null);
+        SetTexts("HINT", "A helpful next swap", why);
+        _itemIcon.sprite = item;
+        _otherIcon.sprite = other;
+        _otherIcon.gameObject.SetActive(other != null);
+        _emptyLabel.SetActive(other == null);
+        _instruction.text = instruction;
+        Bind(_showButton, onShow);
         Bind(_tryButton, onTry);
     }
 }

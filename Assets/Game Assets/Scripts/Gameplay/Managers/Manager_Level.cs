@@ -1,20 +1,19 @@
 using UnityEngine;
 
-// Turns a level number (1-based) into a LevelDefinition: the content pack's cases, through
-// CaseLevelSource (FileRef.Content). Levels are numbered 1..LevelCount without gaps; a saved number
-// past the last case (an older build) opens the last one.
+// Turns a case number (1-based) into its DeliveryCase (FileRef.Cases). Cases are numbered
+// 1..LevelCount in file order; a saved number past the last case opens the last one.
 public class Manager_Level : Singleton<Manager_Level>
 {
-    private ILevelSource _source;
+    private DeliveryCase[] _cases = new DeliveryCase[0];
 
-    public int LevelCount { get; private set; }
+    public int LevelCount => _cases.Length;
 
     public override void Awake2()
     {
-        _source = new CaseLevelSource(FileRef.Instance);
-        LevelCount = _source.Count;
-        if (LevelCount == 0) Debug.LogError("[Manager_Level] No cases. Assign FileRef's content library (ShiftSort > Build Assets).");
+        var content = FileRef.Instance.Cases;
+        if (content != null) _cases = content.cases;
+        if (LevelCount == 0) Debug.LogError("[Manager_Level] No cases. Assign FileRef's Cases (Assets/Game Assets/Data/delivery_cases.json).");
     }
 
-    public LevelDefinition Load(int levelNumber) => _source.Load(Mathf.Clamp(levelNumber, 1, Mathf.Max(1, LevelCount)));
+    public DeliveryCase Load(int levelNumber) => LevelCount == 0 ? null : _cases[Mathf.Clamp(levelNumber, 1, LevelCount) - 1];
 }
